@@ -597,7 +597,7 @@ export const forceNavigatorSettings = {
 					forceNavigator.apiUrl = unescape(response.apiUrl)
 					forceNavigator.loadCommands(forceNavigatorSettings)
 				} catch(e) {
-					_d([e, response])
+					_d([e, response, chrome.runtime.lastError])
 				}
 				ui.hideLoadingIndicator()
 			})
