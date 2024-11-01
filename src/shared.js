@@ -915,7 +915,7 @@ export const forceNavigator = {
 		let serverUrl
 		let url = location.origin + ""
 		if(settings.lightningMode) {// if(url.indexOf("lightning.force") != -1)
-			serverUrl = url.replace('lightning.force.com','').replace('my.salesforce.com','') + "lightning.force.com"
+            serverUrl = url.replace(/my\.salesforce\.com$/, 'lightning.force.com').replace(/my\.salesforce-setup\.com$/, 'lightning.force.com')
 		} else {
 			if(url.includes("salesforce"))
 				serverUrl = url.substring(0, url.indexOf("salesforce")) + "salesforce.com"
