@@ -84,9 +84,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 			break
 		case "getApiSessionId":
 			request.sid = request.uid = request.domain = request.oid = ""
-			chrome.cookies.getAll({}, (all)=>{
+			chrome.cookies.getAll({name: 'sid'}, (all)=>{
 				all.forEach((c)=>{
-					if(c.domain==request.serverUrl && c.name === "sid") {
+					if(c.domain==request.serverUrl) {
 						request.sid = c.value
 						request.domain = c.domain
 						request.oid = request.sid.match(/([\w\d]+)/)[1]
