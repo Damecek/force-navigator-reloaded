@@ -67,8 +67,6 @@ chrome.commands.onCommand.addListener((command)=>{
 	switch(command) {
 		case 'showSearchBox': showElement("searchBox"); break
 		case 'showAppMenu': showElement("appMenu"); break
-		case 'goToTasks': goToUrl(".com/00T"); break
-		case 'goToReports': goToUrl(".com/00O"); break
 	}
 })
 chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
