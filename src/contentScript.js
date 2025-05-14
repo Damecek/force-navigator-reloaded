@@ -22,29 +22,4 @@ forceNavigator.getIdFromUrl = ()=>{
 	}
 	return false
 }
-forceNavigator.createTask = (subject)=>{
-	ui.showLoadingIndicator()
-	if(["",null,undefined].includes(subject) && !forceNavigator.userId) { console.error("Empty Task subject"); hideLoadingIndicator(); return }
-	chrome.runtime.sendMessage({
-			"action":'createTask', "apiUrl": forceNavigator.apiUrl,
-			"sessionId": forceNavigator.sessionId,
-			"domain": forceNavigator.serverInstance,
-			"subject": subject, "userId": forceNavigator.userId
-		}, response=>{
-			if(response.errors.length != 0) { console.error("Error creating task", response.errors); return }
-			ui.clearOutput()
-			forceNavigator.commands["commands.goToTask"] = {
-				"key": "commands.goToTask",
-				"url": forceNavigator.serverInstance + "/"+ response.id
-			}
-			ui.quickSearch.value = ""
-			ui.addSearchResult("commands.goToTask")
-			ui.addSearchResult("commands.escapeCommand")
-			let firstEl = document.querySelector('#sfnavOutputs :first-child')
-			if(forceNavigator.listPosition == -1 && firstEl != null)
-				firstEl.className = "sfnav_child sfnav_selected"
-			ui.hideLoadingIndicator()
-	})
-}
-
 forceNavigator.init()

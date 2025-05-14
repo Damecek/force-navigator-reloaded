@@ -150,10 +150,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 			else
 				sendResponse(metaData[request.sessionHash])
 			break
-		case 'createTask':
-            forceNavigator.getServiceDataHTTP("/sobjects/Task", "json", request, {"Subject": request.subject, "OwnerId": request.userId}, "POST")
-			.then(function (response) { sendResponse(response) })
-			break
 		case 'searchLogins':
             forceNavigator.getServiceDataHTTP("/query/?q=SELECT Id, Name, Username FROM User WHERE Name LIKE '%25" + request.searchValue.trim() + "%25' OR Username LIKE '%25" + request.searchValue.trim() + "%25'", "json", request)
 			.then(function(success) { sendResponse(success) }).catch(function(error) {

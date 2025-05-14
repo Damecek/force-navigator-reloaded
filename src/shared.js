@@ -162,16 +162,15 @@ export const ui = {
 			ui.debounceGetMoreData()
 			return
 		}
-		ui.lookupMode = LOOKUP_MODE_SHOW_COMMANDS
-		if(input.substring(0,1) == "!") ui.addSearchResult("menu.createTask")
-		else {
-			let words = ui.filterCommandList(input)
-			if(words.length > 0)
-				for (var i = 0;i < words.length; ++i)
-					ui.addSearchResult(words[i])
-			else
-				forceNavigator.listPosition = -1
-		}
+            ui.lookupMode = LOOKUP_MODE_SHOW_COMMANDS
+            let words = ui.filterCommandList(input)
+            if (words.length > 0) {
+                for (var i = 0; i < words.length; ++i) {
+                    ui.addSearchResult(words[i])
+                }
+            } else {
+                forceNavigator.listPosition = -1
+            }
 		let firstEl = ui.navOutput.querySelector(":first-child")
 		if(forceNavigator.listPosition == -1 && firstEl != null) firstEl.className = "sfnav_child sfnav_selected"
 		ui.debounceGetMoreData()
@@ -394,9 +393,6 @@ export const ui = {
 					return false
 			}
 		}
-		//Enter / ctrl-enter / shift-enter pressed
-		if(["!"].includes(e.target.value[0]))
-			cmdKey = { "key": ("commands.createTask") }
 		if(!cmdKey?.key?.startsWith("commands.loginAs.") && e.target.value.toLowerCase().includes(t("prefix.loginAs").toLowerCase())) {
 			cmdKey = "commands.loginAs"
 			//details = ui.quickSearch.value
@@ -829,9 +825,6 @@ export const forceNavigator = {
 			case "commands.loginAs":
 				forceNavigator.loginAs(command, newTab)
 				return true
-			case "commands.createTask":
-				forceNavigator.createTask(ui.quickSearch.value.substring(1).trim())
-				break
 			case "commands.search":
 				targetUrl = forceNavigator.searchTerms(ui.quickSearch.value.substring(1).trim())
 				break
