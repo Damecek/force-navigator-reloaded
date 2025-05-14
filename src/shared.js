@@ -943,7 +943,7 @@ export const forceNavigator = {
 		if(Object.keys(data).length > 0)
 			request.body = JSON.stringify(data)
 		return fetch(getUrl, request).then(response => {
-			forceNavigator.apiUrl = response.url.match(/:\/\/(.*)salesforce.com/)[1] + "salesforce.com"
+            forceNavigator.apiUrl = new URL(response.url).host;
 			switch(type) {
 				case "json": return response.clone().json()
 				case "document": return response.clone().text()
