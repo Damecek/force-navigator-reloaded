@@ -1910,3 +1910,15 @@ export const forceNavigator = {
 		},
 	}
 }
+
+// Auto-initialize navigator bar in top-level frame
+// Initialize navigator after shared.js is fully evaluated
+if (typeof window !== 'undefined' && window.top === window) {
+    setTimeout(() => {
+        try {
+            forceNavigator.init();
+        } catch (e) {
+            console.error('Error initializing forceNavigator:', e);
+        }
+    }, 0);
+}

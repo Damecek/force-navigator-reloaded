@@ -37,8 +37,7 @@
 			"https://*.cloudforce.com/*"
 		],
 		"all_frames": true,
-    "js": [
-        "contentScript.js",
+        "js": [
         "shared.js"
     ],
 		"run_at": "document_end"

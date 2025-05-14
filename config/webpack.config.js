@@ -9,7 +9,6 @@ const PATHS = require('./paths');
 const config = (env, argv) =>
   merge(common, {
     entry: {
-      contentScript: PATHS.src + '/contentScript.js',
       serviceWorker: PATHS.src + '/serviceWorker.js',
       shared: PATHS.src + '/shared.js',
     },
