@@ -590,7 +590,7 @@ export const forceNavigatorSettings = {
 			if(forceNavigator.sessionId !== null) { return }
 			if(forceNavigator.serverUrl?.includes('https://test.salesforce.com')) { return }
 			chrome.runtime.sendMessage({ "action": "getApiSessionId", "serverUrl": forceNavigator.serverUrl }, response=>{
-				if(response && response.error) { console.error("response", response, chrome.runtime?.lastError); return }
+				if(response && response.error) { console.error("response", JSON.stringify(response), chrome.runtime.lastError); return }
 				try {
 					forceNavigator.sessionId = unescape(response.sessionId)
 					forceNavigator.userId = unescape(response.userId)
