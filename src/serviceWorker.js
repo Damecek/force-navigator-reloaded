@@ -63,6 +63,10 @@ const goToUrl = (targetUrl, newTab, settings = {})=>{
 	})
 }
 
+chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
+    console.log(details)
+})
+
 chrome.commands.onCommand.addListener((command)=>{
 	switch(command) {
 		case 'showSearchBox': showElement("searchBox"); break

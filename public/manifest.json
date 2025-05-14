@@ -36,7 +36,6 @@
 			"https://*.salesforce-setup.com/*",
 			"https://*.cloudforce.com/*"
 		],
-		"all_frames": true,
     "js": [
         "contentScript.js",
         "shared.js"
@@ -63,7 +62,8 @@
 		"storage",
 		"clipboardRead",
 		"cookies",
-		"scripting"
+		"scripting",
+        "webNavigation"
 	],
 	"host_permissions": [
 		"https://*.force.com/*",

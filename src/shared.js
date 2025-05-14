@@ -401,7 +401,7 @@ export const ui = {
 			cmdKey = "commands.loginAs"
 			//details = ui.quickSearch.value
 		}
-console.log(cmdKey)
+// console.log(cmdKey)
 		switch(ui.lookupMode) {
 			case LOOKUP_MODE_SHOW_SEARCH_RESULTS:
 				//Search mode
@@ -668,7 +668,7 @@ export const forceNavigator = {
 		}
 	},
 	"createSObjectCommands": (commands, sObjectData,qualifiedApiNameToDurableIdMap, serverUrl) => {
-        console.log('in createSObjectCommands', qualifiedApiNameToDurableIdMap)
+        // console.log('in createSObjectCommands', qualifiedApiNameToDurableIdMap)
 		const { labelPlural, label, name, keyPrefix } = sObjectData
 		const mapKeys = Object.keys(forceNavigator.objectSetupLabelsMap)
 		if (!keyPrefix || forceNavigatorSettings.skipObjects.includes(keyPrefix)) { return commands }
