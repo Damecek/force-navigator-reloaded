@@ -22,26 +22,6 @@ forceNavigator.getIdFromUrl = ()=>{
 	}
 	return false
 }
-forceNavigator.launchMerger = (otherId, object)=>{
-	if(!otherId)
-		otherId = forceNavigator.pasteFromClipboard()
-	if(![15,18].includes(otherId.length)) {
-		ui.clearOutput()
-		ui.addSearchResult("commands.errorAccountMerge")
-		return
-	}
-	const thisId = forceNavigator.getIdFromUrl()
-	if(!thisId)
-		return
-	switch(object) {
-		case "Account":
-			document.location.href = `${forceNavigator.serverInstance}/merge/accmergewizard.jsp?goNext=+Next+&cid=${otherId}&cid=${thisId}`
-			break
-		default:
-			break
-	}
-}
-forceNavigator.launchMergerAccounts = (otherId)=>forceNavigator.launchMerger(otherId, "Account")
 forceNavigator.createTask = (subject)=>{
 	ui.showLoadingIndicator()
 	if(["",null,undefined].includes(subject) && !forceNavigator.userId) { console.error("Empty Task subject"); hideLoadingIndicator(); return }

@@ -829,9 +829,6 @@ export const forceNavigator = {
 			case "commands.loginAs":
 				forceNavigator.loginAs(command, newTab)
 				return true
-			case "commands.mergeAccounts":
-				forceNavigator.launchMergerAccounts(command.value)
-				break
 			case "commands.createTask":
 				forceNavigator.createTask(ui.quickSearch.value.substring(1).trim())
 				break
@@ -869,7 +866,6 @@ export const forceNavigator = {
 			"commands.home",
 			"commands.logout",
 			"commands.setup",
-			"commands.mergeAccounts",
 			"commands.toggleAllCheckboxes",
 			"commands.toggleLightning",
 			"commands.help",

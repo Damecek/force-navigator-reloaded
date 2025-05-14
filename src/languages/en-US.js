@@ -15,7 +15,6 @@ module.exports = {
 		"commands.home": "Home",
 		"commands.help": "Help",
 		"commands.setup": "Setup",
-		"commands.mergeAccounts": "Merge Accounts",
 		"commands.toggleAllCheckboxes": "Toggle All Checkboxes",
 		"commands.toggleLightning": "Toggle Lightning",
 		"commands.loginAs": "Login As [login as <FirstName> <LastName> OR <Username>]",
