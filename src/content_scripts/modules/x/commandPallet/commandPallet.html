@@ -1,0 +1,87 @@
+<template lwc:render-mode="light">
+  <section
+    aria-labelledby="command-palette-heading"
+    aria-modal="true"
+    class="slds-modal slds-fade-in-open"
+    role="dialog"
+    tabindex="-1"
+  >
+    <div class="modal-container slds-modal__container">
+      <div class="slds-modal__header">
+        <h1 class="slds-modal__title slds-hyphenate" tabindex="-1">
+          Command Palette
+        </h1>
+      </div>
+      <div class="slds-modal__content slds-p-around_medium">
+        <div class="slds-form-element">
+          <label class="slds-form-element__label">Command</label>
+          <div class="slds-form-element__control">
+            <div class="slds-combobox_container">
+              <div
+                aria-controls="command-listbox"
+                aria-expanded="true"
+                aria-haspopup="listbox"
+                aria-labelledby="command-combobox-label"
+                class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open"
+                role="combobox"
+              >
+                <div
+                  class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
+                  role="none"
+                >
+                  <input
+                    aria-autocomplete="list"
+                    aria-controls="command-listbox"
+                    aria-labelledby="command-combobox-label"
+                    autofocus
+                    class="slds-input slds-combobox__input"
+                    lwc:ref="input"
+                    oninput={handleInput}
+                    onkeydown={handleKeyDown}
+                    placeholder="Type a command..."
+                    type="text"
+                  />
+                  <!--                  todo: this does not display the icon-->
+                  <span
+                    class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right"
+                    title="Show commands"
+                  >
+                    <svg aria-hidden="true" class="slds-icon slds-icon_x-small">
+                      <use xlink:href="#down"></use>
+                    </svg>
+                  </span>
+                </div>
+                <div
+                  aria-label="Commands"
+                  class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                  role="listbox"
+                >
+                  <ul
+                    class="slds-listbox slds-listbox_vertical"
+                    role="presentation"
+                  >
+                    <template for:each={items} for:item="item">
+                      <li
+                        class="slds-listbox__item"
+                        data-index={item.idx}
+                        key={item.cmd.id}
+                        onmouseover={handleMouseOver}
+                      >
+                        <x-command-item
+                          command={item.cmd}
+                          data-highlighted={item.isSelected}
+                          highlighted={item.isSelected}
+                        ></x-command-item>
+                      </li>
+                    </template>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</template>

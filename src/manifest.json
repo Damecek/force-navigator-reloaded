@@ -1,0 +1,44 @@
+{
+  "name": "Salesforce Navigator Reloaded",
+  "manifest_version": 3,
+  "version": "5.0.0",
+  "description": "",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": "icons/sf-navigator32.png",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icons/sf-navigator16.png",
+    "32": "icons/sf-navigator32.png",
+    "48": "icons/sf-navigator48.png",
+    "128": "icons/sf-navigator128.png"
+  },
+  "permissions": ["storage", "identity", "tabs", "activeTab"],
+  "oauth2": {
+    "client_id": "3MVG9dAEux2v1sLuNHpwtD8XoDOCh2LFdy7QFtq9V5s03mu72XswHI9w7DJG7EcCLko8DdXfZjrQRZmmHI3Dm",
+    "scopes": ["api", "refresh_token", "web", "openid"]
+  },
+  "host_permissions": [
+    "https://*.force.com/*",
+    "https://*.salesforce-setup.com/*",
+    "https://*.my.salesforce.com/*"
+  ],
+  "commands": {
+    "toggle-command-palette": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "Toggle Command Palette"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.force.com/*", "https://*.salesforce-setup.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

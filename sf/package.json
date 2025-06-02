@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "deploy": "sf project deploy start -m 'ConnectedApp:*' --target-org stepanek.ada.77595@agentforce.com",
+    "retreive": "sf project retrieve start -m 'ConnectedApp:*' --target-org stepanek.ada.77595@agentforce.com"
+  }
+}
