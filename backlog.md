@@ -1,19 +1,19 @@
 # MVP Backlog
 
-Níže jsou hlavní kroky k dosažení MVP Command Palette pro Salesforce rozšíření.
-Každý řádek označte [x] po dokončení úkolu.
+Below are the main steps to achieve the MVP of the Command Palette for the Salesforce extension.  
+Mark each line with [x] when the task is completed.
 
-- [ ] Error Handling: centralizovaná validace vstupu a reporting chyb v UI
-- [ ] Příkaz Login as <uživatelské_jméno> (User Switcher)
-- [ ] pridat seznam active flows do menu
-- [ ] pridat seznam sobject specific submenu (fields, layout etc.)
-- [ ] Settings Provider a UI pro uživatelská nastavení (téma, klávesové zkratky)
-- [ ] Theme Engine s podporou témat (Default, Dark, Unicorn, Solarized)
-- [ ] implementovat lightning navigation misto page
-      goto https://github.com/tprouvot/Salesforce-Inspector-reloaded/blob/main/addon/inject.js
-- [ ] zkusit implementovat wire adapter pro seznam commandu https://lwc.dev/guide/wire_adapter#wire-adapters
-- [ ] implementovat record search pres ? prefix
-- [ ] implementovat setup page
-- [ ] obrendovat auth page
-- [ ] rozmyslet, jestli neni lepsi otevrit auth page az na request usera, jakoze, neni token tak jedinej command
-      authorize
+- [ ] Error Handling: centralized input validation and error reporting in the UI
+- [ ] Command `Login as <username>` (User Switcher)
+- [ ] Add a list of active flows to the menu
+- [ ] Add SObject-specific submenu (fields, layout, etc.)
+- [ ] Settings Provider and UI for user preferences (theme, keyboard shortcuts)
+- [ ] Theme Engine with support for themes (Default, Dark, Unicorn, Solarized)
+- [ ] Implement Lightning navigation instead of page redirection  
+      refer to https://github.com/tprouvot/Salesforce-Inspector-reloaded/blob/main/addon/inject.js
+- [ ] Try implementing a wire adapter for the command list https://lwc.dev/guide/wire_adapter#wire-adapters
+- [ ] Implement record search using `?` prefix
+- [ ] Implement Setup Page
+- [ ] Brand the Auth Page
+- [ ] Consider deferring opening of the Auth Page until user requests it; e.g., if there’s no token, the only available command is `authorize`
+- [ ] Modernize icons
