@@ -1,4 +1,4 @@
-import { Command } from './Command';
+import Command from './Command';
 import CacheManager from '../../../../background/cacheManager';
 import {
   ENTITY_CACHE_KEY,
@@ -25,14 +25,11 @@ export default class RefreshCommandListCommand extends Command {
    */
   async execute(options) {
     console.log('RefreshCommandListCommand.execute');
-    const cache = new CacheManager(
-      toLightningHostname(window.location.hostname)
-    );
+    const cache = new CacheManager(toLightningHostname(this.hostname));
     await cache.clear(MENU_CACHE_KEY);
     await cache.clear(ENTITY_CACHE_KEY);
-    const pallet = document.querySelector('x-command-pallet');
-    if (pallet) {
-      pallet.dispatchEvent(
+    if (this.pallet) {
+      this.pallet.dispatchEvent(
         new CustomEvent('refreshcommands', { bubbles: true, composed: true })
       );
     }

@@ -1,9 +1,9 @@
-import { Command } from './Command';
+import Command from './Command';
 
 /**
  * Command that navigates the page to a specified path.
  */
-export class NavigationCommand extends Command {
+export default class NavigationCommand extends Command {
   /**
    * @param {string} id - Unique identifier for the command.
    * @param {string} label - Display text for the command.

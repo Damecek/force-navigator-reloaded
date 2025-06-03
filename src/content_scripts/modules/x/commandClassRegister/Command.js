@@ -1,7 +1,7 @@
 /**
  * Abstract base class for commands in the command palette.
  */
-export class Command {
+export default class Command {
   /**
    * @param {string} id - Unique identifier for the command.
    * @param {string} label - Display text for the command.
@@ -9,6 +9,8 @@ export class Command {
   constructor(id, label) {
     this.id = id;
     this.label = label;
+    this.hostname = window.location.hostname;
+    this.pallet = document.querySelector('x-command-pallet');
   }
 
   /**
