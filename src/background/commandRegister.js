@@ -12,6 +12,7 @@ import {
   fetchEntityDefinitionsFromSalesforce,
   fetchMenuNodesFromSalesforce,
 } from './salesforceUtils';
+import { SalesforceConnection } from './salesforceConnection';
 
 /**
  * Retrieves both static and dynamic commands for a given domain hostname.
@@ -19,10 +20,15 @@ import {
  * @returns {Promise<{NavigationCommand: import('./staticCommands').Command[], RefreshCommandListCommand: import('./staticCommands').Command[]}>} Object containing navigation commands and refresh command list.
  */
 export async function getCommands(hostname) {
+  const instanceHostname = toLightningHostname(hostname);
+  const connection = new SalesforceConnection({
+    instanceUrl: token.instance_url,
+    accessToken: token.access_token,
+  });
   const NavigationCommand = [
     ...staticCommands,
-    ...(await getSetupCommands(hostname)),
-    ...(await getEntityCommands(hostname)),
+    ...(await getSetupCommands(instanceHostname, connection)),
+    ...(await getEntityCommands(instanceHostname, connection)),
   ];
   const RefreshCommandListCommand = [{}];
   return {
@@ -69,24 +75,17 @@ function buildBreadcrumbs(menuNodes) {
 /**
  * Retrieves dynamic commands for a given domain via Salesforce API and cache.
  * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
+ * @param connection {SalesforceConnection} Salesforce connection instance
  * @returns {Promise<import('./staticCommands').Command[]>} Array of dynamic Command instances.
  */
-async function getSetupCommands(hostname) {
-  const instanceHostname = toLightningHostname(hostname);
-  const cache = new CacheManager(instanceHostname);
+async function getSetupCommands(hostname, connection) {
+  const cache = new CacheManager(hostname);
   const cachedCommands = await cache.get(MENU_CACHE_KEY);
   if (cachedCommands) {
     return cachedCommands;
   }
   try {
-    let tok = await ensureToken(hostname);
-    if (!tok) {
-      tok = await interactiveLogin(hostname);
-    }
-    const menuNodes = await fetchMenuNodesFromSalesforce(
-      tok.instance_url,
-      tok.access_token
-    );
+    const menuNodes = await fetchMenuNodesFromSalesforce(connection);
     const breadcrumbs = buildBreadcrumbs(menuNodes);
     console.log('Breadcrumbs built', breadcrumbs);
     const commands = menuNodes
@@ -106,7 +105,7 @@ async function getSetupCommands(hostname) {
     return dedupedCommands;
   } catch (err) {
     console.error(
-      `CommandRegister: failed to fetch dynamic commands for ${instanceHostname}`,
+      `CommandRegister: failed to fetch dynamic commands for ${hostname}`,
       err
     );
     return [];
@@ -116,24 +115,17 @@ async function getSetupCommands(hostname) {
 /**
  * Retrieves SObject and Custom Metadata navigation commands via Salesforce Tooling API.
  * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
+ * @param connection {SalesforceConnection} Salesforce connection instance
  * @returns {Promise<Array<{id: string, label: string, path: string}>>}
  */
-async function getEntityCommands(hostname) {
-  const instanceHostname = toLightningHostname(hostname);
-  const cache = new CacheManager(instanceHostname);
+async function getEntityCommands(hostname, connection) {
+  const cache = new CacheManager(hostname);
   const cachedCommands = await cache.get(ENTITY_CACHE_KEY);
   if (cachedCommands) {
     return cachedCommands;
   }
   try {
-    let tok = await ensureToken(hostname);
-    if (!tok) {
-      tok = await interactiveLogin(hostname);
-    }
-    const entities = await fetchEntityDefinitionsFromSalesforce(
-      tok.instance_url,
-      tok.access_token
-    );
+    const entities = await fetchEntityDefinitionsFromSalesforce(connection);
     const commands = [];
     for (const e of entities) {
       const { DurableId, KeyPrefix, Label, QualifiedApiName } = e;
@@ -173,7 +165,7 @@ async function getEntityCommands(hostname) {
     return commands;
   } catch (err) {
     console.error(
-      `CommandRegister: failed to fetch entity commands for ${instanceHostname}`,
+      `CommandRegister: failed to fetch entity commands for ${hostname}`,
       err
     );
     return [];

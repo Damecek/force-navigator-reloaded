@@ -12,16 +12,10 @@ import { SETUP_NODE_TYPES } from './constants';
 
 /**
  * Fetch menu nodes from Salesforce Aura endpoint.
- * @param {string} instanceUrl
- * @param {string} accessToken
+ * @param {SalesforceConnection} connection Salesforce connection instance
  * @returns {Promise<SetupNode[]>}
  */
-export async function fetchMenuNodesFromSalesforce(instanceUrl, accessToken) {
-  console.log('Instancing new Salesforce Connection', instanceUrl, accessToken);
-  const connection = new SalesforceConnection({
-    instanceUrl,
-    accessToken,
-  });
+export async function fetchMenuNodesFromSalesforce(connection) {
   // todo: evaluate IconUrl for use in the UI
   const result = await connection.toolingQuery(
     `SELECT FullName, NodeType, Label, IconUrl, Url 
@@ -42,16 +36,10 @@ export async function fetchMenuNodesFromSalesforce(instanceUrl, accessToken) {
 
 /**
  * Fetch EntityDefinition records (customizable sObjects and custom metadata) via Tooling API.
- * @param {string} instanceUrl Base URL for Salesforce instance (e.g., https://org.my.site.com)
- * @param {string} accessToken Session token or OAuth bearer for authentication.
+ * @param {SalesforceConnection} connection Salesforce connection instance
  * @returns {Promise<EntityDefinition[]>}
  */
-export async function fetchEntityDefinitionsFromSalesforce(
-  instanceUrl,
-  accessToken
-) {
-  console.log('Fetching EntityDefinition via Tooling API', instanceUrl);
-  const connection = new SalesforceConnection({ instanceUrl, accessToken });
+export async function fetchEntityDefinitionsFromSalesforce(connection) {
   const soql = `SELECT DurableId, KeyPrefix, Label, QualifiedApiName
     FROM EntityDefinition
     WHERE IsCustomizable = TRUE AND IsCustomSetting = FALSE
