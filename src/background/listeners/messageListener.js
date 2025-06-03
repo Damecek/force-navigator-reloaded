@@ -1,4 +1,5 @@
 import { getCommands } from '../commandRegister.js';
+import { ensureToken, interactiveLogin } from '../auth/auth';
 
 /**
  * Generic message listener for background script.
@@ -13,6 +14,9 @@ export function handleMessage(message, sender, sendResponse) {
     switch (message.action) {
       case 'getCommands':
         sendCommands(sender).then((response) => sendResponse(response));
+        return true;
+      case 'invokeAuthFlow':
+        invokeAuthFlow(sender).then((response) => sendResponse(response));
         return true;
       default:
         console.error('Unknown message action:', message.action);
@@ -40,4 +44,10 @@ async function sendCommands(sender) {
   const commands = hostname ? await getCommands(hostname) : [];
   console.log('Commands to send:', commands);
   return { commands };
+}
+
+async function invokeAuthFlow(sender) {
+  const hostname = getSenderHostname(sender);
+  await interactiveLogin(hostname);
+  return {};
 }

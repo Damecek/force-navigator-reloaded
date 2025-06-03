@@ -7,7 +7,7 @@ import {
   MENU_CACHE_TTL,
 } from './constants.js';
 import { buildLightningUrl, toLightningHostname } from './urlUtils';
-import { ensureToken, interactiveLogin } from './auth/auth.js';
+import { ensureToken } from './auth/auth.js';
 import {
   fetchEntityDefinitionsFromSalesforce,
   fetchMenuNodesFromSalesforce,
@@ -20,6 +20,12 @@ import { SalesforceConnection } from './salesforceConnection';
  * @returns {Promise<{NavigationCommand: import('./staticCommands').Command[], RefreshCommandListCommand: import('./staticCommands').Command[]}>} Object containing navigation commands and refresh command list.
  */
 export async function getCommands(hostname) {
+  let token = await ensureToken(hostname);
+  if (!token) {
+    return {
+      AuthorizeExtensionCommand: [{}],
+    };
+  }
   const instanceHostname = toLightningHostname(hostname);
   const connection = new SalesforceConnection({
     instanceUrl: token.instance_url,
