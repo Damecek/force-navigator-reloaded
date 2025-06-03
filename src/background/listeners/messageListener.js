@@ -26,13 +26,17 @@ export function handleMessage(message, sender, sendResponse) {
   return false;
 }
 
-async function sendCommands(sender) {
-  let hostname;
+function getSenderHostname(sender) {
   try {
-    hostname = sender.tab && new URL(sender.tab.url).hostname;
+    return sender.tab && new URL(sender.tab.url).hostname;
   } catch {
-    hostname = null;
+    console.error('Failed to get sender hostname', sender);
+    return null;
   }
+}
+
+async function sendCommands(sender) {
+  const hostname = getSenderHostname(sender);
   const commands = hostname ? await getCommands(hostname) : [];
   console.log('Commands to send:', commands);
   return { commands };
