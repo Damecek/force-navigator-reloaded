@@ -20,7 +20,7 @@ import { SalesforceConnection } from './salesforceConnection';
  * @returns {Promise<{NavigationCommand: import('./staticCommands').Command[], RefreshCommandListCommand: import('./staticCommands').Command[]}>} Object containing navigation commands and refresh command list.
  */
 export async function getCommands(hostname) {
-  let token = await ensureToken(hostname);
+  const token = await ensureToken(hostname);
   if (!token) {
     return {
       AuthorizeExtensionCommand: [{}],
