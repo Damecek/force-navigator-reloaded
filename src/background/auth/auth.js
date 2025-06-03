@@ -6,7 +6,7 @@ import {
 } from '../constants.js';
 import CacheManager from '../cacheManager.js';
 import { makePkcePair } from './authUtil';
-import { toCoreUrl, toLightningUrl } from '../urlUtils';
+import { toCoreUrl, toLightningHostname, toLightningUrl } from '../urlUtils';
 
 /**
  * @typedef {Object} Token
@@ -73,7 +73,7 @@ export async function interactiveLogin(hostname) {
  * @returns {Promise<Token|null>}
  */
 export async function ensureToken(hostname) {
-  const loginBase = toLightningUrl(hostname);
+  const loginBase = toLightningHostname(hostname);
   const cache = new CacheManager(loginBase);
   const cachedToken = await cache.get(SF_TOKEN_CACHE_KEY);
   if (!cachedToken) {
@@ -108,6 +108,6 @@ export async function ensureToken(hostname) {
 
 function storeToken(token) {
   token.issued_at = Date.now();
-  const cache = new CacheManager(token.instance_url);
+  const cache = new CacheManager(toLightningHostname(token.instance_url));
   return cache.set(SF_TOKEN_CACHE_KEY, token, SF_TOKEN_CACHE_TTL);
 }
