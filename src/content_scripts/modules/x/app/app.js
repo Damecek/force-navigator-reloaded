@@ -8,14 +8,15 @@ export default class App extends LightningElement {
 
   connectedCallback() {
     this.loadCommands();
-    this.addEventListener('refreshcommands', this._handleRefreshCommands);
+    window.addEventListener('refreshcommands', this._handleRefreshCommands);
   }
 
   disconnectedCallback() {
-    this.removeEventListener('refreshcommands', this._handleRefreshCommands);
+    window.removeEventListener('refreshcommands', this._handleRefreshCommands);
   }
 
   _handleRefreshCommands = () => {
+    console.log('handling refresh commands');
     this.loadCommands();
   };
 
