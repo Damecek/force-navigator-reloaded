@@ -1,17 +1,17 @@
 /* Command Palette styles */
 :host {
-  position: fixed;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, 0);
-  width: 400px;
-  z-index: 1000000;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 400px;
+    z-index: 1000000;
 }
 
 .slds-modal__content {
-  overflow: visible;
+    overflow: visible;
 }
 
 .modal-container.slds-modal__content {
-  max-width: 50rem;
+    max-width: 50rem;
 }

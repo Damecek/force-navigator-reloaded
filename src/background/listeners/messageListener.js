@@ -1,5 +1,5 @@
 import { getCommands } from '../commandRegister.js';
-import { ensureToken, interactiveLogin } from '../auth/auth';
+import { interactiveLogin } from '../auth/auth';
 
 /**
  * Generic message listener for background script.

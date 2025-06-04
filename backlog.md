@@ -16,3 +16,4 @@ Mark each line with [x] when the task is completed.
 - [x] Consider deferring opening of the Auth Page until user requests it; e.g., if there’s no token, the only available command is `authorize`
 - [x] Modernize icons
 - [ ] Replace all message string names with constants
+- [ ] performance: instantiate commands only on click/select in the command item class, now it is instantiated on command list load

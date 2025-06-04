@@ -17,7 +17,12 @@ const buildPatterns = (targetSuffix) => [
   [/\.sandbox\.my\.site\.com$/, '.sandbox' + targetSuffix],
 
   // canvas VF & derivatives
-  [/--c(?:\.[^.]+)?\.vf\.force\.com$/, targetSuffix],
+  [
+    /--c(\.[^.]+)?\.vf\.force\.com$/,
+    (_, env) => {
+      return (env || '') + targetSuffix;
+    },
+  ],
 
   // Experience Builder / Sites / Setup
   [/\.builder\.salesforce-experience\.com$/, targetSuffix],

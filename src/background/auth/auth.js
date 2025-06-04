@@ -74,8 +74,8 @@ export async function interactiveLogin(hostname) {
  * @returns {Promise<Token|null>}
  */
 export async function ensureToken(hostname) {
-  console.log('Ensuring token for', hostname);
   const loginBase = toLightningHostname(hostname);
+  console.log('Ensuring token for', loginBase);
   const cache = new CacheManager(loginBase);
   const cachedToken = await cache.get(SF_TOKEN_CACHE_KEY);
   if (!cachedToken) {
