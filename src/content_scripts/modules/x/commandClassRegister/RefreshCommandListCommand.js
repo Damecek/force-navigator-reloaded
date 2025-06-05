@@ -28,10 +28,8 @@ export default class RefreshCommandListCommand extends Command {
     const cache = new CacheManager(toLightningHostname(this.hostname));
     await cache.clear(MENU_CACHE_KEY);
     await cache.clear(ENTITY_CACHE_KEY);
-    if (this.pallet) {
-      this.pallet.dispatchEvent(
-        new CustomEvent('refreshcommands', { bubbles: true, composed: true })
-      );
-    }
+    await chrome.runtime.sendMessage({
+      action: 'getCommands',
+    });
   }
 }

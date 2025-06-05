@@ -35,8 +35,7 @@
 
 - Follow a modular structure: separate distinct responsibilities into individual files.
   - Initialization logic, event listeners, and business logic should each reside in their own modules.
-  - For example, in `src/content_scripts`, `content.js` delegates mounting the LWC app to `mount.js` and message
-    handling to `messageListener.js`.
+  - For example, in `src/content_scripts`, `content.js` delegates mounting the LWC app to `mount.js`.
   - In `src/background`, `index.js` delegates command handling to `commandListener.js`.
   - When adding new features, maintain this pattern to ensure clarity, testability, and ease of maintenance.
 - Prefer using ES6 modules (`import`/`export`) over CommonJS (`require`) for modularity.

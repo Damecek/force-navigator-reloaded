@@ -18,10 +18,8 @@ export default class AuthorizeExtensionCommand extends Command {
     await chrome.runtime.sendMessage({
       action: 'invokeAuthFlow',
     });
-    if (this.pallet) {
-      this.pallet.dispatchEvent(
-        new CustomEvent('refreshcommands', { bubbles: true, composed: true })
-      );
-    }
+    await chrome.runtime.sendMessage({
+      action: 'getCommands',
+    });
   }
 }

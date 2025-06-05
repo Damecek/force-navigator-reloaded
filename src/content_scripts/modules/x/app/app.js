@@ -1,4 +1,4 @@
-import { api, LightningElement, track } from 'lwc';
+import { LightningElement, track } from 'lwc';
 import { register } from '../commandClassRegister/commandClassRegister';
 
 export default class App extends LightningElement {
@@ -8,38 +8,37 @@ export default class App extends LightningElement {
 
   connectedCallback() {
     this.loadCommands();
-    window.addEventListener('refreshcommands', this._handleRefreshCommands);
+    chrome.runtime.onMessage.addListener(this._handleCommands);
+    chrome.runtime.onMessage.addListener(this._handleToggleCommandPalette);
   }
 
   disconnectedCallback() {
-    window.removeEventListener('refreshcommands', this._handleRefreshCommands);
+    chrome.runtime.onMessage.removeListener(this._handleCommands);
+    chrome.runtime.onMessage.addListener(this._handleToggleCommandPalette);
   }
 
-  _handleRefreshCommands = () => {
-    console.log('handling refresh commands');
-    this.loadCommands();
+  _handleCommands = (request, sender, sendResponse) => {
+    if (request.action !== 'sendCommands') return;
+    if (request?.data?.commands) {
+      this.commands = Object.entries(request.data.commands)
+        .flatMap(([className, rawArray]) =>
+          rawArray.map((raw) => new register[className](raw))
+        )
+        .sort((a, b) => a.label.localeCompare(b.label));
+    }
+    return false;
+  };
+
+  _handleToggleCommandPalette = (request, sender, sendResponse) => {
+    if (request.action !== 'toggleCommandPalette') return;
+    this.isCommandPalletVisible = !this.isCommandPalletVisible;
+    return false;
   };
 
   async loadCommands() {
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'getCommands',
-      });
-      if (response && response.commands) {
-        this.commands = Object.entries(response.commands)
-          .flatMap(([className, rawArray]) =>
-            rawArray.map((raw) => new register[className](raw))
-          )
-          .sort((a, b) => a.label.localeCompare(b.label));
-      }
-    } catch (error) {
-      console.error('App: error loading commands:', error);
-      this.commands = [];
-    }
-  }
-
-  @api toggleCommandPallet() {
-    this.isCommandPalletVisible = !this.isCommandPalletVisible;
+    await chrome.runtime.sendMessage({
+      action: 'getCommands',
+    });
   }
 
   /**

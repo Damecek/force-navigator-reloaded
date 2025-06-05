@@ -13,8 +13,13 @@ export function handleMessage(message, sender, sendResponse) {
   try {
     switch (message.action) {
       case 'getCommands':
-        sendCommands(sender).then((response) => sendResponse(response));
-        return true;
+        sendCommands(sender).then((response) =>
+          chrome.tabs.sendMessage(sender.tab.id, {
+            action: 'sendCommands',
+            data: response,
+          })
+        );
+        return false;
       case 'invokeAuthFlow':
         invokeAuthFlow(sender).then((response) => sendResponse(response));
         return true;
