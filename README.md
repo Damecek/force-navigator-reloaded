@@ -58,6 +58,7 @@ _Coming soon_
 - **LWC**: Uses Lightning Web Components via lwc-webpack-plugin
 - **Code Quality**: Prettier and ESLint configured with Salesforce LWC standards
 - **Git Hooks**: Husky pre-commit hook runs formatting
+- **CI Build**: A GitHub Action builds `dist/` on each commit to main and uploads it as an artifact
 
 ### Available Scripts
 

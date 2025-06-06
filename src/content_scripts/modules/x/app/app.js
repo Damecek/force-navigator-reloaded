@@ -18,7 +18,9 @@ export default class App extends LightningElement {
   }
 
   _handleCommands = (request, sender, sendResponse) => {
-    if (request.action !== 'sendCommands') return;
+    if (request.action !== 'sendCommands') {
+      return;
+    }
     if (request?.data?.commands) {
       this.commands = Object.entries(request.data.commands)
         .flatMap(([className, rawArray]) =>
@@ -30,7 +32,9 @@ export default class App extends LightningElement {
   };
 
   _handleToggleCommandPalette = (request, sender, sendResponse) => {
-    if (request.action !== 'toggleCommandPalette') return;
+    if (request.action !== 'toggleCommandPalette') {
+      return;
+    }
     this.isCommandPalletVisible = !this.isCommandPalletVisible;
     return false;
   };
