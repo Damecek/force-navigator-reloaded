@@ -66,6 +66,14 @@ _Coming soon_
 - `npm run lint`: Run ESLint on source files
 - `npm run lint-fix`: Fix ESLint issues automatically
 - `npm run format`: Format code with Prettier
+ - `npm test`: Run Jest unit tests with coverage reporting
+
+## Testing
+
+All backend logic is covered by Jest unit tests. New features must include
+corresponding tests. Coverage of at least **80%** is enforced by Jest.
+The test suite runs automatically in GitHub Actions for pull requests
+targeting `main`.
 
 ## Roadmap
 
