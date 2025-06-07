@@ -4,7 +4,7 @@ import { register } from '../commandClassRegister/commandClassRegister';
 export default class App extends LightningElement {
   static renderMode = 'light';
   @track commands = [];
-  isCommandPalletVisible = false;
+  isCommandPaletteVisible = false;
 
   connectedCallback() {
     this.loadCommands();
@@ -14,7 +14,7 @@ export default class App extends LightningElement {
 
   disconnectedCallback() {
     chrome.runtime.onMessage.removeListener(this._handleCommands);
-    chrome.runtime.onMessage.addListener(this._handleToggleCommandPalette);
+    chrome.runtime.onMessage.removeListener(this._handleToggleCommandPalette);
   }
 
   _handleCommands = (request, sender, sendResponse) => {
@@ -35,7 +35,7 @@ export default class App extends LightningElement {
     if (request.action !== 'toggleCommandPalette') {
       return;
     }
-    this.isCommandPalletVisible = !this.isCommandPalletVisible;
+    this.isCommandPaletteVisible = !this.isCommandPaletteVisible;
     return false;
   };
 
@@ -49,6 +49,6 @@ export default class App extends LightningElement {
    * Handle close event from command palette
    */
   handleClose() {
-    this.isCommandPalletVisible = false;
+    this.isCommandPaletteVisible = false;
   }
 }
