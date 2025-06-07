@@ -4,7 +4,7 @@ import { register } from '../commandClassRegister/commandClassRegister';
 export default class App extends LightningElement {
   static renderMode = 'light';
   @track commands = [];
-  isCommandPalletVisible = false;
+  isCommandPaletteVisible = false;
 
   connectedCallback() {
     this.loadCommands();
@@ -14,11 +14,13 @@ export default class App extends LightningElement {
 
   disconnectedCallback() {
     chrome.runtime.onMessage.removeListener(this._handleCommands);
-    chrome.runtime.onMessage.addListener(this._handleToggleCommandPalette);
+    chrome.runtime.onMessage.removeListener(this._handleToggleCommandPalette);
   }
 
   _handleCommands = (request, sender, sendResponse) => {
-    if (request.action !== 'sendCommands') return;
+    if (request.action !== 'sendCommands') {
+      return;
+    }
     if (request?.data?.commands) {
       this.commands = Object.entries(request.data.commands)
         .flatMap(([className, rawArray]) =>
@@ -30,8 +32,10 @@ export default class App extends LightningElement {
   };
 
   _handleToggleCommandPalette = (request, sender, sendResponse) => {
-    if (request.action !== 'toggleCommandPalette') return;
-    this.isCommandPalletVisible = !this.isCommandPalletVisible;
+    if (request.action !== 'toggleCommandPalette') {
+      return;
+    }
+    this.isCommandPaletteVisible = !this.isCommandPaletteVisible;
     return false;
   };
 
@@ -45,6 +49,6 @@ export default class App extends LightningElement {
    * Handle close event from command palette
    */
   handleClose() {
-    this.isCommandPalletVisible = false;
+    this.isCommandPaletteVisible = false;
   }
 }
