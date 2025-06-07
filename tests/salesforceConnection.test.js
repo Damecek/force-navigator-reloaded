@@ -29,6 +29,19 @@ describe('SalesforceConnection', () => {
     expect(records).toEqual([{ id: 1 }, { id: 2 }]);
   });
 
+  test('query returns empty list on empty response', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValue({ ok: true, json: async () => ({}) });
+    const conn = new SalesforceConnection({
+      instanceUrl: 'https://example.com',
+      accessToken: 'tok',
+    });
+    await expect(
+      conn.toolingQuery('SELECT Id FROM Account')
+    ).resolves.toStrictEqual([]);
+  });
+
   test('query throws on non-ok response', async () => {
     jest
       .spyOn(global, 'fetch')
@@ -37,6 +50,8 @@ describe('SalesforceConnection', () => {
       instanceUrl: 'https://example.com',
       accessToken: 'tok',
     });
-    await expect(conn.query('SELECT')).rejects.toThrow('Salesforce GET');
+    await expect(conn.query('SELECT Id FROM Account')).rejects.toThrow(
+      'Salesforce GET'
+    );
   });
 });

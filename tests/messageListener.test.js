@@ -47,4 +47,13 @@ describe('messageListener.handleMessage', () => {
     expect(result).toBe(false);
     expect(global.chrome.tabs.sendMessage).not.toHaveBeenCalled();
   });
+
+  test('handleMessage handles error', () => {
+    const sendResponse = jest.fn();
+    const sender = { tab: { id: 1, url: 'https://org.lightning.force.com' } };
+    console.error = jest.fn();
+    handleMessage(undefined, sender, sendResponse);
+    expect(sendResponse).not.toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalled();
+  });
 });

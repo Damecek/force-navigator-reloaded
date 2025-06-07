@@ -28,7 +28,7 @@ export function handleMessage(message, sender, sendResponse) {
     }
   } catch (error) {
     console.error(
-      `MessageListener: error handling message ${message.action}`,
+      `MessageListener: error handling message ${message?.action}`,
       error
     );
   }
