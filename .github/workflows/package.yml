@@ -32,7 +32,7 @@ jobs:
         with:
           tag_name: continuous
           name: Continuous Build
-          files: force-navigator-reloaded-lts.zip
+          files: force-navigator-reloaded.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
