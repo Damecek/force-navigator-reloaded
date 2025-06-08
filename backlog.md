@@ -10,10 +10,13 @@ Mark each line with [x] when the task is completed.
 - [ ] Settings Provider and UI for user preferences (theme, SetupNodes, custom commands, etc.)
 - [ ] Theme Engine with support for themes (Default, Dark, Unicorn, Solarized)
 - [ ] Implement Lightning navigation instead of page redirection refer to https://github.com/tprouvot/Salesforce-Inspector-reloaded/blob/main/addon/inject.js
-- [ ] Try implementing a wire adapter for the command list https://lwc.dev/guide/wire_adapter#wire-adapters, this would also fix the refresh command issue
 - [ ] Implement record search using `?` prefix
 - [x] Brand the Auth Page
 - [x] Consider deferring opening of the Auth Page until user requests it; e.g., if there’s no token, the only available command is `authorize`
 - [x] Modernize icons
 - [ ] Replace all message string names with constants
 - [ ] performance: instantiate commands only on click/select in the command item class, now it is instantiated on command list load
+- [ ] [internationalize](https://developer.chrome.com/docs/extensions/reference/api/i18n#concepts_and_usage) the
+      extension
+- [ ] create pipeline
+      for [publishing to chrome store](https://github.com/marketplace/actions/publish-chrome-extension-to-chrome-web-store)
