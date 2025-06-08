@@ -2,7 +2,7 @@
   "name": "Salesforce Navigator Reloaded",
   "manifest_version": 3,
   "version": "5.0.0",
-  "description": "",
+  "description": "Fast, efficient Salesforce Lightning navigation with a command palette—search and act without leaving your keyboard.",
   "background": {
     "service_worker": "background.js"
   },
