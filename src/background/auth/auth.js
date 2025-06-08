@@ -35,11 +35,13 @@ export async function interactiveLogin(hostname) {
     `&redirect_uri=${encodeURIComponent(chrome.identity.getRedirectURL('oauth2'))}` +
     `&scope=${encodeURIComponent(SCOPES)}` +
     `&code_challenge=${challenge}&code_challenge_method=S256`;
+  console.log('Invoking OAuth2 flow', authUrl);
   const redirectUrl = await chrome.identity.launchWebAuthFlow({
     url: authUrl,
     interactive: true,
   });
   const returnedUrl = new URL(redirectUrl);
+  console.log('OAuth2 redirect URL', redirectUrl);
   const code = returnedUrl.searchParams.get('code');
   if (!code) {
     throw new Error(
