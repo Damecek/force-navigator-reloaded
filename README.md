@@ -69,7 +69,7 @@ _Coming soon_
 - `npm run lint-fix`: Fix ESLint issues automatically
 - `npm run format`: Format code with Prettier
 
-### Authentication Setup
+### Authentication
 
 Force Navigator Reloaded uses OAuth2 with PKCE to authorize against Salesforce. The Chrome OAuth settings live in `src/manifest.json`, the connected apps are located in `sf/force-app/main/default/connectedApps`, and the login logic is implemented in `src/background/auth/auth.js`.
 
@@ -79,16 +79,6 @@ There are two connected app definitions in `sf/force-app/main/default/connectedA
 
 - `Force_Navigator_Reloaded_Prod.connectedApp-meta.xml`
 - `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml`
-  Use the appropriate one for your target environment.
-
-To configure authentication for development:
-
-1. Run `npm run dev` and load the extension from the `dist/` folder using **Load unpacked**. The extension ID will be `fjcokiadigpmkojdlhbkbhimkcmjokon`.
-2. Deploy the `Force_Navigator_Reloaded_Dev` connected app with `npm --prefix sf run deploy` and retrieve it using `npm --prefix sf run retreive`. Copy the `<consumerKey>` value—deploying generates a new client ID.
-3. Replace `DEV_CONSUMER_KEY` in the metadata file with this value. Webpack injects the consumer key into `manifest.json` and the `CLIENT_ID` constant automatically. Reload the extension (or rerun `npm run dev`) and run the **Authorize Extension** command from the palette to start the login flow. Tokens are cached per org and refreshed automatically.
-4. For production builds use the `Force_Navigator_Reloaded_Prod` connected app and replace `PROD_CONSUMER_KEY` with its consumer key before running `npm run build`.
-
-Once a connected app is configured for a specific extension ID you can reuse it with any Salesforce org without redeploying.
 
 ## Roadmap
 
