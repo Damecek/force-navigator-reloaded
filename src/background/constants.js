@@ -9,8 +9,11 @@ export const MENU_CACHE_TTL = 3600 * 1000 * 24; // 12 hour
 export const ENTITY_CACHE_KEY = 'entityDefinitions';
 export const ENTITY_CACHE_TTL = 3600 * 1000 * 6; // 12 hour
 
-export const CLIENT_ID =
-  '3MVG9dAEux2v1sLuNHpwtD8XoDOCh2LFdy7QFtq9V5s03mu72XswHI9w7DJG7EcCLko8DdXfZjrQRZmmHI3Dm';
+/**
+ * OAuth2 consumer key injected at build time.
+ * @type {string}
+ */
+export const CLIENT_ID = __CLIENT_ID__;
 export const SCOPES = 'api refresh_token web openid';
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
 export const SF_TOKEN_CACHE_TTL = 3600 * 1000 * 24; // 24 hour

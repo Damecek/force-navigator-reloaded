@@ -59,6 +59,7 @@ _Coming soon_
 - **Code Quality**: Prettier and ESLint configured with Salesforce LWC standards
 - **Git Hooks**: Husky pre-commit hook runs formatting
 - **CI Build**: A GitHub Action builds `dist/` on each commit to main, zips it as `force-navigator-reloaded.zip`, and attaches it to the latest GitHub release
+- **Manifest Key Injection**: `webpack` injects the extension `key` and OAuth consumer key based on build mode. This keeps the extension ID stable for authentication.
 
 ### Available Scripts
 
@@ -68,19 +69,19 @@ _Coming soon_
 - `npm run lint-fix`: Fix ESLint issues automatically
 - `npm run format`: Format code with Prettier
 
-### Authentication Setup
+### Authentication
 
-Force Navigator Reloaded uses OAuth2 with PKCE to authorize against Salesforce. The Chrome OAuth settings live in `src/manifest.json`, the connected app is located in `sf/force-app/main/default/connectedApps/Force_Navigator_Reloaded.connectedApp-meta.xml`, and the login logic is implemented in `src/background/auth/auth.js`.
+Force Navigator Reloaded uses OAuth2 with PKCE to authorize against Salesforce. The Chrome OAuth settings live in `src/manifest.json`, the connected apps are located in `sf/force-app/main/default/connectedApps`, and the login logic is implemented in `src/background/auth/auth.js`.
 
-To configure authentication for development:
+The extension ID is stable thanks to the manifest `key` field. Production builds use ID `iniflnopffblekndhplennjijdcfkeak` while development builds use `fjcokiadigpmkojdlhbkbhimkcmjokon`.
 
-1. Run `npm run dev` and load the extension from the `dist/` folder using **Load unpacked**. Chrome assigns a new extension ID each time; copy it from the extensions page.
-2. Update the `<callbackUrl>` in the connected app metadata to `https://<extension-id>.chromiumapp.org/oauth2`.
-3. Deploy the connected app with `npm --prefix sf run deploy` and retrieve it using `npm --prefix sf run retreive`. Copy the `<consumerKey>` value—deploying generates a new client ID.
-4. Replace the `oauth2.client_id` in `src/manifest.json` and the `CLIENT_ID` constant in `src/background/constants.js` with this consumer key.
-5. Reload the extension (or rerun `npm run dev`) and run the **Authorize Extension** command from the palette to start the login flow. Tokens are cached per org and refreshed automatically.
+There are two connected app definitions in `sf/force-app/main/default/connectedApps`:
 
-Once a connected app is configured for a specific extension ID you can reuse it with any Salesforce org without redeploying.
+- `Force_Navigator_Reloaded_Prod.connectedApp-meta.xml`
+- `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml`
+
+Connected apps are configured for a specific extension ID. Same app is reused across any Salesforce org without actual
+deployment, even if the org where the app lived is deleted.
 
 ## Roadmap
 
