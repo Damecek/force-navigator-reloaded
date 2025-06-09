@@ -18,7 +18,6 @@
   },
   "permissions": ["storage", "identity", "tabs", "activeTab"],
   "oauth2": {
-    "client_id": "3MVG9dAEux2v1sLuNHpwtD8XoDOCh2LFdy7QFtq9V5s03mu72XswHI9w7DJG7EcCLko8DdXfZjrQRZmmHI3Dm",
     "scopes": ["api", "refresh_token", "web", "openid"]
   },
   "host_permissions": [

@@ -11,8 +11,7 @@ module.exports = (env, argv) => {
   const DEV_KEY =
     'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtr+pe1aE1YhsrBtMQO+PGGKgZ7wLjjjxHKP8oP27XLlNpbS4upjuX9IN/RtmZzO71dA5BRTm5kILUggFZOQchVRkP+Yj029BH3FEVKJJx7FvZWG5j+Q8IW1V1GwEWatrFeKCBHdtkp/+qWNniWq+eByviNHNUXF2c1wcztasYSffw0wHL0vjQKrw0Y6isFj6nooyQyT5NNhoJmxY4iSV8rvSFYjadkavkp7Cup1eN79EFcHgL6DOxH9h2UyfXclsD2uFljAiA6orGuTPp6YHiwqpHvRwqrdyIb/KPwroc4l5K+qmR4/nqPzu0sGBRizFC6GyXzU1NO8WPEZrocxiGQIDAQAB';
   const PROD_CLIENT_ID = 'PRODUCTION_CONSUMER_KEY';
-  const DEV_CLIENT_ID =
-    '3MVG9dAEux2v1sLuNHpwtD8XoDOCh2LFdy7QFtq9V5s03mu72XswHI9w7DJG7EcCLko8DdXfZjrQRZmmHI3Dm';
+  const DEV_CLIENT_ID = 'DEV_CONSUMER_KEY';
   return {
     mode: argv.mode,
     devtool: isProd ? false : 'inline-source-map',
@@ -73,6 +72,7 @@ module.exports = (env, argv) => {
             transform(content) {
               const manifest = JSON.parse(content.toString());
               manifest.key = isProd ? PROD_KEY : DEV_KEY;
+              manifest.name = manifest.name + (isProd ? '' : ' (Dev)');
               manifest.oauth2.client_id = isProd
                 ? PROD_CLIENT_ID
                 : DEV_CLIENT_ID;
