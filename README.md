@@ -80,6 +80,9 @@ There are two connected app definitions in `sf/force-app/main/default/connectedA
 - `Force_Navigator_Reloaded_Prod.connectedApp-meta.xml`
 - `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml`
 
+Connected apps are configured for a specific extension ID. Same app is reused across any Salesforce org without actual
+deployment, even if the org where the app lived is deleted.
+
 ## Roadmap
 
 See [backlog.md](backlog.md) for planned features and development tasks.
