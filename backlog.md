@@ -3,6 +3,9 @@
 Below are the main steps to achieve the MVP of the Command Palette for the Salesforce extension.  
 Mark each line with [x] when the task is completed.
 
+- [x] Set up Jest unit testing and CI on pull requests
+- [ ] Reach and maintain 80% test coverage
+
 - [ ] Error Handling: centralized input validation and error reporting in the UI
 - [ ] Command `Login as <username>` (User Switcher)
 - [ ] Add a list of active flows to the menu
