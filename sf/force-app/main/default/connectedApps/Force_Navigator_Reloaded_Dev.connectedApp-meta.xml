@@ -3,11 +3,11 @@
     <contactEmail>info@example.com</contactEmail>
     <description>Oauth for Force Navigator, used to get urls for faster navigation in Salesforce.</description>
     <iconUrl>https://raw.githubusercontent.com/Damecek/force-navigator-reloaded/refs/heads/main/src/icons/icon16.png</iconUrl>
-    <label>Force Navigator Reloaded</label>
+    <label>Force Navigator Reloaded Dev</label>
     <logoUrl>https://raw.githubusercontent.com/Damecek/force-navigator-reloaded/refs/heads/main/src/icons/icon128.png</logoUrl>
     <oauthConfig>
-        <callbackUrl>https://fhfniahcfcangfnkipdnoldfcenglopm.chromiumapp.org/oauth2</callbackUrl>
-        <consumerKey>3MVG9dAEux2v1sLuNHpwtD8XoDOCh2LFdy7QFtq9V5s03mu72XswHI9w7DJG7EcCLko8DdXfZjrQRZmmHI3Dm</consumerKey>
+        <callbackUrl>https://fjcokiadigpmkojdlhbkbhimkcmjokon.chromiumapp.org/oauth2</callbackUrl>
+        <consumerKey>DEV_CONSUMER_KEY</consumerKey>
         <isAdminApproved>false</isAdminApproved>
         <isClientCredentialEnabled>false</isClientCredentialEnabled>
         <isCodeCredentialEnabled>false</isCodeCredentialEnabled>
