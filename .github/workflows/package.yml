@@ -30,6 +30,7 @@ jobs:
         run: npm ci
 
       - name: Bump patch version
+        id: version
         run: |
           newver=$(npm version patch --no-git-tag-version)
           echo "NEW_VERSION=${newver#v}" >> "$GITHUB_ENV"
@@ -52,27 +53,25 @@ jobs:
         run: npm run build
 
       - name: Zip dist
-        env:
-          NEW_VERSION: ${{ env.NEW_VERSION }}
+        id: zip
         run: |
+          zip_name="extension-${NEW_VERSION}.zip"
           cd dist
-          zip -r ../extension-$NEW_VERSION.zip .
+          zip -r "../${zip_name}" .
+          echo "zip_path=${zip_name}" >> "$GITHUB_OUTPUT"
 
       - name: Upload dist artifact
-        env:
-          NEW_VERSION: ${{ env.NEW_VERSION }}
         uses: actions/upload-artifact@v4
         with:
-          name: force-navigator-reloaded-$NEW_VERSION
-          path: extension-$NEW_VERSION.zip
+          name: force-navigator-reloaded-${{ env.NEW_VERSION }}
+          path: ${{ steps.zip.outputs.zip_path }}
+          if-no-files-found: error
 
       - name: Create GitHub release
-        env:
-          NEW_VERSION: ${{ env.NEW_VERSION }}
         uses: softprops/action-gh-release@v2.3.0
         with:
-          tag_name: v$NEW_VERSION
-          files: extension-$NEW_VERSION.zip
+          tag_name: v${{ env.NEW_VERSION }}
+          files: ${{ steps.zip.outputs.zip_path }}
           body: |
             # Steps to install extension:
             1. Download the force-navigator-reloaded.zip
@@ -85,9 +84,9 @@ jobs:
       - name: Publish to Chrome Web Store
         uses: mnao305/chrome-extension-upload@v5.0.0
         with:
-          file-path: extension-${{ env.NEW_VERSION }}.zip
+          file-path: ${{ steps.zip.outputs.zip_path }}
           extension-id: ${{ secrets.CHROME_PROD_EXTENSION_ID }}
           client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          publish: false
+          publish: true
