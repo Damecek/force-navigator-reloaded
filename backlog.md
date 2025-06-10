@@ -18,5 +18,5 @@ Mark each line with [x] when the task is completed.
 - [ ] performance: instantiate commands only on click/select in the command item class, now it is instantiated on command list load
 - [ ] [internationalize](https://developer.chrome.com/docs/extensions/reference/api/i18n#concepts_and_usage) the
       extension
-- [ ] create pipeline
+- [x] create pipeline
       for [publishing to chrome store](https://github.com/marketplace/actions/publish-chrome-extension-to-chrome-web-store)

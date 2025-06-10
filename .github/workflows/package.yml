@@ -19,6 +19,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Bump patch version
+        run: |
+          newver=$(npm version patch --no-git-tag-version)
+          echo "NEW_VERSION=${newver#v}" >> "$GITHUB_ENV"
+
+      - name: Update manifest version
+        run: npx dot-json src/manifest.json version "$NEW_VERSION"
+
+      - name: Commit version bump
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          git add package.json src/manifest.json
+          git commit -m "chore: bump version to $NEW_VERSION"
+          git push origin HEAD
+
       - name: Build extension
         run: npm run build
 
@@ -35,6 +54,14 @@ jobs:
           files: force-navigator-reloaded.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Chrome web store
+        run: npx chrome-webstore-upload-cli@2 upload --source force-navigator-reloaded.zip --auto-publish
+        env:
+          EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
