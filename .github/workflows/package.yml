@@ -52,26 +52,40 @@ jobs:
         run: npm run build
 
       - name: Zip dist
+        env:
+          NEW_VERSION: ${{ env.NEW_VERSION }}
         run: |
           cd dist
           zip -r ../extension-$NEW_VERSION.zip .
 
       - name: Upload dist artifact
+        env:
+          NEW_VERSION: ${{ env.NEW_VERSION }}
         uses: actions/upload-artifact@v4
         with:
           name: force-navigator-reloaded-$NEW_VERSION
           path: extension-$NEW_VERSION.zip
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
+        env:
+          NEW_VERSION: ${{ env.NEW_VERSION }}
+        uses: softprops/action-gh-release@v2.3.0
         with:
-          tag_name: v${{ env.NEW_VERSION }}
+          tag_name: v$NEW_VERSION
           files: extension-$NEW_VERSION.zip
+          body: |
+            # Steps to install extension:
+            1. Download the force-navigator-reloaded.zip
+            2. Unzip
+            3. Go to chrome://extensions/
+            4. At the top right, turn on Developer mode
+            5. Click Load unpacked
+            6. Find and select the unzipped folder
 
       - name: Publish to Chrome Web Store
         uses: mnao305/chrome-extension-upload@v5.0.0
         with:
-          file-path: extension-${{ env.NEW_VERSION }}.zip   # ← změna!
+          file-path: extension-${{ env.NEW_VERSION }}.zip
           extension-id: ${{ secrets.CHROME_PROD_EXTENSION_ID }}
           client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
