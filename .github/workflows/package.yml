@@ -2,8 +2,7 @@ name: Build & Publish Extension
 on:
   push:
     branches: [ main ]
-    paths-ignore:
-      - '.github/**'
+
 concurrency:
   group: build-extension-${{ github.ref }}
   cancel-in-progress: true
@@ -13,6 +12,7 @@ permissions:
 
 jobs:
   build:
+    if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
