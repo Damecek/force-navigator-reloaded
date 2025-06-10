@@ -36,9 +36,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          git fetch origin main
           git add package.json src/manifest.json
           git commit -m "chore: bump version to $NEW_VERSION"
-          git fetch origin main
           git rebase origin/main
           git push origin HEAD
 
