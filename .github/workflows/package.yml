@@ -58,7 +58,7 @@ jobs:
       - name: Publish Chrome web store
         run: npx chrome-webstore-upload-cli@2 upload --source force-navigator-reloaded.zip --auto-publish
         env:
-          EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          EXTENSION_ID: ${{ secrets.CHROME_PROD_EXTENSION_ID }}
           CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
