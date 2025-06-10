@@ -71,7 +71,7 @@ jobs:
       - name: Publish to Chrome Web Store
         uses: mnao305/chrome-extension-upload@v5.0.0
         with:
-          file-path: dist/file.zip
+          file-path: extension-$NEW_VERSION.zip
           extension-id: ${{ secrets.CHROME_PROD_EXTENSION_ID }}
           client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
