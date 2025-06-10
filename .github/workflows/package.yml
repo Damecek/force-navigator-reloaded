@@ -68,7 +68,7 @@ jobs:
           if-no-files-found: error
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2.3.0
+        uses: softprops/action-gh-release@v2.2.0
         with:
           tag_name: v${{ env.NEW_VERSION }}
           files: ${{ steps.zip.outputs.zip_path }}
