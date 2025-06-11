@@ -67,7 +67,7 @@ You can install the latest published version directly from the
 - **LWC**: Uses Lightning Web Components via lwc-webpack-plugin
 - **Code Quality**: Prettier and ESLint configured with Salesforce LWC standards
 - **Git Hooks**: Husky pre-commit hook runs formatting
-- **CI Build & Web Store Release**: A GitHub Action builds `dist/` on each commit to `main`, attaches a zipped archive to the latest GitHub release, and uploads the extension to the Chrome Web Store when source files change
+- **CI Build & Web Store Release**: A GitHub Action builds `dist/` on each commit to `main` where the source files has changed, attaches a zipped archive to the latest GitHub release, and uploads the extension to the Chrome Web Store
 - **Manifest Key Injection**: `webpack` injects the extension `key` and OAuth consumer key based on build mode. This keeps the extension ID stable for authentication.
 
 ### Available Scripts
