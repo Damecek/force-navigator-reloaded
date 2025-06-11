@@ -9,7 +9,7 @@
 Force Navigator Reloaded is a Chrome Extension for Salesforce Lightning that provides fast and efficient navigation
 within Salesforce environments. This extension implements a command palette interface that allows users to quickly
 search, navigate, and perform actions without leaving their keyboard. It is available directly from the
-[Chrome Web Store](https://chromewebstore.google.com/detail/salesforce-navigator-relo/iniflnopffblekndhplennjijdcfkeak).
+[Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=item-share-cp).
 
 ## Features
 
@@ -24,16 +24,15 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 ### From Chrome Web Store
 
 You can install the latest published version directly from the
-[Chrome Web Store](https://chromewebstore.google.com/detail/salesforce-navigator-relo/iniflnopffblekndhplennjijdcfkeak).
+[Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=item-share-cp).
 
 ### Manual Installation (Developer Mode)
 
-1. Clone this repository
-2. Run `npm install` to install dependencies
-3. Run `npm run build` to build the extension
-4. Open Chrome and navigate to `chrome://extensions/`
-5. Enable "Developer mode" in the top-right corner
-6. Click "Load unpacked" and select the `dist` directory from this project
+1. Download `force-navigator-reloaded.zip` from the [GitHub Releases page](https://github.com/Damecek/force-navigator-reloaded/releases)
+2. Extract the archive
+3. Open Chrome and navigate to `chrome://extensions/`
+4. Enable **Developer mode** in the top-right corner
+5. Click **Load unpacked** and select the extracted folder
 
 ## Usage
 
@@ -43,6 +42,14 @@ You can install the latest published version directly from the
 4. Press Enter to execute the selected command
 
 ## Development
+
+### Local Setup
+
+1. Clone this repository
+2. Run `npm install` to install dependencies
+3. Run `npm run dev` to build the extension in watch mode
+4. Open Chrome and navigate to `chrome://extensions/`
+5. Enable **Developer mode** and load the `dist` directory as an unpacked extension
 
 ### Project Structure
 
@@ -60,8 +67,7 @@ You can install the latest published version directly from the
 - **LWC**: Uses Lightning Web Components via lwc-webpack-plugin
 - **Code Quality**: Prettier and ESLint configured with Salesforce LWC standards
 - **Git Hooks**: Husky pre-commit hook runs formatting
-- **CI Build**: A GitHub Action builds `dist/` on each commit to main, zips it as `force-navigator-reloaded.zip`, and attaches it to the latest GitHub release
-- **Web Store Release**: On push to `main` when the extension source changes, the workflow bumps the version, builds the extension, and uploads it to the Chrome Web Store
+- **CI Build & Web Store Release**: A GitHub Action builds `dist/` on each commit to `main` where the source files has changed, attaches a zipped archive to the latest GitHub release, and uploads the extension to the Chrome Web Store
 - **Manifest Key Injection**: `webpack` injects the extension `key` and OAuth consumer key based on build mode. This keeps the extension ID stable for authentication.
 
 ### Available Scripts
