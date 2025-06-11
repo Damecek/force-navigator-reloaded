@@ -59,7 +59,7 @@ _Coming soon_
 - **Code Quality**: Prettier and ESLint configured with Salesforce LWC standards
 - **Git Hooks**: Husky pre-commit hook runs formatting
 - **CI Build**: A GitHub Action builds `dist/` on each commit to main, zips it as `force-navigator-reloaded.zip`, and attaches it to the latest GitHub release
-- **Web Store Release**: On push to `main`, the workflow bumps the version, builds the extension, and uploads it to the Chrome Web Store
+- **Web Store Release**: On push to `main` when the extension source changes, the workflow bumps the version, builds the extension, and uploads it to the Chrome Web Store
 - **Manifest Key Injection**: `webpack` injects the extension `key` and OAuth consumer key based on build mode. This keeps the extension ID stable for authentication.
 
 ### Available Scripts

@@ -2,6 +2,13 @@ name: Build & Publish Extension
 on:
   push:
     branches: [ main ]
+    paths:
+      - "src/**"
+      - "web/**"
+      - "webpack.config.js"
+      - "lwc.config.json"
+      - "package.json"
+      - "package-lock.json"
 
 concurrency:
   group: build-extension-${{ github.ref }}
