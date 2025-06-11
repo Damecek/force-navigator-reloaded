@@ -62,7 +62,7 @@ jobs:
       - name: Zip dist
         id: zip
         run: |
-          zip_name="extension-${NEW_VERSION}.zip"
+          zip_name="force-navigator-reloaded-${NEW_VERSION}.zip"
           cd dist
           zip -r "../${zip_name}" .
           echo "zip_path=${zip_name}" >> "$GITHUB_OUTPUT"
