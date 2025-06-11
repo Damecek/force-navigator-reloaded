@@ -8,7 +8,8 @@
 
 Force Navigator Reloaded is a Chrome Extension for Salesforce Lightning that provides fast and efficient navigation
 within Salesforce environments. This extension implements a command palette interface that allows users to quickly
-search, navigate, and perform actions without leaving their keyboard.
+search, navigate, and perform actions without leaving their keyboard. It is available directly from the
+[Chrome Web Store](https://chromewebstore.google.com/detail/salesforce-navigator-relo/iniflnopffblekndhplennjijdcfkeak).
 
 ## Features
 
@@ -22,7 +23,8 @@ search, navigate, and perform actions without leaving their keyboard.
 
 ### From Chrome Web Store
 
-_Coming soon_
+You can install the latest published version directly from the
+[Chrome Web Store](https://chromewebstore.google.com/detail/salesforce-navigator-relo/iniflnopffblekndhplennjijdcfkeak).
 
 ### Manual Installation (Developer Mode)
 
