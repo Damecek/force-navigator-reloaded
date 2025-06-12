@@ -20,4 +20,5 @@ Mark each line with [x] when the task is completed.
       extension
 - [x] create pipeline
       for [publishing to chrome store](https://github.com/marketplace/actions/publish-chrome-extension-to-chrome-web-store)
-- [x] Publish initial version to [Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=item-share-cp)
+- [x] Publish initial version
+      to [Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=github)

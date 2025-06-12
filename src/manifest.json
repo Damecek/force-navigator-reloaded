@@ -18,7 +18,7 @@
   },
   "permissions": ["storage", "identity", "tabs", "activeTab"],
   "oauth2": {
-    "scopes": ["api", "refresh_token", "web", "openid"]
+    "scopes": ["api", "refresh_token"]
   },
   "host_permissions": [
     "https://*.force.com/*",
