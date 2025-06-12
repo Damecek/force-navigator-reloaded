@@ -9,11 +9,12 @@
 Force Navigator Reloaded is a Chrome Extension for Salesforce Lightning that provides fast and efficient navigation
 within Salesforce environments. This extension implements a command palette interface that allows users to quickly
 search, navigate, and perform actions without leaving their keyboard. It is available directly from the
-[Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=item-share-cp).
+[Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=github).
 
 ## Features
 
-- **Command Palette**: Access a powerful command interface with keyboard shortcut (Ctrl+Shift+P or Cmd+Shift+P on Mac)
+- **Command Palette**: Access a powerful command interface with keyboard shortcut (Ctrl+Shift+P or Cmd+Shift+P on Mac),
+  this can be configured in the chrome shortcut settings (`chrome://extensions/shortcuts`)
 - **Fast Navigation**: Quickly search and navigate to Salesforce records, list views, and setup pages
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
 - **Modern Architecture**: Built with [LWC OSS](https://lwc.dev/) (Lightning Web Components) for composable UI
@@ -23,8 +24,10 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 
 ### From Chrome Web Store
 
-You can install the latest published version directly from the
-[Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=item-share-cp).
+You can install the latest published version directly from
+the [Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=github).
+Please note that updates are published manually, and due to the review process—which can take several days—the store
+version might occasionally lag behind the latest release.
 
 ### Manual Installation (Developer Mode)
 

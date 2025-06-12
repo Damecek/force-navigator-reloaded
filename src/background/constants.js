@@ -14,7 +14,7 @@ export const ENTITY_CACHE_TTL = 3600 * 1000 * 6; // 12 hour
  * @type {string}
  */
 export const CLIENT_ID = __CLIENT_ID__;
-export const SCOPES = 'api refresh_token web openid';
+export const SCOPES = 'api refresh_token';
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
 export const SF_TOKEN_CACHE_TTL = 3600 * 1000 * 24; // 24 hour
 
