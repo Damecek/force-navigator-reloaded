@@ -1,5 +1,5 @@
 import { sendTabMessage } from '../chromeUtils';
-import { isContentScriptAllowedDomain } from '../urlUtils';
+import { isContentScriptAllowedDomain } from '../../shared';
 
 /**
  * Handles keyboard commands defined in the manifest and forwards them to content scripts

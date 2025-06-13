@@ -1,12 +1,13 @@
-import CacheManager from './cacheManager.js';
-import { staticCommands } from './staticCommands.js';
 import {
+  buildLightningUrl,
+  CacheManager,
   ENTITY_CACHE_KEY,
   ENTITY_CACHE_TTL,
   MENU_CACHE_KEY,
   MENU_CACHE_TTL,
-} from './constants.js';
-import { buildLightningUrl, toLightningHostname } from './urlUtils';
+  toLightningHostname,
+} from '../shared';
+import { staticCommands } from './staticCommands.js';
 import { ensureToken } from './auth/auth.js';
 import {
   fetchEntityDefinitionsFromSalesforce,

@@ -1,13 +1,15 @@
 /* eslint-disable camelcase */
 import {
+  CacheManager,
   CLIENT_ID,
   SCOPES,
   SF_TOKEN_CACHE_KEY,
   SF_TOKEN_CACHE_TTL,
-} from '../constants.js';
-import CacheManager from '../cacheManager.js';
+  toCoreUrl,
+  toLightningHostname,
+  toLightningUrl,
+} from '../../shared';
 import { makePkcePair } from './authUtil';
-import { toCoreUrl, toLightningHostname, toLightningUrl } from '../urlUtils';
 
 /**
  * @typedef {Object} Token

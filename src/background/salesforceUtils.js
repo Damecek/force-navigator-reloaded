@@ -1,5 +1,5 @@
 import { SalesforceConnection } from './salesforceConnection';
-import { SETUP_NODE_TYPES } from './constants';
+import { SETUP_NODE_TYPES } from '../shared';
 
 /**
  * @typedef {Object} SetupNode

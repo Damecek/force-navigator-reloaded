@@ -3,7 +3,7 @@ import {
   PERSONAL_SETTING_SETUP_NODE,
   SERVICE_SETUP_SETUP_NODE,
   SETUP_SETUP_NODE,
-} from './constants';
+} from './constants.js';
 
 /**
  * Prepare the list of [RegExp, replacement] pairs for a given target suffix.
