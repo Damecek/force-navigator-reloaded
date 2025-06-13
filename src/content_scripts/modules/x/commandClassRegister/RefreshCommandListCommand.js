@@ -1,10 +1,10 @@
 import Command from './Command';
-import CacheManager from '../../../../background/cacheManager';
 import {
+  CacheManager,
   ENTITY_CACHE_KEY,
   MENU_CACHE_KEY,
-} from '../../../../background/constants';
-import { toLightningHostname } from '../../../../background/urlUtils';
+  toLightningHostname,
+} from '../../../../shared';
 
 /**
  * Command to refresh the list of dynamic commands in the command palette.
