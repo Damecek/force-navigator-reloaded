@@ -7,6 +7,7 @@
     "lint": "eslint \"src/**/*.js\"",
     "lint-fix": "eslint \"src/**/*.js\" --fix",
     "format": "prettier --write \"src/**/*.{js,json,md,html}\"",
+    "bump": "npm version minor --no-git-tag-version && node ./scripts/syncManifestVersion.js",
     "prepare": "husky install"
   },
   "devDependencies": {
