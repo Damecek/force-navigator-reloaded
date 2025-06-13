@@ -49,6 +49,30 @@ version might occasionally lag behind the latest release.
 - _.force.com_
 - _.salesforce-setup.com_
 
+## Authentication & Connected Apps
+
+Force Navigator Reloaded authorises to Salesforce via the **OAuth 2.0 PKCE** flow declared in `src/manifest.json`.
+
+### Where do the connected apps live?
+
+- Two connected-app definitions live in `sf/force-app/main/default/connectedApps`:
+  - `Force_Navigator_Reloaded_Prod.connectedApp-meta.xml`
+  - `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml`
+- Both apps were **created and configured once** in the author’s developer org.  
+  They are bound to the stable extension IDs:
+  - Production ID `iniflnopffblekndhplennjijdcfkeak`
+  - Development ID `fjcokiadigpmkojdlhbkbhimkcmjokon`
+
+### Do I have to deploy the connected app to my org?
+
+**No.** The connected app is needed only during the OAuth handshake; it is _not_ deployed to, nor stored in, your
+Salesforce org. Simply install the extension and approve its access once—nothing else is required.
+
+Even if the original developer org is deleted, Salesforce retains the connected-app metadata in its infrastructure. At
+that point the app becomes read-only. Any future changes (e.g. redirect URIs, scopes, secret rotation) would require the
+author to redeploy a fresh connected app and update the extension’s consumer key—end-users do **not** need to take
+action.
+
 ## Development
 
 ### Local Setup
@@ -87,17 +111,6 @@ version might occasionally lag behind the latest release.
 - `npm run lint-fix`: Fix ESLint issues automatically
 - `npm run format`: Format code with Prettier
 - `npm run bump`: Increment minor version and sync to `src/manifest.json`
-
-### Authentication
-
-Force Navigator Reloaded uses OAuth2 with PKCE to authorize against Salesforce. The Chrome OAuth settings live in `src/manifest.json`, the connected apps are located in `sf/force-app/main/default/connectedApps`, and the login logic is implemented in `src/background/auth/auth.js`.
-
-The extension ID is stable thanks to the manifest `key` field. Production builds use ID `iniflnopffblekndhplennjijdcfkeak` while development builds use `fjcokiadigpmkojdlhbkbhimkcmjokon`.
-
-There are two connected app definitions in `sf/force-app/main/default/connectedApps`:
-
-- `Force_Navigator_Reloaded_Prod.connectedApp-meta.xml`
-- `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml`
 
 Connected apps are configured for a specific extension ID. Same app is reused across any Salesforce org without actual
 deployment, even if the org where the app lived is deleted.
