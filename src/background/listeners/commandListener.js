@@ -1,5 +1,5 @@
-import { sendTabMessage } from '../chromeUtils';
 import {
+  Channel,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
   isContentScriptAllowedDomain,
 } from '../../shared';
@@ -20,13 +20,11 @@ export async function handleCommand(command, tab) {
   console.log('Received command:', command);
   switch (command) {
     case 'toggle-command-palette':
-      await handleToggleCommandPalette(tab?.id);
+      await new Channel(CHANNEL_TOGGLE_COMMAND_PALETTE).publish({
+        tabId: tab.id,
+      });
       break;
     default:
       console.error('Unknown command:', command);
   }
-}
-
-async function handleToggleCommandPalette(tabId) {
-  await sendTabMessage({ action: CHANNEL_TOGGLE_COMMAND_PALETTE }, tabId);
 }

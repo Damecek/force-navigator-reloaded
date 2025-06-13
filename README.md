@@ -68,7 +68,7 @@ version might occasionally lag behind the latest release.
 - **LWC Components** (`src/content_scripts/modules/x`): Lightning Web Components that provide the UI for the command
   palette
 - **Popup** (`src/popup.html/js`): Extension popup interface (currently a basic scaffold)
-- **Shared Utilities** (`src/shared`): Modules used by both the background and content scripts
+- **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper
 
 ### Build & Toolchain
 
