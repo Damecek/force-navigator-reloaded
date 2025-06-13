@@ -4,22 +4,28 @@ import {
   CHANNEL_GET_COMMANDS,
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
+  Channel,
 } from '../../../../shared';
 
 export default class App extends LightningElement {
   static renderMode = 'light';
   @track commands = [];
   isCommandPaletteVisible = false;
+  getCommandsChannel = new Channel(CHANNEL_GET_COMMANDS);
+  sendCommandsChannel = new Channel(CHANNEL_SEND_COMMANDS);
+  toggleCommandPaletChannel = new Channel(CHANNEL_TOGGLE_COMMAND_PALETTE);
 
   connectedCallback() {
     this.loadCommands();
-    chrome.runtime.onMessage.addListener(this._handleCommands);
-    chrome.runtime.onMessage.addListener(this._handleToggleCommandPalette);
+    this.sendCommandsChannel.subscribe(this._handleCommands);
+    this.toggleCommandPaletChannel.subscribe(this._handleToggleCommandPalette);
   }
 
   disconnectedCallback() {
-    chrome.runtime.onMessage.removeListener(this._handleCommands);
-    chrome.runtime.onMessage.removeListener(this._handleToggleCommandPalette);
+    this.sendCommandsChannel.unsubscribe(this._handleCommands);
+    this.toggleCommandPaletChannel.unsubscribe(
+      this._handleToggleCommandPalette
+    );
   }
 
   _handleCommands = (request, sender, sendResponse) => {
@@ -47,9 +53,7 @@ export default class App extends LightningElement {
   };
 
   async loadCommands() {
-    await chrome.runtime.sendMessage({
-      action: CHANNEL_GET_COMMANDS,
-    });
+    await this.getCommandsChannel.publish();
   }
 
   /**
