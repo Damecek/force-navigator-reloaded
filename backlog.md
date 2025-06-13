@@ -23,3 +23,5 @@ Mark each line with [x] when the task is completed.
       for [publishing to chrome store](https://github.com/marketplace/actions/publish-chrome-extension-to-chrome-web-store)
 - [x] Publish initial version
       to [Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=github)
+- [ ] support experience setup
+      domains https://carvago--devas.sandbox.builder.salesforce-experience.com/, https://carvago.builder.salesforce-experience.com/
