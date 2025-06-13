@@ -27,3 +27,8 @@ export const SETUP_NODE_TYPES = [
   PERSONAL_SETTING_SETUP_NODE,
   // SERVICE_SETUP_SETUP_NODE,
 ];
+
+export const CHANNEL_GET_COMMANDS = 'getCommands';
+export const CHANNEL_SEND_COMMANDS = 'sendCommands';
+export const CHANNEL_INVOKE_AUTH_FLOW = 'invokeAuthFlow';
+export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';

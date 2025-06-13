@@ -1,5 +1,10 @@
 import { getCommands } from '../commandRegister.js';
 import { interactiveLogin } from '../auth/auth';
+import {
+  CHANNEL_GET_COMMANDS,
+  CHANNEL_INVOKE_AUTH_FLOW,
+  CHANNEL_SEND_COMMANDS,
+} from '../../shared';
 
 /**
  * Generic message listener for background script.
@@ -12,15 +17,15 @@ export function handleMessage(message, sender, sendResponse) {
   console.log('Received message in background script:', message);
   try {
     switch (message.action) {
-      case 'getCommands':
+      case CHANNEL_GET_COMMANDS:
         sendCommands(sender).then((response) =>
           chrome.tabs.sendMessage(sender.tab.id, {
-            action: 'sendCommands',
+            action: CHANNEL_SEND_COMMANDS,
             data: response,
           })
         );
         return false;
-      case 'invokeAuthFlow':
+      case CHANNEL_INVOKE_AUTH_FLOW:
         invokeAuthFlow(sender).then((response) => sendResponse(response));
         return true;
       default:

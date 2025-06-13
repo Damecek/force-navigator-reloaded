@@ -1,6 +1,7 @@
 import Command from './Command';
 import {
   CacheManager,
+  CHANNEL_GET_COMMANDS,
   ENTITY_CACHE_KEY,
   MENU_CACHE_KEY,
   toLightningHostname,
@@ -29,7 +30,7 @@ export default class RefreshCommandListCommand extends Command {
     await cache.clear(MENU_CACHE_KEY);
     await cache.clear(ENTITY_CACHE_KEY);
     await chrome.runtime.sendMessage({
-      action: 'getCommands',
+      action: CHANNEL_GET_COMMANDS,
     });
   }
 }

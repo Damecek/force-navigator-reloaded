@@ -1,5 +1,10 @@
 import { LightningElement, track } from 'lwc';
 import { register } from '../commandClassRegister/commandClassRegister';
+import {
+  CHANNEL_GET_COMMANDS,
+  CHANNEL_SEND_COMMANDS,
+  CHANNEL_TOGGLE_COMMAND_PALETTE,
+} from '../../../../shared';
 
 export default class App extends LightningElement {
   static renderMode = 'light';
@@ -18,7 +23,7 @@ export default class App extends LightningElement {
   }
 
   _handleCommands = (request, sender, sendResponse) => {
-    if (request.action !== 'sendCommands') {
+    if (request.action !== CHANNEL_SEND_COMMANDS) {
       return;
     }
     console.log('handle commands', request);
@@ -33,7 +38,7 @@ export default class App extends LightningElement {
   };
 
   _handleToggleCommandPalette = (request, sender, sendResponse) => {
-    if (request.action !== 'toggleCommandPalette') {
+    if (request.action !== CHANNEL_TOGGLE_COMMAND_PALETTE) {
       return;
     }
     console.log('toggle command palette');
@@ -43,7 +48,7 @@ export default class App extends LightningElement {
 
   async loadCommands() {
     await chrome.runtime.sendMessage({
-      action: 'getCommands',
+      action: CHANNEL_GET_COMMANDS,
     });
   }
 

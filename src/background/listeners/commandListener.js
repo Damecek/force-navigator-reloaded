@@ -1,5 +1,8 @@
 import { sendTabMessage } from '../chromeUtils';
-import { isContentScriptAllowedDomain } from '../../shared';
+import {
+  CHANNEL_TOGGLE_COMMAND_PALETTE,
+  isContentScriptAllowedDomain,
+} from '../../shared';
 
 /**
  * Handles keyboard commands defined in the manifest and forwards them to content scripts
@@ -25,5 +28,5 @@ export async function handleCommand(command, tab) {
 }
 
 async function handleToggleCommandPalette(tabId) {
-  await sendTabMessage({ action: 'toggleCommandPalette' }, tabId);
+  await sendTabMessage({ action: CHANNEL_TOGGLE_COMMAND_PALETTE }, tabId);
 }
