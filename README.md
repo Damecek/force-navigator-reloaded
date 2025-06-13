@@ -86,6 +86,7 @@ version might occasionally lag behind the latest release.
 - `npm run lint`: Run ESLint on source files
 - `npm run lint-fix`: Fix ESLint issues automatically
 - `npm run format`: Format code with Prettier
+- `npm run bump`: Increment minor version and sync to `src/manifest.json`
 
 ### Authentication
 
