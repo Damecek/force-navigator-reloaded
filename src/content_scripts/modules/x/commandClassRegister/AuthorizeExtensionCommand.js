@@ -2,6 +2,7 @@ import Command from './Command';
 import {
   CHANNEL_GET_COMMANDS,
   CHANNEL_INVOKE_AUTH_FLOW,
+  Channel,
 } from '../../../../shared';
 
 export default class AuthorizeExtensionCommand extends Command {
@@ -19,11 +20,9 @@ export default class AuthorizeExtensionCommand extends Command {
    */
   async execute(options) {
     console.log('AuthorizeExtensionCommand.execute');
-    await chrome.runtime.sendMessage({
-      action: CHANNEL_INVOKE_AUTH_FLOW,
-    });
-    await chrome.runtime.sendMessage({
-      action: CHANNEL_GET_COMMANDS,
-    });
+    const authFlowChannel = new Channel(CHANNEL_INVOKE_AUTH_FLOW);
+    await authFlowChannel.publish();
+    const getCommandsChannel = new Channel(CHANNEL_GET_COMMANDS);
+    await getCommandsChannel.publish();
   }
 }
