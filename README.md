@@ -44,6 +44,11 @@ version might occasionally lag behind the latest release.
 3. Type commands or search terms to find what you need
 4. Press Enter to execute the selected command
 
+### Supported Domains
+
+- _.force.com_
+- _.salesforce-setup.com_
+
 ## Development
 
 ### Local Setup
