@@ -1,8 +1,5 @@
 import Command from './Command';
-import {
-  CHANNEL_GET_COMMANDS,
-  CHANNEL_INVOKE_AUTH_FLOW,
-} from '../../../../shared';
+import { Channel, CHANNEL_INVOKE_AUTH_FLOW } from '../../../../shared';
 
 export default class AuthorizeExtensionCommand extends Command {
   /**
@@ -19,11 +16,7 @@ export default class AuthorizeExtensionCommand extends Command {
    */
   async execute(options) {
     console.log('AuthorizeExtensionCommand.execute');
-    await chrome.runtime.sendMessage({
-      action: CHANNEL_INVOKE_AUTH_FLOW,
-    });
-    await chrome.runtime.sendMessage({
-      action: CHANNEL_GET_COMMANDS,
-    });
+    await new Channel(CHANNEL_INVOKE_AUTH_FLOW).publish();
+    console.log('auth flow invoked');
   }
 }

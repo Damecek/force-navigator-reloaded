@@ -10,7 +10,6 @@ export default class Command {
     this.id = id;
     this.label = label;
     this.hostname = window.location.hostname;
-    this.pallet = document.querySelector('x-command-pallet');
   }
 
   /**

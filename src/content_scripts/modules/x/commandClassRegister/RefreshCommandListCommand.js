@@ -1,9 +1,9 @@
 import Command from './Command';
 import {
   CacheManager,
+  Channel,
   CHANNEL_GET_COMMANDS,
-  ENTITY_CACHE_KEY,
-  MENU_CACHE_KEY,
+  COMMAND_CACHE_KEYS,
   toLightningHostname,
 } from '../../../../shared';
 
@@ -27,10 +27,7 @@ export default class RefreshCommandListCommand extends Command {
   async execute(options) {
     console.log('RefreshCommandListCommand.execute');
     const cache = new CacheManager(toLightningHostname(this.hostname));
-    await cache.clear(MENU_CACHE_KEY);
-    await cache.clear(ENTITY_CACHE_KEY);
-    await chrome.runtime.sendMessage({
-      action: CHANNEL_GET_COMMANDS,
-    });
+    await COMMAND_CACHE_KEYS.forEach((key) => cache.clear(key));
+    await new Channel(CHANNEL_GET_COMMANDS).publish();
   }
 }
