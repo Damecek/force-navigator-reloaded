@@ -10,7 +10,7 @@ import {
 import { getCommands } from './commandRegister';
 import { interactiveLogin } from './auth/auth';
 
-chrome.commands.onCommand.addListener(function (command, tab) {
+chrome.commands.onCommand.addListener((command, tab) => {
   const url = tab?.url;
   if (!url || !isContentScriptAllowedDomain(url)) {
     console.log(`handleCommand: ignored command "${command}" on URL: ${url}`);
@@ -30,7 +30,7 @@ chrome.commands.onCommand.addListener(function (command, tab) {
 /**
  * Sending commands back through different channel as the publisher of CHANNEL_GET_COMMANDS does not need to be the handler of the commands.
  */
-new Channel(CHANNEL_GET_COMMANDS).subscribe(async function ({ sender }) {
+new Channel(CHANNEL_GET_COMMANDS).subscribe(async ({ sender }) => {
   const hostname = getSenderHostname(sender);
   const commands = hostname ? await getCommands(hostname) : [];
   console.log('Commands to send:', commands);
@@ -40,7 +40,7 @@ new Channel(CHANNEL_GET_COMMANDS).subscribe(async function ({ sender }) {
   });
 });
 
-new Channel(CHANNEL_INVOKE_AUTH_FLOW).subscribe(async function ({ sender }) {
+new Channel(CHANNEL_INVOKE_AUTH_FLOW).subscribe(async ({ sender }) => {
   const hostname = getSenderHostname(sender);
   await interactiveLogin(hostname);
   return new Channel(CHANNEL_COMPLETED_AUTH_FLOW).publish({

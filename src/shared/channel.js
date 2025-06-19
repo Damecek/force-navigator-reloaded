@@ -12,16 +12,16 @@ export default class Channel {
 
   /**
    * Subscribe callback to messages of this channel.
-   * @param {({data: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void}) => void} cb
+   * @param {({data: any, sender: chrome.runtime.MessageSender}) => any} cb
    */
   subscribe(cb) {
     console.log('Subscribing to channel', this.name);
-    const wrapper = (msg, sender, sendResponse) => {
+    const wrapper = (msg, sender) => {
       if (msg.action !== this.name) {
         return false;
       }
       console.log('Handling message', msg.action, 'in channel', this.name);
-      return cb({ data: msg.data, sender, sendResponse });
+      return cb({ data: msg.data, sender });
     };
     this._listeners.set(cb, wrapper);
     chrome.runtime.onMessage.addListener(wrapper);
@@ -29,7 +29,8 @@ export default class Channel {
 
   /**
    * Unsubscribe previously registered callback.
-   * @param {({data: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void}) => void} cb   */
+   * @param {({data: any, sender: chrome.runtime.MessageSender}) => any} cb
+   */
   unsubscribe(cb) {
     console.log('Unsubscribing from channel', this.name);
     const wrapper = this._listeners.get(cb);
