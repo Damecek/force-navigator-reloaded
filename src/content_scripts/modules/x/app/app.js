@@ -8,6 +8,16 @@ import {
   CHANNEL_TOGGLE_COMMAND_PALETTE,
 } from '../../../../shared';
 
+/**
+ * App component for the command palette.
+ * It is responsible for rendering the command palette and handling the commands.
+ *
+ * @property {Array<Command>} commands - Array of commands to be rendered in the command palette.
+ * @property {boolean} isCommandPaletteVisible - Flag to indicate whether the command palette is visible or not.
+ * @property {Channel} sendCommandsChannel - Channel to send commands to the background script.
+ * @property {Channel} toggleCommandPaletChannel - Channel to toggle the visibility of the command palette.
+ * @property {Channel} authChannel - Channel to handle the authentication flow.
+ */
 export default class App extends LightningElement {
   static renderMode = 'light';
   @track commands = [];

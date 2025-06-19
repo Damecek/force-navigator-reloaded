@@ -12,7 +12,7 @@ export default class Channel {
 
   /**
    * Subscribe callback to messages of this channel.
-   // * @param {(message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => void} cb
+   * @param {({data: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void}) => void} cb
    */
   subscribe(cb) {
     console.log('Subscribing to channel', this.name);
@@ -29,8 +29,7 @@ export default class Channel {
 
   /**
    * Unsubscribe previously registered callback.
-   * @param {(message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => void} cb
-   */
+   * @param {({data: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void}) => void} cb   */
   unsubscribe(cb) {
     console.log('Unsubscribing from channel', this.name);
     const wrapper = this._listeners.get(cb);
