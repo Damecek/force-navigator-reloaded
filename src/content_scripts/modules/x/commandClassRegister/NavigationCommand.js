@@ -18,7 +18,7 @@ export default class NavigationCommand extends Command {
    * Navigate to the command's path.
    * @param {object} [options]
    * @param {boolean} [options.openInNewTab] - If true, opens in a new tab.
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} whether the palette should close
    */
   execute({ openInNewTab = false } = {}) {
     const url = `${window.location.origin}${this.path}`;
@@ -27,6 +27,6 @@ export default class NavigationCommand extends Command {
     } else {
       window.location.href = url;
     }
-    return Promise.resolve();
+    return Promise.resolve(true);
   }
 }

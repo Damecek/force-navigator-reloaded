@@ -30,13 +30,15 @@ export default class CommandItem extends LightningElement {
   }
 
   /**
-   * Execute this command and close the palette.
+   * Execute this command and close the palette when desired by the command.
    * @param {boolean} openInNewTab
+   * @returns {Promise<void>}
    */
   @api async select(openInNewTab = false) {
-    await this.command.execute({ openInNewTab });
-    // todo: closing should be handled by the command, some commands may not want to close the palette
-    this.dispatchEvent(new CustomEvent('close', { bubbles: true }));
+    const shouldClose = await this.command.execute({ openInNewTab });
+    if (shouldClose !== false) {
+      this.dispatchEvent(new CustomEvent('close', { bubbles: true }));
+    }
   }
 
   /**
