@@ -22,12 +22,13 @@ export default class RefreshCommandListCommand extends Command {
   /**
    * Executes the command: clears cache and dispatches refresh event.
    * @param {object} [options] Execution options (unused).
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} whether the palette should close
    */
   async execute(options) {
     console.log('RefreshCommandListCommand.execute');
     const cache = new CacheManager(toLightningHostname(this.hostname));
     await COMMAND_CACHE_KEYS.forEach((key) => cache.clear(key));
     await new Channel(CHANNEL_GET_COMMANDS).publish();
+    return false;
   }
 }

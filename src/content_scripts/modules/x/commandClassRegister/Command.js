@@ -14,8 +14,9 @@ export default class Command {
 
   /**
    * Execute the command's action.
+   *
    * @param {object} [options] - Optional parameters for execution (e.g., openInNewTab).
-   * @returns {Promise<any>}
+   * @returns {Promise<boolean>} whether the palette should close after executing
    */
   execute(options) {
     return Promise.reject(
