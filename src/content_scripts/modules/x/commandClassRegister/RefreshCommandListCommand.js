@@ -2,7 +2,7 @@ import Command from './Command';
 import {
   CacheManager,
   Channel,
-  CHANNEL_GET_COMMANDS,
+  CHANNEL_REFRESH_COMMANDS,
   COMMAND_CACHE_KEYS,
   toLightningHostname,
 } from '../../../../shared';
@@ -28,7 +28,7 @@ export default class RefreshCommandListCommand extends Command {
     console.log('RefreshCommandListCommand.execute');
     const cache = new CacheManager(toLightningHostname(this.hostname));
     await COMMAND_CACHE_KEYS.forEach((key) => cache.clear(key));
-    await new Channel(CHANNEL_GET_COMMANDS).publish();
+    await new Channel(CHANNEL_REFRESH_COMMANDS).publish();
     return false;
   }
 }

@@ -3,7 +3,7 @@ import { register } from '../commandClassRegister/commandClassRegister';
 import {
   Channel,
   CHANNEL_COMPLETED_AUTH_FLOW,
-  CHANNEL_GET_COMMANDS,
+  CHANNEL_REFRESH_COMMANDS,
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
 } from '../../../../shared';
@@ -37,11 +37,11 @@ export default class App extends LightningElement {
     this.toggleCommandPaletChannel.subscribe(this._handleToggleCommandPalette);
     this.authChannel.subscribe(this._handleAuth);
 
-    this.publishGetCommands();
+    this.publishRefreshCommands();
   }
 
-  publishGetCommands() {
-    return new Channel(CHANNEL_GET_COMMANDS).publish();
+  publishRefreshCommands() {
+    return new Channel(CHANNEL_REFRESH_COMMANDS).publish();
   }
 
   // todo: needs disconnectedCallback? what are the use cases?
@@ -56,7 +56,7 @@ export default class App extends LightningElement {
 
   _handleAuth = () => {
     console.log('auth completed');
-    return this.publishGetCommands();
+    return this.publishRefreshCommands();
   };
 
   _handleCommands = ({ data }) => {

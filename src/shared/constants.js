@@ -30,8 +30,7 @@ export const SETUP_NODE_TYPES = [
   // SERVICE_SETUP_SETUP_NODE,
 ];
 
-// todo: rename to refreshCommands
-export const CHANNEL_GET_COMMANDS = 'getCommands';
+export const CHANNEL_REFRESH_COMMANDS = 'refreshCommands';
 export const CHANNEL_SEND_COMMANDS = 'sendCommands';
 export const CHANNEL_INVOKE_AUTH_FLOW = 'invokeAuthFlow';
 export const CHANNEL_COMPLETED_AUTH_FLOW = 'completedAuthFlow';
