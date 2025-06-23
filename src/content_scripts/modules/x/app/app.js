@@ -33,6 +33,8 @@ export default class App extends LightningElement {
     );
     this.authChannel = new Channel(CHANNEL_COMPLETED_AUTH_FLOW);
 
+    window.addEventListener('keydown', this._handleEscape);
+
     this.sendCommandsChannel.subscribe(this._handleCommands);
     this.toggleCommandPaletChannel.subscribe(this._handleToggleCommandPalette);
     this.authChannel.subscribe(this._handleAuth);
@@ -52,6 +54,7 @@ export default class App extends LightningElement {
       this._handleToggleCommandPalette
     );
     this.authChannel.unsubscribe(this._handleAuth);
+    window.removeEventListener('keydown', this._handleEscape);
   }
 
   _handleAuth = () => {
@@ -75,6 +78,13 @@ export default class App extends LightningElement {
     console.log('toggle command palette');
     this.isCommandPaletteVisible = !this.isCommandPaletteVisible;
     return false;
+  };
+
+  // @todo: does not work on https://carvago--devas.sandbox.lightning.force.com/builder_platform_interaction/flowBuilder.app?flowId=301AP00000raYj2YAE
+  _handleEscape = (event) => {
+    if (event.key === 'Escape' || event.key === 'Esc') {
+      this.isCommandPaletteVisible = false;
+    }
   };
 
   /**

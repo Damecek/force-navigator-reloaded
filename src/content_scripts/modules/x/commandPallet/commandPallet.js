@@ -42,10 +42,6 @@ export default class CommandPallet extends LightningElement {
     }));
   }
 
-  connectedCallback() {
-    window.addEventListener('keydown', this._handleKeyDown);
-  }
-
   renderedCallback() {
     if (!this._didFocus) {
       const inp = this.refs.input;
@@ -77,24 +73,6 @@ export default class CommandPallet extends LightningElement {
     }
     this.selectedIndex = 0;
   }
-
-  /**
-   * Handle close action: dispatch close event
-   */
-  closePalette() {
-    this.dispatchEvent(new CustomEvent('close'));
-  }
-
-  /**
-   * Keydown handler for Escape key
-   * @todo: this should be handled by the x-app component
-   * @todo: does not work on https://carvago--devas.sandbox.lightning.force.com/builder_platform_interaction/flowBuilder.app?flowId=301AP00000raYj2YAE
-   */
-  _handleKeyDown = (event) => {
-    if (event.key === 'Escape' || event.key === 'Esc') {
-      this.closePalette();
-    }
-  };
 
   /**
    * Handle key navigation (arrows, enter) on the input field.
@@ -170,9 +148,5 @@ export default class CommandPallet extends LightningElement {
     if (!isNaN(idx)) {
       this.selectedIndex = idx;
     }
-  }
-
-  disconnectedCallback() {
-    window.removeEventListener('keydown', this._handleKeyDown);
   }
 }
