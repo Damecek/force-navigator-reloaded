@@ -1,8 +1,8 @@
 import {
   Channel,
   CHANNEL_COMPLETED_AUTH_FLOW,
-  CHANNEL_GET_COMMANDS,
   CHANNEL_INVOKE_AUTH_FLOW,
+  CHANNEL_REFRESH_COMMANDS,
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
   isContentScriptAllowedDomain,
@@ -28,9 +28,9 @@ chrome.commands.onCommand.addListener((command, tab) => {
 });
 
 /**
- * Sending commands back through different channel as the publisher of CHANNEL_GET_COMMANDS does not need to be the handler of the commands.
+ * Sending commands back through different channel as the publisher of CHANNEL_REFRESH_COMMANDS does not need to be the handler of the commands.
  */
-new Channel(CHANNEL_GET_COMMANDS).subscribe(async ({ sender }) => {
+new Channel(CHANNEL_REFRESH_COMMANDS).subscribe(async ({ sender }) => {
   const hostname = getSenderHostname(sender);
   const commands = hostname ? await getCommands(hostname) : [];
   console.log('Commands to send:', commands);

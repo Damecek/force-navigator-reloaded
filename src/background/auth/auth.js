@@ -4,7 +4,6 @@ import {
   CLIENT_ID,
   SCOPES,
   SF_TOKEN_CACHE_KEY,
-  SF_TOKEN_CACHE_TTL,
   toCoreUrl,
   toLightningHostname,
   toLightningUrl,
@@ -115,5 +114,5 @@ export async function ensureToken(hostname) {
 function storeToken(token) {
   token.issued_at = Date.now();
   const cache = new CacheManager(toLightningHostname(token.instance_url));
-  return cache.set(SF_TOKEN_CACHE_KEY, token, SF_TOKEN_CACHE_TTL);
+  return cache.set(SF_TOKEN_CACHE_KEY, token);
 }
