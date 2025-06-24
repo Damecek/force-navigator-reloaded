@@ -61,7 +61,6 @@ export default class App extends LightningElement {
     return false;
   };
 
-  // @todo: does not work on https://carvago--devas.sandbox.lightning.force.com/builder_platform_interaction/flowBuilder.app?flowId=301AP00000raYj2YAE
   _handleEscape = (event) => {
     if (event.key === 'Escape' || event.key === 'Esc') {
       this.isCommandPaletteVisible = false;

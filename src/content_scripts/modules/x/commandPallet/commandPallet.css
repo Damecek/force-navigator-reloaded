@@ -12,6 +12,10 @@
     overflow: visible;
 }
 
+.slds-scope .slds-modal__content {
+    overflow: visible;
+}
+
 .modal-container.slds-modal__content {
     max-width: 50rem;
 }
