@@ -13,7 +13,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 
 ## Features
 
-- **Command Palette**: Access a powerful command interface with keyboard shortcut (Ctrl+Shift+P or Cmd+Shift+P on Mac),
+- **Command Palette**: Access a powerful command interface with keyboard shortcut (Ctrl+Shift+L on Windows or Cmd+Shift+P on Mac),
   this can be configured in the chrome shortcut settings (`chrome://extensions/shortcuts`)
 - **Fast Navigation**: Quickly search and navigate to Salesforce records, list views, and setup pages
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
@@ -41,7 +41,7 @@ version might occasionally lag behind the latest release.
 ## Usage
 
 1. Navigate to any Salesforce Lightning page
-2. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) to open the command palette
+2. Press `Ctrl+Shift+L` (or `Cmd+Shift+P` on Mac) to open the command palette
 3. Type commands or search terms to find what you need
 4. Press Enter to execute the selected command
 
