@@ -6,7 +6,6 @@ import { SETUP_NODE_TYPES } from '../shared';
  * @property {string} FullName
  * @property {string} NodeType
  * @property {string} Label
- * @property {string} IconUrl
  * @property {string} Url
  */
 
@@ -16,9 +15,8 @@ import { SETUP_NODE_TYPES } from '../shared';
  * @returns {Promise<SetupNode[]>}
  */
 export async function fetchMenuNodesFromSalesforce(connection) {
-  // todo: evaluate IconUrl for use in the UI
   const result = await connection.toolingQuery(
-    `SELECT FullName, NodeType, Label, IconUrl, Url 
+    `SELECT FullName, NodeType, Label, Url
       FROM SetupNode
       WHERE NodeType IN ('${SETUP_NODE_TYPES.join("','")}')`
   );
@@ -40,9 +38,11 @@ export async function fetchMenuNodesFromSalesforce(connection) {
  * @returns {Promise<EntityDefinition[]>}
  */
 export async function fetchEntityDefinitionsFromSalesforce(connection) {
-  const soql = `SELECT DurableId, KeyPrefix, Label, QualifiedApiName
+  const result =
+    await connection.toolingQuery(`SELECT DurableId, KeyPrefix, Label, QualifiedApiName
     FROM EntityDefinition
     WHERE IsCustomizable = TRUE AND IsCustomSetting = FALSE
-    ORDER BY QualifiedApiName`;
-  return await connection.toolingQuery(soql);
+    ORDER BY QualifiedApiName`);
+  console.log('EntityDefinition query result', result);
+  return result;
 }
