@@ -18,7 +18,6 @@ export const COMMAND_CACHE_KEYS = [MENU_CACHE_KEY, ENTITY_CACHE_KEY];
 export const CLIENT_ID = __CLIENT_ID__;
 export const SCOPES = 'api refresh_token';
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
-export const SF_TOKEN_CACHE_TTL = 3600 * 1000 * 24 * 30; // 30 days
 
 // todo: those should be configurable
 export const SETUP_SETUP_NODE = 'Setup';
