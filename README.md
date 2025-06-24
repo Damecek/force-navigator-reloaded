@@ -34,7 +34,7 @@ version might occasionally lag behind the latest release.
 
 1. Download `force-navigator-reloaded.zip` from the [GitHub Releases page](https://github.com/Damecek/force-navigator-reloaded/releases)
 2. Extract the archive
-3. Open Chrome and navigate to `chrome://extensions/`
+3. Open Chrome and navigate to `chrome://extensions/shortcuts`
 4. Enable **Developer mode** in the top-right corner
 5. Click **Load unpacked** and select the extracted folder
 
