@@ -57,7 +57,6 @@ function getSenderHostname(sender) {
   }
 }
 
-// Clear caches when the extension is installed or updated
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'update' || reason === 'install') {
     console.log('Extension installation detected, clearing cache');
