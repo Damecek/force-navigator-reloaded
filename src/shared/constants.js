@@ -9,7 +9,14 @@ export const MENU_CACHE_TTL = 3600 * 1000 * 24; // 12 hour
 export const ENTITY_CACHE_KEY = 'entityDefinitions';
 export const ENTITY_CACHE_TTL = 3600 * 1000 * 6; // 12 hour
 
-export const COMMAND_CACHE_KEYS = [MENU_CACHE_KEY, ENTITY_CACHE_KEY];
+export const FLOW_CACHE_KEY = 'flowDefinitions';
+export const FLOW_CACHE_TTL = 3600 * 1000 * 3; // 3 hour
+
+export const COMMAND_CACHE_KEYS = [
+  MENU_CACHE_KEY,
+  ENTITY_CACHE_KEY,
+  FLOW_CACHE_KEY,
+];
 
 /**
  * OAuth2 consumer key injected at build time.

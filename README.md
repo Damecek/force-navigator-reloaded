@@ -19,6 +19,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
 - **Modern Architecture**: Built with [LWC OSS](https://lwc.dev/) (Lightning Web Components) for composable UI
 - **Dynamic Setup Menu Commands**: Fetches and caches Salesforce setup menu items directly from your org for quick access
+- **Flow Navigation**: Quickly open Flow definitions and active/latest versions
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 
 ## Installation

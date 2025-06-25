@@ -46,3 +46,24 @@ export async function fetchEntityDefinitionsFromSalesforce(connection) {
   console.log('EntityDefinition query result', result);
   return result;
 }
+
+/**
+ * @typedef {Object} FlowDefinition
+ * @property {string} ActiveVersionId
+ * @property {string} Id
+ * @property {string} LatestVersionId
+ * @property {{ MasterLabel: string }} LatestVersion
+ */
+
+/**
+ * Fetch flow definitions via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<FlowDefinition[]>}
+ */
+export async function fetchFlowDefinitionsFromSalesforce(connection) {
+  const result = await connection.toolingQuery(
+    `SELECT ActiveVersionId, Id, LatestVersionId, LatestVersion.MasterLabel FROM FlowDefinition`
+  );
+  console.log('FlowDefinition query result', result);
+  return result;
+}

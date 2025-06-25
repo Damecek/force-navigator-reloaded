@@ -3,6 +3,8 @@ import {
   CacheManager,
   ENTITY_CACHE_KEY,
   ENTITY_CACHE_TTL,
+  FLOW_CACHE_KEY,
+  FLOW_CACHE_TTL,
   MENU_CACHE_KEY,
   MENU_CACHE_TTL,
   toLightningHostname,
@@ -11,6 +13,7 @@ import { staticCommands } from './staticCommands.js';
 import { ensureToken } from './auth/auth.js';
 import {
   fetchEntityDefinitionsFromSalesforce,
+  fetchFlowDefinitionsFromSalesforce,
   fetchMenuNodesFromSalesforce,
 } from './salesforceUtils';
 import { SalesforceConnection } from './salesforceConnection';
@@ -36,6 +39,7 @@ export async function getCommands(hostname) {
     ...staticCommands,
     ...(await getSetupCommands(instanceHostname, connection)),
     ...(await getEntityCommands(instanceHostname, connection)),
+    ...(await getFlowCommands(instanceHostname, connection)),
   ];
   const RefreshCommandListCommand = [{}];
   return {
@@ -173,6 +177,57 @@ async function getEntityCommands(hostname, connection) {
   } catch (err) {
     console.error(
       `CommandRegister: failed to fetch entity commands for ${hostname}`,
+      err
+    );
+    return [];
+  }
+}
+
+/**
+ * Retrieves Flow navigation commands via Salesforce Tooling API.
+ * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, path: string}>>}
+ */
+async function getFlowCommands(hostname, connection) {
+  const cache = new CacheManager(hostname);
+  const cachedCommands = await cache.get(FLOW_CACHE_KEY);
+  if (cachedCommands) {
+    return cachedCommands;
+  }
+  try {
+    const flows = await fetchFlowDefinitionsFromSalesforce(connection);
+    const commands = flows.flatMap((f) => {
+      const label = f.LatestVersion?.MasterLabel;
+      if (!label) {
+        return [];
+      }
+      return [
+        {
+          id: `flow-definition-${f.Id}`,
+          label: `Flow > Definition > ${label}`,
+          path: `/lightning/setup/Flows/page?address=%2F${f.Id}`,
+        },
+        {
+          id: `flow-latest-${f.LatestVersionId}`,
+          label: `Flow > Latest Version > ${label}`,
+          path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.LatestVersionId}`,
+        },
+        {
+          id: `flow-active-${f.ActiveVersionId}`,
+          label: `Flow > Active Version > ${label}`,
+          path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.ActiveVersionId}`,
+        },
+      ];
+    });
+    console.log('Commands', commands);
+    if (commands.length > 0) {
+      await cache.set(FLOW_CACHE_KEY, commands, FLOW_CACHE_TTL);
+    }
+    return commands;
+  } catch (err) {
+    console.error(
+      `CommandRegister: failed to fetch flow commands for ${hostname}`,
       err
     );
     return [];
