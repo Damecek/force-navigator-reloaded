@@ -197,29 +197,31 @@ async function getFlowCommands(hostname, connection) {
   }
   try {
     const flows = await fetchFlowDefinitionsFromSalesforce(connection);
-    const commands = flows.flatMap((f) => {
-      const label = f.LatestVersion?.MasterLabel;
-      if (!label) {
-        return [];
-      }
-      return [
-        {
+    const commands = [];
+    for (const f of flows) {
+      const label = f?.LatestVersion?.MasterLabel;
+      if (label) {
+        commands.push({
           id: `flow-definition-${f.Id}`,
           label: `Flow > Definition > ${label}`,
           path: `/lightning/setup/Flows/page?address=%2F${f.Id}`,
-        },
-        {
-          id: `flow-latest-${f.LatestVersionId}`,
-          label: `Flow > Latest Version > ${label}`,
-          path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.LatestVersionId}`,
-        },
-        {
-          id: `flow-active-${f.ActiveVersionId}`,
-          label: `Flow > Active Version > ${label}`,
-          path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.ActiveVersionId}`,
-        },
-      ];
-    });
+        });
+        if (f.LatestVersionId) {
+          commands.push({
+            id: `flow-latest-${f.Id}`,
+            label: `Flow > Latest Version > ${label}`,
+            path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.LatestVersionId}`,
+          });
+        }
+        if (f.ActiveVersionId) {
+          commands.push({
+            id: `flow-active-${f.Id}`,
+            label: `Flow > Active Version > ${label}`,
+            path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.ActiveVersionId}`,
+          });
+        }
+      }
+    }
     console.log('Commands', commands);
     if (commands.length > 0) {
       await cache.set(FLOW_CACHE_KEY, commands, FLOW_CACHE_TTL);
