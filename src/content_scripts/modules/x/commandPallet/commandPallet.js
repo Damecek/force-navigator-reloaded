@@ -60,14 +60,15 @@ export default class CommandPallet extends LightningElement {
     if (searchTerm) {
       const haystack = this.commands.map((c) => c.label);
       const [idxs, info, order] = this.uf.search(haystack, searchTerm);
+
+      let indices;
       if (order && info && Array.isArray(info.idx)) {
-        this.filteredCommands = order.map((pos) => {
-          const cmdIndex = info.idx[pos];
-          return this.commands[cmdIndex];
-        });
+        indices = order.map((pos) => info.idx[pos]);
       } else {
-        this.filteredCommands = [];
+        indices = Array.isArray(idxs) ? idxs : [];
       }
+
+      this.filteredCommands = indices.map((i) => this.commands[i]);
     } else {
       this.filteredCommands = [...this.commands];
     }
