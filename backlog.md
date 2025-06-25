@@ -5,7 +5,7 @@ Mark each line with [x] when the task is completed.
 
 - [ ] Error Handling: centralized input validation and error reporting in the UI
 - [ ] Command `Login as <username>` (User Switcher)
-- [ ] Add a list of active flows to the menu
+- [x] Add a list of active flows to the menu
 - [ ] Add SObject-specific submenu (fields, layout, etc.)
 - [ ] Settings Provider and UI for user preferences (theme, SetupNodes, custom commands, etc.)
 - [ ] Theme Engine with support for themes (Default, Dark, Unicorn, Solarized)
