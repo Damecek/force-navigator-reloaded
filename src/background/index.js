@@ -56,3 +56,10 @@ function getSenderHostname(sender) {
     return null;
   }
 }
+
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  if (reason === 'update' || reason === 'install') {
+    console.log('Extension installation detected, clearing cache');
+    await chrome.storage.local.clear();
+  }
+});
