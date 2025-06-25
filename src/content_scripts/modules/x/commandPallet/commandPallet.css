@@ -5,11 +5,16 @@
     left: 50%;
     transform: translate(-50%, 0);
     width: 400px;
-    z-index: 1000000;
+    z-index: 10000;
 }
 
 .slds-modal__content {
     overflow: visible;
+}
+
+
+.slds-modal {
+    z-index: 9060;
 }
 
 .slds-scope .slds-modal__content {
