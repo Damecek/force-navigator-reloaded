@@ -94,8 +94,9 @@ action.
   the background script
 - **LWC Components** (`src/content_scripts/modules/x`): Lightning Web Components that provide the UI for the command
   palette
-- **Popup** (`src/popup.html/js`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme styling
-- **Options Page** (`src/options.html/js` and `src/options/modules`): Settings UI built with LWC
+- **Popup** (`src/popup`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme
+  styling
+- **Options Page** (`src/options` and `src/options/modules`): Settings UI built with LWC
 - **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper
 
 ### Build & Toolchain
