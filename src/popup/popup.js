@@ -12,4 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  const shortcuts = document.getElementById('shortcuts-link');
+  if (shortcuts) {
+    shortcuts.addEventListener('click', (event) => {
+      event.preventDefault();
+      chrome.tabs.create({
+        url: 'chrome://extensions/shortcuts',
+        active: true,
+      });
+    });
+  }
 });

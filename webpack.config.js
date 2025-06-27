@@ -19,8 +19,8 @@ module.exports = (env, argv) => {
     entry: {
       background: path.resolve(__dirname, 'src/background/index.js'),
       content: path.resolve(__dirname, 'src/content_scripts/content.js'),
-      popup: path.resolve(__dirname, 'src/popup.js'),
-      options: path.resolve(__dirname, 'src/options.js'),
+      popup: path.resolve(__dirname, 'src/popup/popup.js'),
+      options: path.resolve(__dirname, 'src/options/options.js'),
     },
     output: {
       filename: '[name].js',
@@ -80,8 +80,8 @@ module.exports = (env, argv) => {
               return JSON.stringify(manifest, null, 2);
             },
           },
-          { from: 'src/popup.html', to: 'popup.html' },
-          { from: 'src/options.html', to: 'options.html' },
+          { from: 'src/popup/popup.html', to: 'popup.html' },
+          { from: 'src/options/options.html', to: 'options.html' },
           { from: 'src/icons', to: 'icons' },
         ],
       }),
