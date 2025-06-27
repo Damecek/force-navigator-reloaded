@@ -1,0 +1,110 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --link-color: #0060df;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1a1a1a;
+        --text-color: #f0f0f0;
+        --link-color: #58a6ff;
+    }
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 1rem;
+    min-width: 500px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+h1 {
+    font-size: 2rem;
+    margin: 0 0 1rem;
+}
+
+section + section {
+    margin-top: 1rem;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover,
+a:focus {
+    text-decoration: underline;
+}
+
+.shortcut kbd {
+    background: #e0e0e0;
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-size: 0.9em;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+    .shortcut kbd {
+        background: #333;
+    }
+}
+
+footer {
+    font-size: 0.875rem;
+    margin-top: 1.5rem;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li + li::before {
+    content: '•';
+    margin-right: 0.5rem;
+}
+
+.footer-links a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.footer-links a:hover,
+.footer-links a:focus {
+    text-decoration: underline;
+}
+
+footer nav a + a::before {
+    content: '•';
+    margin: 0 0.5rem;
+}
+
+/* Accessible hide – keeps content available for assistive tech */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
