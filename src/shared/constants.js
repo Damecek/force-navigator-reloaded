@@ -30,7 +30,7 @@ export const SF_TOKEN_CACHE_KEY = 'sfToken';
 export const SETUP_SETUP_NODE = 'Setup';
 export const PERSONAL_SETTING_SETUP_NODE = 'PersonalSettings';
 export const SERVICE_SETUP_SETUP_NODE = 'ServiceSetup';
-export const SETUP_NODE_TYPES = [
+export const DEFAULT_SETUP_NODE_TYPES = [
   SETUP_SETUP_NODE,
   PERSONAL_SETTING_SETUP_NODE,
   // SERVICE_SETUP_SETUP_NODE,

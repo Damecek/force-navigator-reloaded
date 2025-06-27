@@ -1,5 +1,5 @@
 import { SalesforceConnection } from './salesforceConnection';
-import { SETUP_NODE_TYPES } from '../shared';
+import { getSetupNodeTypesFrom, loadSettings } from '../shared';
 
 /**
  * @typedef {Object} SetupNode
@@ -15,10 +15,12 @@ import { SETUP_NODE_TYPES } from '../shared';
  * @returns {Promise<SetupNode[]>}
  */
 export async function fetchMenuNodesFromSalesforce(connection) {
+  const settings = await loadSettings();
+  const types = getSetupNodeTypesFrom(settings);
   const result = await connection.toolingQuery(
     `SELECT FullName, NodeType, Label, Url
       FROM SetupNode
-      WHERE NodeType IN ('${SETUP_NODE_TYPES.join("','")}')`
+      WHERE NodeType IN ('${types.join("','")}')`
   );
   console.log('SetupNote query result', result);
   return result;

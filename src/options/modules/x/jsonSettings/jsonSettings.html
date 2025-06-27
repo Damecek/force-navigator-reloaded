@@ -1,0 +1,8 @@
+<template>
+  <div class="editor" lwc:dom="manual" lwc:ref="editor"></div>
+  <div class="actions">
+    <button onclick={handleSave}>Save</button>
+    <button onclick={handleReset}>Reset to Defaults</button>
+    <p class="error" if:true={error}>{error}</p>
+  </div>
+</template>

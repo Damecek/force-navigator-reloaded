@@ -50,6 +50,7 @@ version might occasionally lag behind the latest release.
 3. Type commands or search terms to find what you need
 4. Press Enter to execute the selected command
 5. Open the extension popup from the toolbar icon for quick help and a link to Settings
+6. Use the Settings page to edit the JSON configuration, allowing customisation of fetched Setup nodes
 
 ### Supported Domains
 
@@ -101,7 +102,7 @@ action.
 - **Popup** (`src/popup`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme
   styling
 - **Options Page** (`src/options` and `src/options/modules`): Settings UI built with LWC
-- **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper
+- **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper and settings management
 
 ### Build & Toolchain
 
