@@ -16,6 +16,7 @@ export default class CommandPallet extends LightningElement {
    */
   @track selectedIndex = 0;
   _didFocus = false;
+  _lastSearchTerm = '';
 
   _commands = [];
 
@@ -57,22 +58,40 @@ export default class CommandPallet extends LightningElement {
    */
   handleInput(event) {
     const searchTerm = event.target.value;
-    if (searchTerm) {
-      const haystack = this.commands.map((c) => c.label);
-      const [idxs, info, order] = this.uf.search(haystack, searchTerm);
+    let currentHaystackSource;
 
-      let indices;
-      if (order && info && Array.isArray(info.idx)) {
-        indices = order.map((pos) => info.idx[pos]);
+    if (searchTerm) {
+      if (
+        searchTerm.startsWith(this._lastSearchTerm) &&
+        this._lastSearchTerm !== ''
+      ) {
+        currentHaystackSource = this.filteredCommands;
       } else {
-        indices = Array.isArray(idxs) ? idxs : [];
+        currentHaystackSource = this.commands;
       }
 
-      this.filteredCommands = indices.map((i) => this.commands[i]);
+      const currentSearchHaystack = currentHaystackSource.map((c) => c.label);
+
+      const [idxs, info, order] = this.uf.search(
+        currentSearchHaystack,
+        searchTerm
+      );
+
+      let newFilteredCommands = [];
+      if (order && info && Array.isArray(info.idx)) {
+        newFilteredCommands = order.map(
+          (pos) => currentHaystackSource[info.idx[pos]]
+        );
+      } else if (Array.isArray(idxs)) {
+        newFilteredCommands = idxs.map((i) => currentHaystackSource[i]);
+      }
+
+      this.filteredCommands = newFilteredCommands;
     } else {
       this.filteredCommands = [...this.commands];
     }
     this.selectedIndex = 0;
+    this._lastSearchTerm = searchTerm;
   }
 
   /**
