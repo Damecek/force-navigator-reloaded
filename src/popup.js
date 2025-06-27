@@ -3,6 +3,13 @@
  * @returns {void}
  */
 document.addEventListener('DOMContentLoaded', () => {
-  const app = document.getElementById('app');
-  app.textContent = 'Hello from popup!';
+  const settings = document.getElementById('settings-link');
+  if (settings) {
+    settings.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (chrome.runtime.openOptionsPage) {
+        chrome.runtime.openOptionsPage();
+      }
+    });
+  }
 });

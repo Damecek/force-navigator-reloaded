@@ -20,6 +20,7 @@ module.exports = (env, argv) => {
       background: path.resolve(__dirname, 'src/background/index.js'),
       content: path.resolve(__dirname, 'src/content_scripts/content.js'),
       popup: path.resolve(__dirname, 'src/popup.js'),
+      options: path.resolve(__dirname, 'src/options.js'),
     },
     output: {
       filename: '[name].js',
@@ -80,6 +81,7 @@ module.exports = (env, argv) => {
             },
           },
           { from: 'src/popup.html', to: 'popup.html' },
+          { from: 'src/options.html', to: 'options.html' },
           { from: 'src/icons', to: 'icons' },
         ],
       }),
