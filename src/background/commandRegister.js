@@ -109,7 +109,7 @@ async function getSetupCommands(hostname, connection) {
     const dedupedCommands = [
       ...new Map(commands.map((c) => [c.id, c])).values(),
     ];
-    console.log('Commands', dedupedCommands);
+    console.log('Setup Commands', dedupedCommands.length, dedupedCommands);
     if (dedupedCommands.length > 0) {
       await cache.set(MENU_CACHE_KEY, dedupedCommands, MENU_CACHE_TTL);
     }
@@ -169,7 +169,7 @@ async function getEntityCommands(hostname, connection) {
         });
       }
     }
-    console.log('Commands', commands);
+    console.log('Entity Commands', commands.length, commands);
     if (commands.length > 0) {
       await cache.set(ENTITY_CACHE_KEY, commands, ENTITY_CACHE_TTL);
     }
@@ -222,7 +222,7 @@ async function getFlowCommands(hostname, connection) {
         }
       }
     }
-    console.log('Commands', commands);
+    console.log('Flow Commands', commands.length, commands);
     if (commands.length > 0) {
       await cache.set(FLOW_CACHE_KEY, commands, FLOW_CACHE_TTL);
     }
