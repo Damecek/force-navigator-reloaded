@@ -1,68 +1,200 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <title>Popup</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Force Navigator Reloaded</title>
+    <meta
+      content="Quick reference for Force Navigator Reloaded extension shortcuts and settings."
+      name="description"
+    />
     <style>
-      body {
-        width: 360px;
-        padding: 10px;
-        margin: 0;
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-          Arial, sans-serif;
-        background-color: #fff;
-        color: #000;
-      }
-
-      a {
-        color: #0060df;
+      :root {
+        --bg-color: #ffffff;
+        --text-color: #000000;
+        --link-color: #0060df;
       }
 
       @media (prefers-color-scheme: dark) {
-        body {
-          background-color: #1a1a1a;
-          color: #f0f0f0;
+        :root {
+          --bg-color: #1a1a1a;
+          --text-color: #f0f0f0;
+          --link-color: #58a6ff;
         }
+      }
 
-        a {
-          color: #58a6ff;
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 1rem;
+        min-width: 500px;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.5;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin: 0 0 1rem;
+      }
+
+      section + section {
+        margin-top: 1rem;
+      }
+
+      a {
+        color: var(--link-color);
+        text-decoration: none;
+      }
+
+      a:hover,
+      a:focus {
+        text-decoration: underline;
+      }
+
+      .shortcut kbd {
+        background: #e0e0e0;
+        border-radius: 4px;
+        padding: 0.1em 0.4em;
+        font-size: 0.9em;
+        font-family: inherit;
+        font-weight: 600;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .shortcut kbd {
+          background: #333;
         }
+      }
+
+      footer {
+        font-size: 0.875rem;
+        margin-top: 1.5rem;
+      }
+
+      footer {
+        font-size: 0.875rem;
+        margin-top: 1.5rem;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .footer-links li + li::before {
+        content: '•';
+        margin-right: 0.5rem;
+      }
+
+      .footer-links a {
+        color: var(--link-color);
+        text-decoration: none;
+      }
+
+      .footer-links a:hover,
+      .footer-links a:focus {
+        text-decoration: underline;
+      }
+
+      footer nav a + a::before {
+        content: '•';
+        margin: 0 0.5rem;
+      }
+
+      /* Accessible hide – keeps content available for assistive tech */
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
   </head>
   <body>
-    <h1>Force Navigator Reloaded</h1>
-    <p>
-      Open the command palette with <strong>Ctrl+Shift+L</strong> (Windows) or
-      <strong>Cmd+Shift+P</strong> (Mac). You can customize this shortcut in
-      <a href="#" id="shortcuts-link">Chrome shortcut settings</a>.
-    </p>
-    <p>
-      For advanced settings, visit
-      <a id="settings-link" href="#">Settings</a>
-    </p>
-    <p>
-      Contributions are welcome! Visit the GitHub repository to file issues or
-      submit pull requests.
-    </p>
-    <p>
-      <a
-        id="github-link"
-        href="https://github.com/Damecek/force-navigator-reloaded"
-        target="_blank"
-        >GitHub</a
-      >
-      |
-      <a
-        id="issues-link"
-        href="https://github.com/Damecek/force-navigator-reloaded/issues"
-        target="_blank"
-        >Report issues</a
-      >
-      |
-      <a href="https://github.com/damecek" target="_blank">Author</a>
-    </p>
+    <header>
+      <h1>Force Navigator Reloaded</h1>
+    </header>
+
+    <main>
+      <section aria-labelledby="shortcuts-title">
+        <h2 class="visually-hidden" id="shortcuts-title">Shortcut</h2>
+        <p class="shortcut">
+          Open the command palette with
+          <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>L</kbd>
+          (Windows) or
+          <kbd>⌘</kbd><kbd>Shift</kbd><kbd>P</kbd> (Mac). <br />
+          You can change this in
+          <a href="#" id="shortcuts-link">Chrome Extension Shortcuts</a>.
+        </p>
+      </section>
+
+      <section>
+        <p>
+          For advanced configuration open
+          <a href="#" id="settings-link">Settings</a>.
+        </p>
+      </section>
+
+      <section>
+        <p>
+          We ❤️ contributions! Feel free to open an issue or send a PR on
+          GitHub.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <ul class="footer-links" role="list">
+        <li>
+          <a
+            href="https://github.com/Damecek/force-navigator-reloaded"
+            id="github-link"
+            rel="noreferrer"
+            target="_blank"
+            >Repository</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://github.com/Damecek/force-navigator-reloaded/issues/new"
+            id="issues-link"
+            rel="noreferrer"
+            target="_blank"
+            >Report issue</a
+          >
+        </li>
+        <li>
+          <a href="https://github.com/damecek" rel="noreferrer" target="_blank"
+            >Author</a
+          >
+        </li>
+      </ul>
+    </footer>
+
     <script src="popup.js"></script>
   </body>
 </html>
