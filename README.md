@@ -45,6 +45,7 @@ version might occasionally lag behind the latest release.
 2. Press `Ctrl+Shift+L` (or `Cmd+Shift+P` on Mac) to open the command palette
 3. Type commands or search terms to find what you need
 4. Press Enter to execute the selected command
+5. Open the extension popup from the toolbar icon for quick help and a link to Settings
 
 ### Supported Domains
 
@@ -93,7 +94,8 @@ action.
   the background script
 - **LWC Components** (`src/content_scripts/modules/x`): Lightning Web Components that provide the UI for the command
   palette
-- **Popup** (`src/popup.html/js`): Extension popup interface (currently a basic scaffold)
+- **Popup** (`src/popup.html/js`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme styling
+- **Options Page** (`src/options.html/js` and `src/options/modules`): Settings UI built with LWC
 - **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper
 
 ### Build & Toolchain

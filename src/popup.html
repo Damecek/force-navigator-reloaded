@@ -3,9 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <title>Popup</title>
+    <style>
+      body {
+        width: 360px;
+        padding: 10px;
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+          Arial, sans-serif;
+        background-color: #fff;
+        color: #000;
+      }
+      a {
+        color: #0060df;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1a1a1a;
+          color: #f0f0f0;
+        }
+        a {
+          color: #58a6ff;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="app"></div>
+    <h1>Force Navigator Reloaded</h1>
+    <p>
+      Open the command palette with <strong>Ctrl+Shift+L</strong> (Windows) or
+      <strong>Cmd+Shift+P</strong> (Mac). You can customize this shortcut in
+      <a href="chrome://extensions/shortcuts" target="_blank"
+        >Chrome shortcut settings</a
+      >.
+    </p>
+    <p>
+      <a id="settings-link" href="#">Settings</a>
+      |
+      <a
+        id="github-link"
+        href="https://github.com/Damecek/force-navigator-reloaded"
+        target="_blank"
+        >GitHub</a
+      >
+      |
+      <a
+        id="issues-link"
+        href="https://github.com/Damecek/force-navigator-reloaded/issues"
+        target="_blank"
+        >Report issues</a
+      >
+    </p>
+    <p>
+      Contributions are welcome! Visit the GitHub repository to file issues or
+      submit pull requests.
+    </p>
     <script src="popup.js"></script>
   </body>
 </html>
