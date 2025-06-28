@@ -22,6 +22,10 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Flow Navigation**: Quickly open Flow definitions and active/latest versions
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 
+### Fuzzy Search
+
+The command palette uses the [uFuzzy](https://github.com/leeoniya/uFuzzy) library for efficient searching.
+
 ## Installation
 
 ### From Chrome Web Store
