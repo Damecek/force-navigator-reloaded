@@ -1,0 +1,96 @@
+/* dark-mode.css */
+
+html {
+    background-color: #1a1a1a; /* Dark background */
+    color: #f5f5f5; /* Light text color */
+}
+
+/* Dark mode styles for the body and main containers */
+body {
+    background-color: #1a1a1a; /* Dark background */
+    color: #f5f5f5; /* Light text color */
+}
+
+/* Override SLDS background for elements that should adapt to dark mode */
+.slds-scope {
+    background-color: #1a1a1a;
+    color: #f5f5f5;
+}
+
+/* Dark mode for the code mirror editor */
+.editor .cm-editor {
+    background-color: #2b2b2b; /* Darker background for the editor */
+    color: #f5f5f5; /* Light text */
+    border-color: #555;
+}
+
+.editor .cm-editor .cm-gutters {
+    background-color: #2b2b2b; /* Darker background for line numbers */
+    color: #888; /* Dimmer line number color */
+}
+
+.editor .cm-editor .cm-activeLine {
+    background-color: #3a3a3a; /* Highlight active line with a slightly lighter dark */
+}
+
+.editor .cm-editor .cm-activeLineGutter {
+    background-color: #3a3a3a; /* Highlight active line gutter */
+}
+
+.editor .cm-editor .cm-scroller {
+    background-color: #2b2b2b;
+}
+
+/* Adjust button styles for dark mode if default SLDS buttons don't adapt well */
+.slds-button_brand {
+    background-color: #0070d2; /* Slightly adjusted brand color for dark mode */
+    color: #fff;
+}
+
+.slds-button_brand:hover {
+    background-color: #005fb2;
+}
+
+.slds-button_neutral {
+    background-color: #3b3b3b; /* Darker neutral button */
+    color: #f5f5f5;
+    border-color: #555;
+}
+
+.slds-button_neutral:hover {
+    background-color: #4a4a4a;
+    color: #f5f5f5;
+}
+
+/* Error text color for dark mode */
+.slds-text-color_error {
+    color: #ff5757; /* Bright red for error messages */
+}
+
+/* Adjust text colors that might be too dark on dark background */
+.slds-text-heading_large,
+.slds-text-heading_medium,
+.slds-text-heading_small {
+    color: #f5f5f5;
+}
+
+/* SLDS box styles for dark mode */
+.slds-box {
+    background-color: #2b2b2b;
+    border-color: #555;
+    color: #f5f5f5;
+}
+
+/* Specific adjustments for input fields if any were present or added later */
+.slds-input,
+.slds-textarea {
+    background-color: #3b3b3b;
+    color: #f5f5f5;
+    border-color: #555;
+}
+
+.slds-input:focus,
+.slds-textarea:focus {
+    border-color: #0070d2;
+    box-shadow: 0 0 0 1px #0070d2;
+}

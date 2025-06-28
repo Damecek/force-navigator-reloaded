@@ -83,6 +83,7 @@ module.exports = (env, argv) => {
           { from: 'src/popup/popup.html', to: 'popup.html' },
           { from: 'src/popup/popup.css', to: 'popup.css' },
           { from: 'src/options/options.html', to: 'options.html' },
+          { from: 'src/options/dark-mode.css', to: 'dark-mode.css' },
           { from: 'src/icons', to: 'icons' },
         ],
       }),
