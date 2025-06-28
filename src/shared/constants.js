@@ -26,15 +26,10 @@ export const CLIENT_ID = __CLIENT_ID__;
 export const SCOPES = 'api refresh_token';
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
 
-// todo: those should be configurable
+export const SETUP_NODE_TYPES = 'Setup Node Types';
 export const SETUP_SETUP_NODE = 'Setup';
 export const PERSONAL_SETTING_SETUP_NODE = 'PersonalSettings';
 export const SERVICE_SETUP_SETUP_NODE = 'ServiceSetup';
-export const DEFAULT_SETUP_NODE_TYPES = [
-  SETUP_SETUP_NODE,
-  PERSONAL_SETTING_SETUP_NODE,
-  // SERVICE_SETUP_SETUP_NODE,
-];
 
 export const CHANNEL_REFRESH_COMMANDS = 'refreshCommands';
 export const CHANNEL_SEND_COMMANDS = 'sendCommands';

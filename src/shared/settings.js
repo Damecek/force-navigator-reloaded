@@ -1,8 +1,9 @@
 /* global chrome */
 import {
-  SETUP_SETUP_NODE,
   PERSONAL_SETTING_SETUP_NODE,
   SERVICE_SETUP_SETUP_NODE,
+  SETUP_NODE_TYPES,
+  SETUP_SETUP_NODE,
 } from './constants.js';
 
 /**
@@ -14,7 +15,7 @@ export const SETTINGS_KEY = 'settings';
  * Default extension settings.
  */
 export const DEFAULT_SETTINGS = {
-  setupNodeTypes: {
+  [SETUP_NODE_TYPES]: {
     [SETUP_SETUP_NODE]: true,
     [PERSONAL_SETTING_SETUP_NODE]: true,
     [SERVICE_SETUP_SETUP_NODE]: false,
@@ -23,10 +24,28 @@ export const DEFAULT_SETTINGS = {
 
 function mergeSettings(partial) {
   const merged = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-  if (partial && typeof partial === 'object') {
-    if (partial.setupNodeTypes && typeof partial.setupNodeTypes === 'object') {
-      Object.assign(merged.setupNodeTypes, partial.setupNodeTypes);
+
+  function recursiveAssign(target, source) {
+    for (const key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        if (
+          source[key] &&
+          typeof source[key] === 'object' &&
+          !Array.isArray(source[key]) &&
+          target[key] &&
+          typeof target[key] === 'object' &&
+          !Array.isArray(target[key])
+        ) {
+          recursiveAssign(target[key], source[key]);
+        } else {
+          target[key] = source[key];
+        }
+      }
     }
+  }
+
+  if (partial && typeof partial === 'object') {
+    recursiveAssign(merged, partial);
   }
   return merged;
 }
@@ -62,12 +81,11 @@ export async function resetSettings() {
 }
 
 /**
- * Derive configured setup node types from settings.
- * @param {typeof DEFAULT_SETTINGS} settings
- * @returns {string[]}
+ * Get value from settings by key.
+ * @param {string} key
+ * @return {Promise<any>}
  */
-export function getSetupNodeTypesFrom(settings) {
-  return Object.entries(settings.setupNodeTypes)
-    .filter(([, enabled]) => Boolean(enabled))
-    .map(([node]) => node);
+export async function getSetting(key) {
+  const settings = await loadSettings();
+  return settings[key];
 }

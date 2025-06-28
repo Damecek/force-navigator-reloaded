@@ -1,23 +1,18 @@
 import { LightningElement, track } from 'lwc';
-import { loadSettings, saveSettings, resetSettings } from '../../../../shared';
-import { EditorView, basicSetup } from '@codemirror/basic-setup';
+import { loadSettings, resetSettings, saveSettings } from '../../../../shared';
+import { basicSetup, EditorView } from 'codemirror';
 import { json } from '@codemirror/lang-json';
 
 export default class JsonSettings extends LightningElement {
-  editor;
   view;
   @track error = '';
 
-  async connectedCallback() {
-    const settings = await loadSettings();
-    this.editorValue = JSON.stringify(settings, null, 2);
-  }
-
-  renderedCallback() {
+  async renderedCallback() {
     if (!this.view) {
+      const settings = await loadSettings();
       const parent = this.refs.editor;
       this.view = new EditorView({
-        doc: this.editorValue,
+        doc: JSON.stringify(settings, null, 2),
         extensions: [basicSetup, json()],
         parent,
       });
