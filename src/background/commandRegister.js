@@ -1,12 +1,21 @@
 import {
   buildLightningUrl,
   CacheManager,
+  COMMANDS_SETTINGS_KEY,
+  CUSTOM_METADATA_ENTITY_TYPE,
   ENTITY_CACHE_KEY,
   ENTITY_CACHE_TTL,
+  ENTITY_DEFINITION_SETTINGS_KEY,
+  FLOW_ACTIVE_VERSION_TYPE,
   FLOW_CACHE_KEY,
   FLOW_CACHE_TTL,
+  FLOW_DEFINITION_SETTINGS_KEY,
+  FLOW_DEFINITION_TYPE,
+  FLOW_LATEST_VERSION_TYPE,
+  getSetting,
   MENU_CACHE_KEY,
   MENU_CACHE_TTL,
+  SOBJECT_ENTITY_TYPE,
   toLightningHostname,
 } from '../shared';
 import { staticCommands } from './staticCommands.js';
@@ -138,9 +147,20 @@ async function getEntityCommands(hostname, connection) {
   try {
     const entities = await fetchEntityDefinitionsFromSalesforce(connection);
     const commands = [];
+    const includeCustomMetadata = await getSetting([
+      COMMANDS_SETTINGS_KEY,
+      ENTITY_DEFINITION_SETTINGS_KEY,
+      CUSTOM_METADATA_ENTITY_TYPE,
+    ]);
+    const includeSObject = await getSetting([
+      COMMANDS_SETTINGS_KEY,
+      ENTITY_DEFINITION_SETTINGS_KEY,
+      SOBJECT_ENTITY_TYPE,
+    ]);
+
     for (const e of entities) {
       const { DurableId, KeyPrefix, Label, QualifiedApiName } = e;
-      if (QualifiedApiName.endsWith('__mdt')) {
+      if (QualifiedApiName.endsWith('__mdt') && includeCustomMetadata) {
         commands.push({
           id: `custommetadata-new-${KeyPrefix}`,
           label: `Custom Metadata Types > ${Label} > New`,
@@ -151,7 +171,7 @@ async function getEntityCommands(hostname, connection) {
           label: `Custom Metadata Types > ${Label} > List`,
           path: `/lightning/setup/CustomMetadata/page?address=/${KeyPrefix}`,
         });
-      } else {
+      } else if (includeSObject) {
         commands.push({
           id: `sobject-setup-detail-${DurableId}`,
           label: `Object Manager > ${Label}`,
@@ -198,22 +218,40 @@ async function getFlowCommands(hostname, connection) {
   try {
     const flows = await fetchFlowDefinitionsFromSalesforce(connection);
     const commands = [];
+    const includeDefinition = await getSetting([
+      COMMANDS_SETTINGS_KEY,
+      FLOW_DEFINITION_SETTINGS_KEY,
+      FLOW_DEFINITION_TYPE,
+    ]);
+    const includeLatest = await getSetting([
+      COMMANDS_SETTINGS_KEY,
+      FLOW_DEFINITION_SETTINGS_KEY,
+      FLOW_LATEST_VERSION_TYPE,
+    ]);
+    const includeActive = await getSetting([
+      COMMANDS_SETTINGS_KEY,
+      FLOW_DEFINITION_SETTINGS_KEY,
+      FLOW_ACTIVE_VERSION_TYPE,
+    ]);
+
     for (const f of flows) {
       const label = f?.LatestVersion?.MasterLabel;
       if (label) {
-        commands.push({
-          id: `flow-definition-${f.Id}`,
-          label: `Flow > Definition > ${label}`,
-          path: `/lightning/setup/Flows/page?address=%2F${f.Id}`,
-        });
-        if (f.LatestVersionId) {
+        if (includeDefinition) {
+          commands.push({
+            id: `flow-definition-${f.Id}`,
+            label: `Flow > Definition > ${label}`,
+            path: `/lightning/setup/Flows/page?address=%2F${f.Id}`,
+          });
+        }
+        if (f.LatestVersionId && includeLatest) {
           commands.push({
             id: `flow-latest-${f.Id}`,
             label: `Flow > Latest Version > ${label}`,
             path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.LatestVersionId}`,
           });
         }
-        if (f.ActiveVersionId) {
+        if (f.ActiveVersionId && includeActive) {
           commands.push({
             id: `flow-active-${f.Id}`,
             label: `Flow > Active Version > ${label}`,

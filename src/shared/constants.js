@@ -27,10 +27,23 @@ export const SCOPES = 'api refresh_token';
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
 
 export const COMMANDS_SETTINGS_KEY = 'Commands';
-export const SETUP_NODE_TYPES = 'Setup Based';
+
+// Command settings for Setup Nodes
+export const SETUP_NODE_TYPES = 'SetupBased';
 export const SETUP_SETUP_NODE = 'Setup';
 export const PERSONAL_SETTING_SETUP_NODE = 'PersonalSettings';
 export const SERVICE_SETUP_SETUP_NODE = 'ServiceSetup';
+
+// Command settings for Entity Definitions
+export const ENTITY_DEFINITION_SETTINGS_KEY = 'EntityDefinition';
+export const CUSTOM_METADATA_ENTITY_TYPE = 'CustomMetadata';
+export const SOBJECT_ENTITY_TYPE = 'SObject';
+
+// Command settings for Flow Definitions
+export const FLOW_DEFINITION_SETTINGS_KEY = 'FlowDefinition';
+export const FLOW_DEFINITION_TYPE = 'Definition';
+export const FLOW_LATEST_VERSION_TYPE = 'Latest';
+export const FLOW_ACTIVE_VERSION_TYPE = 'Active';
 
 export const CHANNEL_REFRESH_COMMANDS = 'refreshCommands';
 export const CHANNEL_SEND_COMMANDS = 'sendCommands';
