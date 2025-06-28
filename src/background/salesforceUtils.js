@@ -1,5 +1,5 @@
 import { SalesforceConnection } from './salesforceConnection';
-import { getSetting, SETUP_NODE_TYPES } from '../shared';
+import { COMMANDS_SETTINGS_KEY, getSetting, SETUP_NODE_TYPES } from '../shared';
 
 /**
  * @typedef {Object} SetupNode
@@ -30,7 +30,7 @@ export async function fetchMenuNodesFromSalesforce(connection) {
  * @returns {string[]}
  */
 export function getSetupNodeTypesFrom() {
-  return Object.entries(getSetting(SETUP_NODE_TYPES))
+  return Object.entries(getSetting([COMMANDS_SETTINGS_KEY, SETUP_NODE_TYPES]))
     .filter(([, enabled]) => Boolean(enabled))
     .map(([node]) => node);
 }

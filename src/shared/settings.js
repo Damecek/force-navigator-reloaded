@@ -1,5 +1,6 @@
 /* global chrome */
 import {
+  COMMANDS_SETTINGS_KEY,
   PERSONAL_SETTING_SETUP_NODE,
   SERVICE_SETUP_SETUP_NODE,
   SETUP_NODE_TYPES,
@@ -15,10 +16,12 @@ export const SETTINGS_KEY = 'settings';
  * Default extension settings.
  */
 export const DEFAULT_SETTINGS = {
-  [SETUP_NODE_TYPES]: {
-    [SETUP_SETUP_NODE]: true,
-    [PERSONAL_SETTING_SETUP_NODE]: true,
-    [SERVICE_SETUP_SETUP_NODE]: false,
+  [COMMANDS_SETTINGS_KEY]: {
+    [SETUP_NODE_TYPES]: {
+      [SETUP_SETUP_NODE]: true,
+      [PERSONAL_SETTING_SETUP_NODE]: true,
+      [SERVICE_SETUP_SETUP_NODE]: false,
+    },
   },
 };
 
@@ -82,10 +85,15 @@ export async function resetSettings() {
 
 /**
  * Get value from settings by key.
- * @param {string} key
+ * @param {string[]} keyPath
  * @return {Promise<any>}
  */
-export async function getSetting(key) {
+export async function getSetting(keyPath) {
   const settings = await loadSettings();
-  return settings[key];
+  return keyPath.reduce((acc, key) => {
+    if (acc && Object.prototype.hasOwnProperty.call(acc, key)) {
+      return acc[key];
+    }
+    return undefined;
+  }, settings);
 }
