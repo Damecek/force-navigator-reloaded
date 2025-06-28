@@ -62,6 +62,11 @@ body {
     color: #f5f5f5;
 }
 
+.slds-button_neutral:focus {
+    background-color: #4a4a4a;
+    color: #f5f5f5;
+}
+
 /* Error text color for dark mode */
 .slds-text-color_error {
     color: #ff5757; /* Bright red for error messages */
