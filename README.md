@@ -18,8 +18,8 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Fast Navigation**: Quickly search and navigate to Salesforce records, list views, and setup pages
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
 - **Modern Architecture**: Built with [LWC OSS](https://lwc.dev/) (Lightning Web Components) for composable UI
-- **Dynamic Setup Menu Commands**: Fetches and caches Salesforce setup menu items directly from your org for quick access
-- **Flow Navigation**: Quickly open Flow definitions and active/latest versions
+- **Dynamic & Configurable Commands**: Fetches and caches Salesforce setup menu items, SObjects, and Flows directly from
+  your org, with configurable settings to tailor what appears in your command palette.
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 
 ### Fuzzy Search
