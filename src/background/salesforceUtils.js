@@ -1,5 +1,5 @@
 import { SalesforceConnection } from './salesforceConnection';
-import { SETUP_NODE_TYPES } from '../shared';
+import { COMMANDS_SETTINGS_KEY, getSetting, SETUP_NODE_TYPES } from '../shared';
 
 /**
  * @typedef {Object} SetupNode
@@ -15,13 +15,24 @@ import { SETUP_NODE_TYPES } from '../shared';
  * @returns {Promise<SetupNode[]>}
  */
 export async function fetchMenuNodesFromSalesforce(connection) {
+  const types = getSetupNodeTypesFrom();
   const result = await connection.toolingQuery(
     `SELECT FullName, NodeType, Label, Url
       FROM SetupNode
-      WHERE NodeType IN ('${SETUP_NODE_TYPES.join("','")}')`
+      WHERE NodeType IN ('${types.join("','")}')`
   );
   console.log('SetupNote query result', result);
   return result;
+}
+
+/**
+ * Derive configured setup node types from settings.
+ * @returns {string[]}
+ */
+export function getSetupNodeTypesFrom() {
+  return Object.entries(getSetting([COMMANDS_SETTINGS_KEY, SETUP_NODE_TYPES]))
+    .filter(([, enabled]) => Boolean(enabled))
+    .map(([node]) => node);
 }
 
 /**

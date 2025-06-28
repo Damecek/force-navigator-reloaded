@@ -7,6 +7,9 @@ Press Ctrl + Shift + L (or ⌘ + Shift + P on macOS) to summon the palette from 
 • Blazing-Fast Search & Navigation  
 Type the name of a SObject, list, new, or Setup item and hit Enter—no more menu-digging.
 
+• Configurable Command Sources  
+Control which types of commands (e.g., Setup menu items, SObjects, Flow versions) are fetched and displayed in your
+command palette via the extension settings.
 • Live, Dynamic Commands  
 The extension pulls object metadata and Setup menu items directly from your org and caches them for instant reuse.
 

@@ -6,6 +6,8 @@ import {
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
   isContentScriptAllowedDomain,
+  loadSettings,
+  SETTINGS_KEY,
 } from '../shared';
 import { getCommands } from './commandRegister';
 import { interactiveLogin } from './auth/auth';
@@ -60,6 +62,11 @@ function getSenderHostname(sender) {
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'update' || reason === 'install') {
     console.log('Extension installation detected, clearing cache');
+    const stored = (await chrome.storage.local.get(SETTINGS_KEY))[SETTINGS_KEY];
     await chrome.storage.local.clear();
+    if (stored) {
+      await chrome.storage.local.set({ [SETTINGS_KEY]: stored });
+    }
+    await loadSettings();
   }
 });
