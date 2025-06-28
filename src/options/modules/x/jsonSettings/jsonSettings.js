@@ -4,6 +4,7 @@ import { basicSetup, EditorView } from 'codemirror';
 import { json } from '@codemirror/lang-json';
 
 export default class JsonSettings extends LightningElement {
+  static renderMode = 'light';
   view;
   @track error = '';
 

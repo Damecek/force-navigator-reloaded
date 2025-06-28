@@ -1,8 +1,26 @@
-<template>
-  <div class="editor" lwc:dom="manual" lwc:ref="editor"></div>
-  <div class="actions">
-    <button onclick={handleSave}>Save</button>
-    <button onclick={handleReset}>Reset to Defaults</button>
-    <p class="error" if:true={error}>{error}</p>
+<template lwc:render-mode="light">
+  <div class="slds-scope slds-var-sizing_border slds-p-around_medium">
+    <div
+      class="editor slds-box"
+      lwc:ref="editor"
+      style="min-height: 300px"
+    ></div>
+    <div class="actions slds-var-m-top_small slds-grid slds-grid_align-end">
+      <p
+        class="error slds-text-color_error slds-var-m-right_small"
+        lwc:if={error}
+      >
+        {error}
+      </p>
+      <button class="slds-button slds-button_neutral" onclick={handleReset}>
+        Reset to Defaults
+      </button>
+      <button
+        class="slds-button slds-button_brand slds-var-m-left_x-small"
+        onclick={handleSave}
+      >
+        Save
+      </button>
+    </div>
   </div>
 </template>
