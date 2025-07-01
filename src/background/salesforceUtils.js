@@ -15,13 +15,12 @@ import { COMMANDS_SETTINGS_KEY, getSetting, SETUP_NODE_TYPES } from '../shared';
  * @returns {Promise<SetupNode[]>}
  */
 export async function fetchMenuNodesFromSalesforce(connection) {
-  const types = getSetupNodeTypesFrom();
-  const result = await connection.toolingQuery(
-    `SELECT FullName, NodeType, Label, Url
-      FROM SetupNode
-      WHERE NodeType IN ('${types.join("','")}')`
-  );
-  console.log('SetupNote query result', result);
+  const types = await getSetupNodeTypesFrom();
+  const soql = `SELECT FullName, NodeType, Label, Url
+    FROM SetupNode
+    WHERE NodeType IN ('${types.join("','")}')`;
+  const result = await connection.toolingQuery(soql);
+  console.log('SetupNote query:', soql, result);
   return result;
 }
 
@@ -29,10 +28,12 @@ export async function fetchMenuNodesFromSalesforce(connection) {
  * Derive configured setup node types from settings.
  * @returns {string[]}
  */
-export function getSetupNodeTypesFrom() {
-  return Object.entries(getSetting([COMMANDS_SETTINGS_KEY, SETUP_NODE_TYPES]))
-    .filter(([, enabled]) => Boolean(enabled))
-    .map(([node]) => node);
+export async function getSetupNodeTypesFrom() {
+  return Object.entries(
+    await getSetting([COMMANDS_SETTINGS_KEY, SETUP_NODE_TYPES])
+  )
+    .filter(([, val]) => Boolean(val))
+    .map(([key]) => key);
 }
 
 /**
@@ -49,12 +50,12 @@ export function getSetupNodeTypesFrom() {
  * @returns {Promise<EntityDefinition[]>}
  */
 export async function fetchEntityDefinitionsFromSalesforce(connection) {
-  const result =
-    await connection.toolingQuery(`SELECT DurableId, KeyPrefix, Label, QualifiedApiName
-    FROM EntityDefinition
-    WHERE IsCustomizable = TRUE AND IsCustomSetting = FALSE
-    ORDER BY QualifiedApiName`);
-  console.log('EntityDefinition query result', result);
+  const soql = `SELECT DurableId, KeyPrefix, Label, QualifiedApiName
+  FROM EntityDefinition
+  WHERE IsCustomizable = TRUE AND IsCustomSetting = FALSE
+  ORDER BY QualifiedApiName`;
+  const result = await connection.toolingQuery(soql);
+  console.log('EntityDefinition query:', soql, result);
   return result;
 }
 
@@ -72,9 +73,8 @@ export async function fetchEntityDefinitionsFromSalesforce(connection) {
  * @returns {Promise<FlowDefinition[]>}
  */
 export async function fetchFlowDefinitionsFromSalesforce(connection) {
-  const result = await connection.toolingQuery(
-    `SELECT ActiveVersionId, Id, LatestVersionId, LatestVersion.MasterLabel FROM FlowDefinition`
-  );
-  console.log('FlowDefinition query result', result);
+  const soql = `SELECT ActiveVersionId, Id, LatestVersionId, LatestVersion.MasterLabel FROM FlowDefinition`;
+  const result = await connection.toolingQuery(soql);
+  console.log('FlowDefinition query:', soql, result);
   return result;
 }

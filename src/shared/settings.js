@@ -66,6 +66,7 @@ function mergeSettings(partial) {
   if (partial && typeof partial === 'object') {
     recursiveAssign(merged, partial);
   }
+  console.log('Merged settings', merged);
   return merged;
 }
 
@@ -75,6 +76,7 @@ function mergeSettings(partial) {
  */
 export async function loadSettings() {
   const stored = (await chrome.storage.local.get(SETTINGS_KEY))[SETTINGS_KEY];
+  console.log('Loading settings', stored);
   const settings = mergeSettings(stored);
   await chrome.storage.local.set({ [SETTINGS_KEY]: settings });
   return settings;
@@ -86,6 +88,7 @@ export async function loadSettings() {
  * @returns {Promise<void>}
  */
 export async function saveSettings(settings) {
+  console.log('Saving settings', settings);
   const merged = mergeSettings(settings);
   await chrome.storage.local.set({ [SETTINGS_KEY]: merged });
 }
@@ -95,6 +98,7 @@ export async function saveSettings(settings) {
  * @returns {Promise<typeof DEFAULT_SETTINGS>}
  */
 export async function resetSettings() {
+  console.log('Resetting settings to defaults');
   await chrome.storage.local.remove(SETTINGS_KEY);
   return loadSettings();
 }
@@ -105,11 +109,14 @@ export async function resetSettings() {
  * @return {Promise<any>}
  */
 export async function getSetting(keyPath) {
+  console.log('Getting settings for key', keyPath);
   const settings = await loadSettings();
-  return keyPath.reduce((acc, key) => {
+  const value = keyPath.reduce((acc, key) => {
     if (acc && Object.prototype.hasOwnProperty.call(acc, key)) {
       return acc[key];
     }
     return undefined;
   }, settings);
+  console.log('Setting value for key', keyPath, value);
+  return value;
 }
