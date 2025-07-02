@@ -8,6 +8,10 @@ export default class JsonSettings extends LightningElement {
   view;
   @track error = '';
 
+  /**
+   * Initialize the CodeMirror editor once after the component renders.
+   * @returns {Promise<void>}
+   */
   async renderedCallback() {
     if (!this.view) {
       const settings = await loadSettings();
@@ -20,6 +24,11 @@ export default class JsonSettings extends LightningElement {
     }
   }
 
+  /**
+   * Persist the JSON settings entered in the editor.
+   * Displays an error message when the JSON is invalid.
+   * @returns {Promise<void>}
+   */
   async handleSave() {
     try {
       const value = this.view.state.doc.toString();
@@ -31,6 +40,10 @@ export default class JsonSettings extends LightningElement {
     }
   }
 
+  /**
+   * Reset the editor contents to the default settings.
+   * @returns {Promise<void>}
+   */
   async handleReset() {
     const settings = await resetSettings();
     this.view.dispatch({

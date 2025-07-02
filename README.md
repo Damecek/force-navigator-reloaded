@@ -15,11 +15,11 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 
 - **Command Palette**: Access a powerful command interface with keyboard shortcut (Ctrl+Shift+L on Windows or Cmd+Shift+P on Mac),
   this can be configured in the chrome shortcut settings (`chrome://extensions/shortcuts`)
-- **Fast Navigation**: Quickly search and navigate to Salesforce records, list views, and setup pages
+- **Fast Navigation**: Quickly search and navigate to Salesforce records, flows, list views, and setup pages
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
 - **Modern Architecture**: Built with [LWC OSS](https://lwc.dev/) (Lightning Web Components) for composable UI
 - **Dynamic & Configurable Commands**: Fetches and caches Salesforce setup menu items, SObjects, and Flows directly from
-  your org, with configurable settings to tailor what appears in your command palette.
+  your org. Edit the JSON settings to include or exclude specific sources and custom commands from the palette.
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 
 ### Fuzzy Search
@@ -50,7 +50,7 @@ version might occasionally lag behind the latest release.
 3. Type commands or search terms to find what you need
 4. Press Enter to execute the selected command
 5. Open the extension popup from the toolbar icon for quick help and a link to Settings
-6. Use the Settings page to edit the JSON configuration, allowing customisation of fetched Setup nodes
+6. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows, custom commands) appear in the palette
 
 ### Supported Domains
 
