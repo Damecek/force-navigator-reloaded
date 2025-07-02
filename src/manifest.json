@@ -1,7 +1,7 @@
 {
   "name": "Force Navigator Reloaded",
   "manifest_version": 3,
-  "version": "5.2.9",
+  "version": "5.2.10",
   "description": "Fast, efficient Salesforce Lightning navigation with a command palette—search and act without leaving your keyboard.",
   "background": {
     "service_worker": "background.js"
