@@ -1,4 +1,5 @@
 import Command from './Command';
+import { toLightningUrl } from '../../../../shared';
 
 /**
  * Command that navigates the page to a specified path.
@@ -21,7 +22,7 @@ export default class NavigationCommand extends Command {
    * @returns {Promise<boolean>} whether the palette should close
    */
   execute({ openInNewTab = false } = {}) {
-    const url = `${window.location.origin}${this.path}`;
+    const url = `${toLightningUrl(window.location.origin)}${this.path}`;
     if (openInNewTab) {
       window.open(url, '_blank');
     } else {

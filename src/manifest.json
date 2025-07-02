@@ -24,11 +24,7 @@
   "oauth2": {
     "scopes": ["api", "refresh_token"]
   },
-  "host_permissions": [
-    "https://*.force.com/*",
-    "https://*.salesforce-setup.com/*",
-    "https://*.my.salesforce.com/*"
-  ],
+  "host_permissions": ["https://*.my.salesforce.com/*"],
   "commands": {
     "toggle-command-palette": {
       "suggested_key": {
@@ -40,7 +36,11 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*.force.com/*", "https://*.salesforce-setup.com/*"],
+      "matches": [
+        "https://*.force.com/*",
+        "https://*.salesforce-setup.com/*",
+        "https://*.builder.salesforce-experience.com/*"
+      ],
       "js": ["content.js"]
     }
   ]

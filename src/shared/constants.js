@@ -1,6 +1,7 @@
 export const CONTENT_SCRIPTS_BASE_DOMAINS = [
   '.force.com',
   '.salesforce-setup.com',
+  '.builder.salesforce-experience.com',
 ];
 
 export const MENU_CACHE_KEY = 'menuNodes';
