@@ -50,6 +50,11 @@ new Channel(CHANNEL_INVOKE_AUTH_FLOW).subscribe(async ({ sender }) => {
   });
 });
 
+/**
+ * Safely extract the hostname from a runtime message sender.
+ * @param {chrome.runtime.MessageSender} sender
+ * @returns {string|null} Parsed hostname or null when unavailable.
+ */
 function getSenderHostname(sender) {
   try {
     return sender.tab && new URL(sender.tab.url).hostname;

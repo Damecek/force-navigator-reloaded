@@ -1,15 +1,16 @@
 Force Navigator Reloaded is a lightning-fast command palette for Salesforce Lightning.  
-Open any SObject list view, or Setup page without ever touching the mouse.
+Open any SObject list view, flow, or Setup page without ever touching the mouse.
 
 • One-Keystroke Command Palette  
 Press Ctrl + Shift + L (or ⌘ + Shift + P on macOS) to summon the palette from anywhere in Lightning.\*
 
 • Blazing-Fast Search & Navigation  
-Type the name of a SObject, list, new, or Setup item and hit Enter—no more menu-digging.
+Type the name of an SObject, flow, or Setup item and hit Enter—no more menu-digging.
 
 • Configurable Command Sources  
 Control which types of commands (e.g., Setup menu items, SObjects, Flow versions) are fetched and displayed in your
-command palette via the extension settings.
+command palette via the extension settings—simply edit the JSON configuration to fine‑tune the list.
+
 • Live, Dynamic Commands  
 The extension pulls object metadata and Setup menu items directly from your org and caches them for instant reuse.
 

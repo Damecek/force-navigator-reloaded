@@ -47,3 +47,4 @@
   - backlog.md lists planned features and development tasks. Mark completed tasks with an x once done.
 - Use JSDoc comments to document public APIs and to introduce types for parameters and return values.
 - Do not litter code with comments //.
+- Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.

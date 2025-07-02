@@ -35,6 +35,7 @@ export default class CommandItem extends LightningElement {
    * @returns {Promise<void>}
    */
   @api async select(openInNewTab = false) {
+    console.log('Executing command', this.command.id);
     const shouldClose = await this.command.execute({ openInNewTab });
     if (shouldClose !== false) {
       this.dispatchEvent(new CustomEvent('close', { bubbles: true }));
