@@ -4,6 +4,7 @@ Below are the main steps to achieve the MVP of the Command Palette for the Sales
 Mark each line with [x] when the task is completed.
 
 - [ ] Error Handling: centralized input validation and error reporting in the UI
+- [ ] performance: optimize <li> dom elements, now it is created for each command could be thousands of elements
 - [ ] Command `Login as <username>` (User Switcher)
 - [x] Add SObject-specific submenu (fields, layout, etc.)
 - [ ] Implement Lightning navigation instead of page redirection refer
