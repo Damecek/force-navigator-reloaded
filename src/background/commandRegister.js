@@ -293,12 +293,12 @@ async function getEntityCommands(hostname, connection) {
         }
         commands.push({
           id: `sobject-new-${QualifiedApiName}`,
-          label: `${Label} > New`,
+          label: `Application > ${Label} > New`,
           path: `/lightning/o/${QualifiedApiName}/new`,
         });
         commands.push({
           id: `sobject-list-${QualifiedApiName}`,
-          label: `${Label} > List View`,
+          label: `Application > ${Label} > List View`,
           path: `/lightning/o/${QualifiedApiName}/list`,
         });
       }
