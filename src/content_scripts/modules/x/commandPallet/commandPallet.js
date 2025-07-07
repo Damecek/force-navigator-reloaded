@@ -117,6 +117,10 @@ export default class CommandPallet extends LightningElement {
     }
   }
 
+  handleClose() {
+    this.dispatchEvent(new CustomEvent('close', { bubbles: true }));
+  }
+
   /**
    * Move the highlighted index by delta and scroll into view.
    * @param {number} delta

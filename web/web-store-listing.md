@@ -3,6 +3,7 @@ Open any SObject list view, flow, or Setup page without ever touching the mouse.
 
 • One-Keystroke Command Palette  
 Press Ctrl + Shift + L (or ⌘ + Shift + P on macOS) to summon the palette from anywhere in Lightning.\*
+Press Esc or the same shortcut again to close the palette when you're done.
 
 • Blazing-Fast Search & Navigation  
 Type the name of an SObject, flow, or Setup item and hit Enter—no more menu-digging.

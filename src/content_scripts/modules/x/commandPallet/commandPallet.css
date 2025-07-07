@@ -21,6 +21,7 @@
     overflow: visible;
 }
 
-.modal-container.slds-modal__content {
+.modal-container.slds-modal__container {
     max-width: 50rem;
+    padding-bottom: 20rem;
 }
