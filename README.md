@@ -46,11 +46,12 @@ version might occasionally lag behind the latest release.
 ## Usage
 
 1. Navigate to any Salesforce Lightning page
-2. Press `Ctrl+Shift+L` (or `Cmd+Shift+P` on Mac) to open the command palette
+2. Press `Ctrl+Shift+L` (or `Cmd+Shift+P` on Mac) to toggle the command palette
 3. Type commands or search terms to find what you need
 4. Press Enter to execute the selected command
-5. Open the extension popup from the toolbar icon for quick help and a link to Settings
-6. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows, custom commands) appear in the palette
+5. Press `Esc` or the same shortcut again to close the command palette
+6. Open the extension popup from the toolbar icon for quick help and a link to Settings
+7. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows, custom commands) appear in the palette
 
 ### Supported Domains
 
