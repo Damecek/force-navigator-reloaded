@@ -55,8 +55,9 @@ version might occasionally lag behind the latest release.
 
 ### Supported Domains
 
-- _.force.com_
-- _.salesforce-setup.com_
+- _\*.force.com\*_
+- _\*.salesforce-setup.com\*_
+- _\*.builder.salesforce-experience.com\*_
 
 ## Authentication & Connected Apps
 
