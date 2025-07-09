@@ -19,7 +19,11 @@ The extension pulls object metadata and Setup menu items directly from your org 
 Built with Lightning Web Components and the Salesforce Lightning Design System, so it feels like it’s part of the
 platform.
 
-• 100 % Open Source  
+• 100 % Open Source
 Browse the code, file issues, or submit pull requests on GitHub: <https://github.com/Damecek/force-navigator-reloaded>.
+
+• Enjoying Force Navigator Reloaded?
+Show your support by leaving a review on the Chrome Web Store:
+<https://chromewebstore.google.com/detail/force-navigator-reloaded/iniflnopffblekndhplennjijdcfkeak/reviews?utm_source=store>.
 
 \*You can customise the shortcut in Chrome at `chrome://extensions/shortcuts`.

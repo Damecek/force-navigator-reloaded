@@ -134,6 +134,10 @@ See [backlog.md](backlog.md) for planned features and development tasks.
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+If you enjoy using Force Navigator Reloaded, please consider leaving a
+[review on the Chrome Web Store](https://chromewebstore.google.com/detail/force-navigator-reloaded/iniflnopffblekndhplennjijdcfkeak/reviews?utm_source=github).
+Your feedback helps the project grow.
+
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
