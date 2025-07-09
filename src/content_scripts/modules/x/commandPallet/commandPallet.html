@@ -84,16 +84,20 @@
                   aria-label="Commands"
                   class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
                   role="listbox"
+                  lwc:ref="listbox"
+                  onscroll={handleScroll}
                 >
                   <ul
                     class="slds-listbox slds-listbox_vertical"
                     role="presentation"
+                    style={listStyle}
                   >
                     <template for:each={items} for:item="item">
                       <li
                         class="slds-listbox__item"
                         data-index={item.idx}
                         key={item.cmd.id}
+                        style={item.style}
                         onmouseover={handleMouseOver}
                       >
                         <x-command-item
