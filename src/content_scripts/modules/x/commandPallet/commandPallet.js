@@ -1,5 +1,6 @@
 import { api, LightningElement, track } from 'lwc';
 import uFuzzy from '@leeoniya/ufuzzy';
+import VirtualScroller from '../../virtualScroller/virtualScroller';
 
 export default class CommandPallet extends LightningElement {
   static renderMode = 'light';
@@ -18,6 +19,11 @@ export default class CommandPallet extends LightningElement {
   _didFocus = false;
   _lastSearchTerm = '';
 
+  _itemHeight = 36;
+  _scroller;
+  @track _visibleStart = 0;
+  @track _visibleEnd = 20;
+
   _commands = [];
 
   @api
@@ -29,6 +35,8 @@ export default class CommandPallet extends LightningElement {
     this._commands = Array.isArray(value) ? value : [];
     this.filteredCommands = [...this._commands];
     this.selectedIndex = 0;
+    this._visibleStart = 0;
+    this._visibleEnd = 20;
   }
 
   /**
@@ -36,11 +44,17 @@ export default class CommandPallet extends LightningElement {
    * @returns {{ cmd: any, idx: number, isSelected: boolean }[]}
    */
   get items() {
-    return this.filteredCommands.map((cmd, idx) => ({
-      cmd,
-      idx,
-      isSelected: idx === this.selectedIndex,
-    }));
+    return this.filteredCommands
+      .slice(this._visibleStart, this._visibleEnd)
+      .map((cmd, idx) => {
+        const realIdx = idx + this._visibleStart;
+        return {
+          cmd,
+          idx: realIdx,
+          style: `position:absolute;top:${realIdx * this._itemHeight}px;width:100%;`,
+          isSelected: realIdx === this.selectedIndex,
+        };
+      });
   }
 
   renderedCallback() {
@@ -49,6 +63,17 @@ export default class CommandPallet extends LightningElement {
       inp?.focus();
       this._didFocus = true;
     }
+    if (!this._scroller) {
+      const container = this.refs.listbox;
+      if (container) {
+        const firstItem = container.querySelector('li[data-index]');
+        if (firstItem) {
+          this._itemHeight = firstItem.offsetHeight || this._itemHeight;
+        }
+        this._scroller = new VirtualScroller(container, this._itemHeight, 5);
+      }
+    }
+    this._updateVisibleRange();
   }
 
   /**
@@ -141,10 +166,18 @@ export default class CommandPallet extends LightningElement {
    * @param {number} idx
    */
   _scrollIntoView(idx) {
-    const items = this.querySelectorAll('li[data-index]');
-    const el = items[idx];
-    if (el) {
-      el.scrollIntoView({ block: 'nearest' });
+    const container = this.refs.listbox;
+    if (!container) {
+      return;
+    }
+    const top = idx * this._itemHeight;
+    const bottom = top + this._itemHeight;
+    const viewTop = container.scrollTop;
+    const viewBottom = viewTop + container.clientHeight;
+    if (top < viewTop) {
+      container.scrollTop = top;
+    } else if (bottom > viewBottom) {
+      container.scrollTop = bottom - container.clientHeight;
     }
   }
 
@@ -172,5 +205,25 @@ export default class CommandPallet extends LightningElement {
     if (!isNaN(idx)) {
       this.selectedIndex = idx;
     }
+  }
+
+  handleScroll() {
+    this._updateVisibleRange();
+  }
+
+  _updateVisibleRange() {
+    if (!this._scroller) {
+      return;
+    }
+    const [start, end] = this._scroller.getVisibleRange(
+      this.filteredCommands.length
+    );
+    this._visibleStart = start;
+    this._visibleEnd = end;
+  }
+
+  get listStyle() {
+    const height = this.filteredCommands.length * this._itemHeight;
+    return `height:${height}px;position:relative;`;
   }
 }
