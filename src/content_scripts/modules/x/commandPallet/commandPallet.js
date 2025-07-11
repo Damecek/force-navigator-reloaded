@@ -70,7 +70,7 @@ export default class CommandPallet extends LightningElement {
         if (firstItem) {
           this._itemHeight = firstItem.offsetHeight || this._itemHeight;
         }
-        this._scroller = new VirtualScroller(container, this._itemHeight, 5);
+        this._scroller = new VirtualScroller(container, this._itemHeight, 10);
       }
     }
     this._updateVisibleRange();
