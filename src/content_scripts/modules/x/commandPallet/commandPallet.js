@@ -5,7 +5,6 @@ import VirtualScroller from '../../virtualScroller/virtualScroller';
 export default class CommandPallet extends LightningElement {
   static renderMode = 'light';
 
-  searchTerm = '';
   /**
    * Fuzzy search engine instance
    */
