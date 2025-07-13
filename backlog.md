@@ -10,7 +10,7 @@ Mark each line with [x] when the task is completed.
 - [ ] Implement Lightning navigation instead of page redirection refer
       to https://github.com/tprouvot/Salesforce-Inspector-reloaded/blob/main/addon/inject.js
 - [ ] Implement record search using `?` prefix
-- [ ] implement command usage prioritization or better sorting based on usage
+- [x] implement command usage prioritization or better sorting based on usage
   > could be implemented encoding following json in base64 and prefixing with `one/one.app#<base64>`
 
 ```json

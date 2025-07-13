@@ -21,6 +21,8 @@ export const COMMAND_CACHE_KEYS = [
   FLOW_CACHE_KEY,
 ];
 
+export const COMMAND_USAGE_KEY = 'commandUsage';
+
 /**
  * OAuth2 consumer key injected at build time.
  * @type {string}

@@ -1,6 +1,8 @@
 /**
  * Abstract base class for commands in the command palette.
  */
+import { UsageTracker } from '../../../../shared';
+
 export default class Command {
   /**
    * @param {string} id - Unique identifier for the command.
@@ -10,6 +12,14 @@ export default class Command {
     this.id = id;
     this.label = label;
     this.hostname = window.location.hostname;
+    this.usage = 0;
+    UsageTracker.instance.getUsage(this.id).then((u) => {
+      this.usage = u;
+    });
+  }
+
+  async incrementUsage() {
+    this.usage = await UsageTracker.instance.incrementUsage(this.id);
   }
 
   /**

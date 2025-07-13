@@ -22,6 +22,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
   your org. Edit the JSON settings to include or exclude specific sources and custom commands from the palette.
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 - **Virtual Scrolling**: Only visible commands are rendered, keeping performance high even with thousands of commands
+- **Usage-based Sorting**: Frequently executed commands appear higher in search results
 
 ### Fuzzy Search
 

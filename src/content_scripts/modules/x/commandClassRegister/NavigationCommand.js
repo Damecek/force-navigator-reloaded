@@ -21,13 +21,14 @@ export default class NavigationCommand extends Command {
    * @param {boolean} [options.openInNewTab] - If true, opens in a new tab.
    * @returns {Promise<boolean>} whether the palette should close
    */
-  execute({ openInNewTab = false } = {}) {
+  async execute({ openInNewTab = false } = {}) {
+    await this.incrementUsage();
     const url = `${toLightningUrl(this.hostname)}${this.path}`;
     if (openInNewTab) {
       window.open(url, '_blank');
     } else {
       window.location.href = url;
     }
-    return Promise.resolve(true);
+    return true;
   }
 }

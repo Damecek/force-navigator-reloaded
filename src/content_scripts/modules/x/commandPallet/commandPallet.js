@@ -32,10 +32,15 @@ export default class CommandPallet extends LightningElement {
 
   set commands(value) {
     this._commands = Array.isArray(value) ? value : [];
-    this.filteredCommands = [...this._commands];
+    this.filteredCommands = [...this._commands].sort(this.usageSort);
+    console.log('CommandPallet commands set:', this.filteredCommands);
     this.selectedIndex = 0;
     this._visibleStart = 0;
     this._visibleEnd = 20;
+  }
+
+  usageSort(a, b) {
+    return (b.usage || 0) - (a.usage || 0);
   }
 
   /**
@@ -114,6 +119,7 @@ export default class CommandPallet extends LightningElement {
     } else {
       this.filteredCommands = [...this.commands];
     }
+    this.filteredCommands.sort(this.usageSort);
     this.selectedIndex = 0;
     this._lastSearchTerm = searchTerm;
   }
