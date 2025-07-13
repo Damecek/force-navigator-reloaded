@@ -6,14 +6,14 @@
  */
 export default class CacheManager {
   /**
-   * @param {string} domain
+   * @param {string} scope
    */
-  constructor(domain) {
-    this.domain = domain;
+  constructor(scope) {
+    this.scope = scope;
   }
 
   getDomainKey(key) {
-    return `${this.domain}_${key}`;
+    return `${this.scope}_${key}`;
   }
 
   /**
