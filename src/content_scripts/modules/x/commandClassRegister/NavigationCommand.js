@@ -22,7 +22,7 @@ export default class NavigationCommand extends Command {
    * @returns {Promise<boolean>} whether the palette should close
    */
   execute({ openInNewTab = false } = {}) {
-    const url = `${toLightningUrl(window.location.origin)}${this.path}`;
+    const url = `${toLightningUrl(this.hostname)}${this.path}`;
     if (openInNewTab) {
       window.open(url, '_blank');
     } else {
