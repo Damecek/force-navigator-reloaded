@@ -4,6 +4,8 @@ export const CONTENT_SCRIPTS_BASE_DOMAINS = [
   '.builder.salesforce-experience.com',
 ];
 
+export const GLOBAL_CACHE_SCOPE = 'global';
+
 export const MENU_CACHE_KEY = 'menuNodes';
 export const MENU_CACHE_TTL = 3600 * 1000 * 24; // 12 hour
 

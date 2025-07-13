@@ -7,6 +7,7 @@ import {
   FLOW_DEFINITION_SETTINGS_KEY,
   FLOW_DEFINITION_TYPE,
   FLOW_LATEST_VERSION_TYPE,
+  GLOBAL_CACHE_SCOPE,
   PERSONAL_SETTING_SETUP_NODE,
   SERVICE_SETUP_SETUP_NODE,
   SETUP_NODE_TYPES,
@@ -27,6 +28,7 @@ import {
   SOBJECT_SEARCH_LAYOUTS_ENTITY_TYPE,
   SOBJECT_VALIDATION_RULES_ENTITY_TYPE,
 } from './constants.js';
+import { CacheManager } from './index';
 
 /**
  * Key used for persisting settings in chrome.storage.
@@ -104,10 +106,10 @@ function mergeSettings(partial) {
  * @returns {Promise<typeof DEFAULT_SETTINGS>}
  */
 export async function loadSettings() {
-  const stored = (await chrome.storage.local.get(SETTINGS_KEY))[SETTINGS_KEY];
+  const stored = await new CacheManager(GLOBAL_CACHE_SCOPE).get(SETTINGS_KEY);
   console.log('Loading settings', stored);
   const settings = mergeSettings(stored);
-  await chrome.storage.local.set({ [SETTINGS_KEY]: settings });
+  await new CacheManager(GLOBAL_CACHE_SCOPE).set(SETTINGS_KEY, settings);
   return settings;
 }
 
@@ -119,7 +121,7 @@ export async function loadSettings() {
 export async function saveSettings(settings) {
   console.log('Saving settings', settings);
   const merged = mergeSettings(settings);
-  await chrome.storage.local.set({ [SETTINGS_KEY]: merged });
+  return new CacheManager(GLOBAL_CACHE_SCOPE).set(SETTINGS_KEY, merged);
 }
 
 /**
@@ -128,7 +130,7 @@ export async function saveSettings(settings) {
  */
 export async function resetSettings() {
   console.log('Resetting settings to defaults');
-  await chrome.storage.local.remove(SETTINGS_KEY);
+  await new CacheManager(GLOBAL_CACHE_SCOPE).clear(SETTINGS_KEY);
   return loadSettings();
 }
 
