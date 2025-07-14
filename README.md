@@ -13,7 +13,8 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 
 ## Features
 
-- **Command Palette**: Access a powerful command interface with keyboard shortcut (Ctrl+Shift+L on Windows or Cmd+Shift+P on Mac),
+- **Command Palette**: Access a powerful command interface with keyboard shortcut (`Ctrl+Shift+L` on Windows or
+  `Cmd+Shift+P` on Mac),
   this can be configured in the chrome shortcut settings (`chrome://extensions/shortcuts`)
 - **Fast Navigation**: Quickly search and navigate to Salesforce records, flows, list views, and setup pages
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
