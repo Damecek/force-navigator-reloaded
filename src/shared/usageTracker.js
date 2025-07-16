@@ -2,6 +2,7 @@ import CacheManager from './cacheManager.js';
 import { COMMAND_USAGE_KEY, GLOBAL_CACHE_SCOPE } from './constants.js';
 
 export default class UsageTracker {
+  static _tracker = null;
   _usageMap = null;
 
   constructor() {
@@ -9,7 +10,7 @@ export default class UsageTracker {
     this.cache = new CacheManager(GLOBAL_CACHE_SCOPE);
   }
 
-  static get instance() {
+  static async instance() {
     if (!this._tracker) {
       this._tracker = new UsageTracker();
     }

@@ -7,19 +7,22 @@ export default class Command {
   /**
    * @param {string} id - Unique identifier for the command.
    * @param {string} label - Display text for the command.
+   * @param {number} [defaultUsage=0] - Initial usage count (default is 0).
    */
-  constructor(id, label) {
+  constructor(id, label, defaultUsage = 0) {
     this.id = id;
     this.label = label;
     this.hostname = window.location.hostname;
-    this.usage = 0;
-    UsageTracker.instance.getUsage(this.id).then((u) => {
-      this.usage = u;
-    });
+    this.usage = defaultUsage;
+    UsageTracker.instance()
+      .then((i) => i.getUsage(this.id))
+      .then((u) => {
+        this.usage = u;
+      });
   }
 
   async incrementUsage() {
-    this.usage = await UsageTracker.instance.incrementUsage(this.id);
+    return (await UsageTracker.instance()).incrementUsage(this.id);
   }
 
   /**
