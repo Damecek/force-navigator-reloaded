@@ -9,16 +9,19 @@ export default class Command {
    * @param {string} label - Display text for the command.
    * @param {number} [defaultUsage=0] - Initial usage count (default is 0).
    */
-  constructor(id, label, defaultUsage = 0) {
+  constructor(id, label, defaultUsage) {
     this.id = id;
     this.label = label;
     this.hostname = window.location.hostname;
-    this.usage = defaultUsage;
-    UsageTracker.instance()
-      .then((i) => i.getUsage(this.id))
-      .then((u) => {
-        this.usage = u;
-      });
+    if (defaultUsage) {
+      this.usage = defaultUsage;
+    } else {
+      UsageTracker.instance()
+        .then((i) => i.getUsage(this.id))
+        .then((u) => {
+          this.usage = u;
+        });
+    }
   }
 
   async incrementUsage() {
