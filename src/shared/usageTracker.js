@@ -37,4 +37,10 @@ export default class UsageTracker {
     await this.cache.set(COMMAND_USAGE_KEY, map);
     return count;
   }
+
+  resetUsage() {
+    console.log('Resetting command usage map');
+    this._usageMap = null;
+    return this.cache.clear(COMMAND_USAGE_KEY);
+  }
 }

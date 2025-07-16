@@ -65,9 +65,11 @@ export async function getCommands(hostname) {
     ...(await getFlowCommands(instanceHostname, connection)),
   ];
   const RefreshCommandListCommand = [{}];
+  const ResetCommandListUsageTracking = [{}];
   return {
     NavigationCommand,
     RefreshCommandListCommand,
+    ResetCommandListUsageTracking,
   };
 }
 
