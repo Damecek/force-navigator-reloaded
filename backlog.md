@@ -42,3 +42,6 @@ Mark each line with [x] when the task is completed.
       command list load
 - [ ] [internationalize](https://developer.chrome.com/docs/extensions/reference/api/i18n#concepts_and_usage) the
       extension
+- [ ] visualize the user running process, e.g. on command refresh, either spinner or toast or some other indication that
+      task started and finished
+-
