@@ -16,7 +16,7 @@ export default class RefreshCommandListCommand extends Command {
    * Initializes the refresh command with default id and label.
    */
   constructor() {
-    super('RefreshCommandListCommand', 'Refresh Command List');
+    super('RefreshCommandListCommand', 'Extension > Refresh Command List', 1);
   }
 
   /**
