@@ -222,6 +222,23 @@ export default class CommandPallet extends LightningElement {
     this._visibleEnd = end;
   }
 
+  /**
+   * Returns true if the input element currently has focus.
+   * @returns {boolean}
+   */
+  isInputFocused() {
+    return this.refs.input === document.activeElement;
+  }
+
+  /**
+   * Focus the search input element.
+   */
+  focusInput() {
+    const inp = this.refs.input;
+    inp?.focus();
+    this._didFocus = true;
+  }
+
   get listStyle() {
     const height = this.filteredCommands.length * this._itemHeight;
     return `height:${height}px;position:relative;`;

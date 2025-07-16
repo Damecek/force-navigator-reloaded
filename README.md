@@ -51,6 +51,7 @@ version might occasionally lag behind the latest release.
 3. Type commands or search terms to find what you need
 4. Press Enter to execute the selected command
 5. Press `Esc` or the same shortcut again to close the command palette
+   - When the palette is open but the input is not focused, pressing the shortcut refocuses the input instead of closing.
 6. Open the extension popup from the toolbar icon for quick help and a link to Settings
 7. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows, custom commands) appear in the palette
 
