@@ -2,6 +2,7 @@ import {
   Channel,
   CHANNEL_COMPLETED_AUTH_FLOW,
   CHANNEL_INVOKE_AUTH_FLOW,
+  CHANNEL_OPEN_OPTIONS,
   CHANNEL_REFRESH_COMMANDS,
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
@@ -48,6 +49,14 @@ new Channel(CHANNEL_INVOKE_AUTH_FLOW).subscribe(async ({ sender }) => {
   return new Channel(CHANNEL_COMPLETED_AUTH_FLOW).publish({
     tabId: sender.tab.id,
   });
+});
+
+new Channel(CHANNEL_OPEN_OPTIONS).subscribe(() => {
+  if (chrome.runtime.openOptionsPage) {
+    return chrome.runtime.openOptionsPage();
+  } else {
+    return console.warn('openOptionsPage is not supported');
+  }
 });
 
 /**

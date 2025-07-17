@@ -70,4 +70,5 @@ export const CHANNEL_REFRESH_COMMANDS = 'refreshCommands';
 export const CHANNEL_SEND_COMMANDS = 'sendCommands';
 export const CHANNEL_INVOKE_AUTH_FLOW = 'invokeAuthFlow';
 export const CHANNEL_COMPLETED_AUTH_FLOW = 'completedAuthFlow';
+export const CHANNEL_OPEN_OPTIONS = 'openOptions';
 export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';
