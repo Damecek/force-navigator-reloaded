@@ -48,9 +48,11 @@ import { SalesforceConnection } from './salesforceConnection';
  */
 export async function getCommands(hostname) {
   const token = await ensureToken(hostname);
+  const ExtensionOptionsCommand = [{}];
   if (!token) {
     return {
       AuthorizeExtensionCommand: [{}],
+      ExtensionOptionsCommand,
     };
   }
   const instanceHostname = toLightningHostname(hostname);
@@ -65,9 +67,12 @@ export async function getCommands(hostname) {
     ...(await getFlowCommands(instanceHostname, connection)),
   ];
   const RefreshCommandListCommand = [{}];
+  const ResetCommandListUsageTracking = [{}];
   return {
     NavigationCommand,
     RefreshCommandListCommand,
+    ResetCommandListUsageTracking,
+    ExtensionOptionsCommand,
   };
 }
 

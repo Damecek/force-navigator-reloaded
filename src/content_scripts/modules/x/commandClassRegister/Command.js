@@ -1,15 +1,31 @@
 /**
  * Abstract base class for commands in the command palette.
  */
+import { UsageTracker } from '../../../../shared';
+
 export default class Command {
   /**
    * @param {string} id - Unique identifier for the command.
    * @param {string} label - Display text for the command.
+   * @param {number} [defaultUsage=0] - Initial usage count (default is 0).
    */
-  constructor(id, label) {
+  constructor(id, label, defaultUsage) {
     this.id = id;
     this.label = label;
     this.hostname = window.location.hostname;
+    if (defaultUsage) {
+      this.usage = defaultUsage;
+    } else {
+      UsageTracker.instance()
+        .then((i) => i.getUsage(this.id))
+        .then((u) => {
+          this.usage = u;
+        });
+    }
+  }
+
+  async incrementUsage() {
+    return (await UsageTracker.instance()).incrementUsage(this.id);
   }
 
   /**

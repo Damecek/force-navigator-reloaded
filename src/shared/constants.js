@@ -4,6 +4,8 @@ export const CONTENT_SCRIPTS_BASE_DOMAINS = [
   '.builder.salesforce-experience.com',
 ];
 
+export const GLOBAL_CACHE_SCOPE = 'global';
+
 export const MENU_CACHE_KEY = 'menuNodes';
 export const MENU_CACHE_TTL = 3600 * 1000 * 24; // 12 hour
 
@@ -18,6 +20,8 @@ export const COMMAND_CACHE_KEYS = [
   ENTITY_CACHE_KEY,
   FLOW_CACHE_KEY,
 ];
+
+export const COMMAND_USAGE_KEY = 'commandUsage';
 
 /**
  * OAuth2 consumer key injected at build time.
@@ -66,4 +70,5 @@ export const CHANNEL_REFRESH_COMMANDS = 'refreshCommands';
 export const CHANNEL_SEND_COMMANDS = 'sendCommands';
 export const CHANNEL_INVOKE_AUTH_FLOW = 'invokeAuthFlow';
 export const CHANNEL_COMPLETED_AUTH_FLOW = 'completedAuthFlow';
+export const CHANNEL_OPEN_OPTIONS = 'openOptions';
 export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';

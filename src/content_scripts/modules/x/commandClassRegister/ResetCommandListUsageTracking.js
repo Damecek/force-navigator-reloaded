@@ -1,22 +1,23 @@
 import Command from './Command';
 import {
-  CacheManager,
   Channel,
   CHANNEL_REFRESH_COMMANDS,
-  COMMAND_CACHE_KEYS,
-  toLightningHostname,
+  UsageTracker,
 } from '../../../../shared';
 
 /**
- * Command to refresh the list of dynamic commands in the command palette.
- * Clears cached setup nodes and triggers a reload in the content script.
+ * Command to reset command list usage tracking.
  */
-export default class RefreshCommandListCommand extends Command {
+export default class ResetCommandListUsageTracking extends Command {
   /**
    * Initializes the refresh command with default id and label.
    */
   constructor() {
-    super('RefreshCommandListCommand', 'Extension > Refresh Command List', 1);
+    super(
+      'ResetCommandListUsageTracking',
+      'Extension > Reset Command List Usage Tracking',
+      1
+    );
   }
 
   /**
@@ -26,8 +27,7 @@ export default class RefreshCommandListCommand extends Command {
    */
   async execute(options) {
     console.log('RefreshCommandListCommand.execute');
-    const cache = new CacheManager(toLightningHostname(this.hostname));
-    await COMMAND_CACHE_KEYS.forEach((key) => cache.clear(key));
+    await (await UsageTracker.instance()).resetUsage();
     await new Channel(CHANNEL_REFRESH_COMMANDS).publish();
     return false;
   }

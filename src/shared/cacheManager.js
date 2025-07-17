@@ -6,14 +6,14 @@
  */
 export default class CacheManager {
   /**
-   * @param {string} domain
+   * @param {string} scope
    */
-  constructor(domain) {
-    this.domain = domain;
+  constructor(scope) {
+    this.scope = scope;
   }
 
-  getDomainKey(key) {
-    return `${this.domain}_${key}`;
+  _getDomainKey(key) {
+    return `${this.scope}_${key}`;
   }
 
   /**
@@ -22,7 +22,7 @@ export default class CacheManager {
    * @returns {Promise<any|null>}
    */
   async get(key) {
-    const cacheKey = [this.getDomainKey(key)];
+    const cacheKey = [this._getDomainKey(key)];
     const entry = (await chrome.storage.local.get(cacheKey))[cacheKey];
     console.log('Cached', cacheKey, entry);
     if (!entry || !('value' in entry)) {
@@ -52,7 +52,7 @@ export default class CacheManager {
       entry.timestamp = Date.now() + ttl;
     }
 
-    const cacheRecord = { [this.getDomainKey(key)]: entry };
+    const cacheRecord = { [this._getDomainKey(key)]: entry };
     console.log('Caching', cacheRecord);
     return chrome.storage.local.set(cacheRecord);
   }
@@ -63,7 +63,7 @@ export default class CacheManager {
    * @returns {Promise<void>}
    */
   async clear(key) {
-    const cacheKey = this.getDomainKey(key);
+    const cacheKey = this._getDomainKey(key);
     console.log('Clearing', cacheKey);
     return chrome.storage.local.remove([cacheKey]);
   }
