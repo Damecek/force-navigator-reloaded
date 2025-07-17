@@ -8,20 +8,19 @@
     z-index: 10000;
 }
 
-.slds-modal__content {
+x-command-pallet .slds-modal__content {
     overflow: visible;
 }
 
-
-.slds-modal {
+x-command-pallet .slds-modal {
     z-index: 9060;
 }
 
-.slds-scope .slds-modal__content {
+x-command-pallet .slds-scope .slds-modal__content {
     overflow: visible;
 }
 
-.modal-container.slds-modal__container {
+x-command-pallet .modal-container.slds-modal__container {
     max-width: 50rem;
     padding-bottom: 20rem;
 }
