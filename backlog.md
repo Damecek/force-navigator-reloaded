@@ -44,4 +44,13 @@ Mark each line with [x] when the task is completed.
       extension
 - [ ] visualize the user running process, e.g. on command refresh, either spinner or toast or some other indication that
       task started and finished
--
+- [ ] improve error handling when connection have expired token. implement client class which will create connection and
+      expose command creator methods, on 401, it will call ensure token
+
+> CommandRegister: failed to fetch flow commands for carvago--devas.sandbox.lightning.force.com Error: Salesforce GET
+>
+> /tooling/query/?q=SELECT%20ActiveVersionId%2C%20Id%2C%20LatestVersionId%2C%20LatestVersion.MasterLabel%20FROM%20FlowDefinition →
+> 401: [{"message":"This session is not valid for use with the REST API","errorCode":"INVALID_SESSION_ID"}]
+
+- [ ] fix navigation to events **r and other sobjects which cannot be opened in Lightning
+      lightning/o/et4ae5**JB_Flow_Event\_\_e/list
