@@ -37,24 +37,24 @@ export default class CacheManager {
   }
 
   /**
-   * Store a value under key. If ttl is provided, the entry will expire after ttl
-   * milliseconds. If omitted (undefined/null) the entry never expires.
-   *
-   * @param {string} key
-   * @param {any} value
-   * @param {number} [ttl] Time-to-live in ms (optional)
+   * @typedef {Object} SetOptions
+   * @property {number} [ttl] - Time to live in milliseconds. If provided, the entry will expire after this time.
+   * @property {boolean} [preserve] - If true, the entry will not be cleared on storage cleanup. Defaults to false.
+   */
+
+  /**
+   * Clear all cached entries in chrome.storage.local except those marked as `preserve`.
    * @returns {Promise<void>}
    */
-  async set(key, value, { ttl } = {}) {
-    const entry = { value };
-
-    if (typeof ttl === 'number' && ttl > 0) {
-      entry.timestamp = Date.now() + ttl;
+  static async clearAll() {
+    console.log('Clearing all cache entries');
+    const items = await chrome.storage.local.get();
+    const toRemove = Object.keys(items).filter((key) => !items[key].preserve);
+    if (toRemove.length > 0) {
+      console.log('Removing non-preserved cache entries:', toRemove);
+      return chrome.storage.local.remove(toRemove);
     }
-
-    const cacheRecord = { [this._getDomainKey(key)]: entry };
-    console.log('Caching', cacheRecord);
-    return chrome.storage.local.set(cacheRecord);
+    console.log('No non-preserved cache entries to remove');
   }
 
   /**
@@ -66,5 +66,27 @@ export default class CacheManager {
     const cacheKey = this._getDomainKey(key);
     console.log('Clearing', cacheKey);
     return chrome.storage.local.remove([cacheKey]);
+  }
+
+  /**
+   * Store a value under key. If ttl is provided, the entry will expire after ttl
+   * milliseconds. If omitted (undefined/null) the entry never expires.
+   *
+   * @param {string} key
+   * @param {any} value
+   * @param {SetOptions} [options] - Options for setting the cache entry.
+   * @returns {Promise<void>}
+   */
+  async set(key, value, { ttl, preserve } = {}) {
+    const entry = { value, preserve: !!preserve };
+
+    if (typeof ttl === 'number' && ttl > 0) {
+      entry.timestamp = Date.now() + ttl;
+    }
+
+    const domainKey = this._getDomainKey(key);
+    const cacheRecord = { [domainKey]: entry };
+    console.log('Caching', domainKey, entry);
+    return chrome.storage.local.set(cacheRecord);
   }
 }

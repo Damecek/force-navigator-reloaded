@@ -114,5 +114,5 @@ export async function ensureToken(hostname) {
 function storeToken(token) {
   token.issued_at = Date.now();
   const cache = new CacheManager(toLightningHostname(token.instance_url));
-  return cache.set(SF_TOKEN_CACHE_KEY, token);
+  return cache.set(SF_TOKEN_CACHE_KEY, token, { preserve: true });
 }

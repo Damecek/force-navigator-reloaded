@@ -108,20 +108,21 @@ function mergeSettings(partial) {
 export async function loadSettings() {
   const stored = await new CacheManager(GLOBAL_CACHE_SCOPE).get(SETTINGS_KEY);
   console.log('Loading settings', stored);
-  const settings = mergeSettings(stored);
-  await new CacheManager(GLOBAL_CACHE_SCOPE).set(SETTINGS_KEY, settings);
-  return settings;
+  return await saveSettings(stored);
 }
 
 /**
  * Save provided settings to storage.
  * @param {typeof DEFAULT_SETTINGS} settings
- * @returns {Promise<void>}
+ * @return {Promise<typeof DEFAULT_SETTINGS>}
  */
 export async function saveSettings(settings) {
   console.log('Saving settings', settings);
   const merged = mergeSettings(settings);
-  return new CacheManager(GLOBAL_CACHE_SCOPE).set(SETTINGS_KEY, merged);
+  await new CacheManager(GLOBAL_CACHE_SCOPE).set(SETTINGS_KEY, merged, {
+    preserve: true,
+  });
+  return merged;
 }
 
 /**
