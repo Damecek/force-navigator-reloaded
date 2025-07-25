@@ -24,7 +24,7 @@ export default class CacheManager {
   async get(key) {
     const cacheKey = [this._getDomainKey(key)];
     const entry = (await chrome.storage.local.get(cacheKey))[cacheKey];
-    console.log('Cached', cacheKey, entry);
+    console.log('Cached', ...cacheKey, entry);
     if (!entry || !('value' in entry)) {
       return null;
     }
