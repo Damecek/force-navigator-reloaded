@@ -45,7 +45,7 @@ export default class CacheManager {
    * @param {number} [ttl] Time-to-live in ms (optional)
    * @returns {Promise<void>}
    */
-  async set(key, value, ttl) {
+  async set(key, value, { ttl } = {}) {
     const entry = { value };
 
     if (typeof ttl === 'number' && ttl > 0) {

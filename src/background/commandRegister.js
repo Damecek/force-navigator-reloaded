@@ -139,7 +139,7 @@ async function getSetupCommands(hostname, connection) {
     ];
     console.log('Setup Commands', dedupedCommands.length, dedupedCommands);
     if (dedupedCommands.length > 0) {
-      await cache.set(MENU_CACHE_KEY, dedupedCommands, MENU_CACHE_TTL);
+      await cache.set(MENU_CACHE_KEY, dedupedCommands, { ttl: MENU_CACHE_TTL });
     }
     return dedupedCommands;
   } catch (err) {
@@ -310,7 +310,7 @@ async function getEntityCommands(hostname, connection) {
     }
     console.log('Entity Commands', commands.length, commands);
     if (commands.length > 0) {
-      await cache.set(ENTITY_CACHE_KEY, commands, ENTITY_CACHE_TTL);
+      await cache.set(ENTITY_CACHE_KEY, commands, { ttl: ENTITY_CACHE_TTL });
     }
     return commands;
   } catch (err) {
@@ -381,7 +381,7 @@ async function getFlowCommands(hostname, connection) {
     }
     console.log('Flow Commands', commands.length, commands);
     if (commands.length > 0) {
-      await cache.set(FLOW_CACHE_KEY, commands, FLOW_CACHE_TTL);
+      await cache.set(FLOW_CACHE_KEY, commands, { ttl: FLOW_CACHE_TTL });
     }
     return commands;
   } catch (err) {
