@@ -84,12 +84,12 @@ export async function ensureToken(hostname) {
   if (!cachedToken) {
     return null;
   }
-  const refreshTime = 3600 * 1000 * 2;
-  const grace = 60 * 1000 * 20;
-  // refresh 20 minute before expiry
+  const refreshTime = 3600 * 1000 * 24; // defined in Force_Navigator_Reloaded_xxx.connectedApp-meta.xml
+  const grace = 3600 * 1000 * 4; // 4 hours grace period
   if (Date.now() - cachedToken.issued_at < refreshTime - grace) {
     return cachedToken;
   }
+  console.log('Token expired, refreshing...');
   const tokenEndpoint = `${cachedToken.instance_url.replace(/\/+$/, '')}/services/oauth2/token`;
   const params = new URLSearchParams({
     grant_type: 'refresh_token',
@@ -102,6 +102,7 @@ export async function ensureToken(hostname) {
     body: params.toString(),
   });
   if (!resp.ok) {
+    console.log('Token refresh failed.', await resp.text());
     await cache.clear(SF_TOKEN_CACHE_KEY);
     return null;
   }

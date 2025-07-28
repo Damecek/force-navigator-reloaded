@@ -28,4 +28,7 @@
         <isTokenExchangeFlowEnabled>false</isTokenExchangeFlowEnabled>
         <refreshTokenPolicy>infinite</refreshTokenPolicy>
     </oauthPolicy>
+    <sessionPolicy>
+        <sessionTimeout>1440</sessionTimeout>
+    </sessionPolicy>
 </ConnectedApp>
