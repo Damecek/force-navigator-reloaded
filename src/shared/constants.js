@@ -1,7 +1,12 @@
-export const CONTENT_SCRIPTS_BASE_DOMAINS = [
+export const CONTENT_SCRIPT_ENABLED_BASE_DOMAINS = [
   '.force.com',
   '.salesforce-setup.com',
   '.builder.salesforce-experience.com',
+];
+
+export const CONTENT_SCRIPT_DISABLED_BASE_DOMAINS = [
+  '--c.sandbox.vf.force.com',
+  '--c.vf.force.com',
 ];
 
 export const GLOBAL_CACHE_SCOPE = 'global';

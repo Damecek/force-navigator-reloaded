@@ -1,5 +1,6 @@
 import {
-  CONTENT_SCRIPTS_BASE_DOMAINS,
+  CONTENT_SCRIPT_DISABLED_BASE_DOMAINS,
+  CONTENT_SCRIPT_ENABLED_BASE_DOMAINS,
   PERSONAL_SETTING_SETUP_NODE,
   SERVICE_SETUP_SETUP_NODE,
   SETUP_SETUP_NODE,
@@ -118,13 +119,20 @@ export function buildLightningUrl(fullName, nodeType) {
  * @returns {boolean} True if the hostname matches an allowed base domain.
  */
 export function isContentScriptAllowedDomain(urlString) {
-  return isEnabledDomain(urlString, CONTENT_SCRIPTS_BASE_DOMAINS);
+  return isEnabledDomain(
+    urlString,
+    CONTENT_SCRIPT_ENABLED_BASE_DOMAINS,
+    CONTENT_SCRIPT_DISABLED_BASE_DOMAINS
+  );
 }
 
-function isEnabledDomain(urlString, enabledDomains) {
+function isEnabledDomain(urlString, enabledDomains, disabledDomains) {
   try {
     const hostname = new URL(urlString).hostname;
-    return enabledDomains.some((domain) => hostname.endsWith(domain));
+    return enabledDomains.some(
+      (domain) =>
+        hostname.endsWith(domain) && !hostname.endsWith(disabledDomains)
+    );
   } catch {
     return false;
   }
