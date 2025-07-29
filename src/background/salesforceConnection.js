@@ -1,3 +1,5 @@
+import { interactiveLogin } from './auth/auth';
+
 export class SalesforceConnection {
   /**
    * @param {object} opts
@@ -5,9 +7,14 @@ export class SalesforceConnection {
    * @param {string} opts.accessToken   sid / OAuth bearer
    * @param {string} [opts.version='60.0']
    */
-  constructor({ instanceUrl, accessToken, version = '60.0' }) {
+  constructor({ instanceUrl, accessToken, version = '62.0' }) {
     this.base = `${instanceUrl.replace(/\/$/, '')}/services/data/v${version}`;
-    this.headers = {
+    this.headers = this.getHeaders(accessToken);
+    this.refreshToken = interactiveLogin;
+  }
+
+  getHeaders(accessToken) {
+    return {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     };
@@ -26,9 +33,21 @@ export class SalesforceConnection {
   }
 
   /* ───────── basic helpers ───────── */
-  async _get(path) {
+  async _get(path, tokenExpiredCode = 401) {
     const res = await fetch(`${this.base}${path}`, { headers: this.headers });
     if (!res.ok) {
+      if (res.status === tokenExpiredCode) {
+        console.warn(
+          'Salesforce GET',
+          path,
+          '→ 401 Unauthorized, refreshing token',
+          this.headers.Authorization
+        );
+        this.headers = this.getHeaders(
+          (await this.refreshToken(this.base)).access_token
+        );
+        return this._get(path, 0);
+      }
       const msg = await res.text();
       throw new Error(`Salesforce GET ${path} → ${res.status}: ${msg}`);
     }

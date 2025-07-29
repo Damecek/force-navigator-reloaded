@@ -3,6 +3,7 @@ export const CONTENT_SCRIPT_ENABLED_BASE_DOMAINS = [
   '.salesforce-setup.com',
   '.builder.salesforce-experience.com',
 ];
+// handleCommand: ignored command "toggle-command-palette" on URL: https://carvago--integ.sandbox.my.salesforce.com/_ui/common/apex/debug/ApexCSIPage?sdtd=1
 
 export const CONTENT_SCRIPT_DISABLED_BASE_DOMAINS = [
   '--c.sandbox.vf.force.com',
