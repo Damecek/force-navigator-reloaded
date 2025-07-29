@@ -73,9 +73,11 @@ function getSenderHostname(sender) {
   }
 }
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   if (reason === 'update' || reason === 'install') {
-    console.log('Extension installation detected, clearing cache');
+    console.log(
+      `Extension installation detected (${reason}, ${previousVersion}), clearing cache`
+    );
     await CacheManager.clearAll();
     await loadSettings();
   }
