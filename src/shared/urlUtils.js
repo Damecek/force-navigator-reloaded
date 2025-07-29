@@ -44,6 +44,9 @@ const buildPatterns = (targetSuffix) => [
   // Legacy core without 'my'
   [/\.salesforce\.com$/, targetSuffix],
 
+  // File domains (login)
+  [/\.file\.force\.com$/, targetSuffix],
+
   // Experience Cloud (prod)
   [/\.my\.site\.com$/, targetSuffix],
 ];
