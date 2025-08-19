@@ -57,7 +57,16 @@ export default class App extends LightningElement {
 
   _handleToggleCommandPalette = () => {
     console.log('toggle command palette');
-    this.isCommandPaletteVisible = !this.isCommandPaletteVisible;
+    if (!this.isCommandPaletteVisible) {
+      this.isCommandPaletteVisible = true;
+    } else {
+      const activeElement = document.activeElement;
+      if (activeElement.name === 'command-input') {
+        this.isCommandPaletteVisible = false;
+      } else {
+        this.refs.palette?.focusInput();
+      }
+    }
     return false;
   };
 
