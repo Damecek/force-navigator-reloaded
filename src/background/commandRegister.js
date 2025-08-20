@@ -42,6 +42,15 @@ import {
 import { SalesforceConnection } from './salesforceConnection';
 
 /**
+ * Determines whether an sObject supports Lightning record pages.
+ * @param {string} apiName sObject API name.
+ * @returns {boolean}
+ */
+function supportsLightningRecordUi(apiName) {
+  return !(apiName.endsWith('__e') || apiName.endsWith('__b'));
+}
+
+/**
  * Retrieves both static and dynamic commands for a given domain hostname.
  * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
  * @returns {Promise<{NavigationCommand: import('./staticCommands').Command[], RefreshCommandListCommand: import('./staticCommands').Command[]}>} Object containing navigation commands and refresh command list.
@@ -296,16 +305,18 @@ async function getEntityCommands(hostname, connection) {
             path: `/lightning/setup/ObjectManager/${DurableId}/ValidationRules/view`,
           });
         }
-        commands.push({
-          id: `sobject-new-${QualifiedApiName}`,
-          label: `Application > ${Label} > New`,
-          path: `/lightning/o/${QualifiedApiName}/new`,
-        });
-        commands.push({
-          id: `sobject-list-${QualifiedApiName}`,
-          label: `Application > ${Label} > List View`,
-          path: `/lightning/o/${QualifiedApiName}/list`,
-        });
+        if (KeyPrefix && supportsLightningRecordUi(QualifiedApiName)) {
+          commands.push({
+            id: `sobject-new-${QualifiedApiName}`,
+            label: `Application > ${Label} > New`,
+            path: `/lightning/o/${QualifiedApiName}/new`,
+          });
+          commands.push({
+            id: `sobject-list-${QualifiedApiName}`,
+            label: `Application > ${Label} > List View`,
+            path: `/lightning/o/${QualifiedApiName}/list`,
+          });
+        }
       }
     }
     console.log('Entity Commands', commands.length, commands);

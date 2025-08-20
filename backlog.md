@@ -53,5 +53,5 @@ Mark each line with [x] when the task is completed.
 > /tooling/query/?q=SELECT%20ActiveVersionId%2C%20Id%2C%20LatestVersionId%2C%20LatestVersion.MasterLabel%20FROM%20FlowDefinition →
 > 401: [{"message":"This session is not valid for use with the REST API","errorCode":"INVALID_SESSION_ID"}]
 
-- [ ] fix navigation to events **r and other sobjects which cannot be opened in Lightning
-      lightning/o/et4ae5**JB_Flow_Event\_\_e/list
+- [x] fix navigation to events and other sobjects which cannot be opened in Lightning
+      lightning/o/et4ae5JB_Flow_Event\_\_e/list
