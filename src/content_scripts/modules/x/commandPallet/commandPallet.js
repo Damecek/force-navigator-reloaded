@@ -63,8 +63,7 @@ export default class CommandPallet extends LightningElement {
 
   renderedCallback() {
     if (!this._didFocus) {
-      const inp = this.refs.input;
-      inp?.focus();
+      this.focusInput();
       this._didFocus = true;
     }
     if (!this._scroller) {
@@ -149,6 +148,17 @@ export default class CommandPallet extends LightningElement {
 
   handleClose() {
     this.dispatchEvent(new CustomEvent('close', { bubbles: true }));
+  }
+
+  /**
+   * Programmatically focus the search input.
+   */
+  @api
+  focusInput() {
+    const inp = this.refs.input;
+    if (inp) {
+      inp.focus();
+    }
   }
 
   /**

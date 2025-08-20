@@ -38,6 +38,7 @@ Mark each line with [x] when the task is completed.
 ```
 
 - [x] implement command usage prioritization or better sorting based on usage
+- [x] Toggle shortcut refocuses command palette when open without focus
 - [ ] performance: instantiate commands only on click/select in the command item class, now it is instantiated on
       command list load
 - [ ] [internationalize](https://developer.chrome.com/docs/extensions/reference/api/i18n#concepts_and_usage) the
