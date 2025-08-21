@@ -52,7 +52,7 @@ export async function getSetupNodeTypesFrom() {
 export async function fetchEntityDefinitionsFromSalesforce(connection) {
   const soql = `SELECT DurableId, KeyPrefix, Label, QualifiedApiName
   FROM EntityDefinition
-  WHERE IsCustomizable = TRUE AND IsCustomSetting = FALSE
+  WHERE IsCustomizable = TRUE AND IsCustomSetting = FALSE AND IsDeprecatedAndHidden = FALSE AND IsLayoutable = TRUE
   ORDER BY QualifiedApiName`;
   const result = await connection.toolingQuery(soql);
   console.log('EntityDefinition query:', soql, result);
