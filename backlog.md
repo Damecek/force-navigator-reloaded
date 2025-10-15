@@ -62,3 +62,4 @@ Mark each line with [x] when the task is completed.
       /tooling/query/?q=SELECT%20FullName%2C%20NodeType%2C%20Label%2C%20Url%0A%20%20%20%20FROM%20SetupNode%0A%20%20%20%20WHERE%20NodeType%20IN%20('
       Setup'%2C'PersonalSettings') → 403: [{"message":"TotalRequests Limit exceeded.","errorCode":"REQUEST_LIMIT_EXCEEDED"}]
       Context background.js:513 (anonymous function)
+- [ ] add Reports, Files, Dashboards
