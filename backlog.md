@@ -63,3 +63,5 @@ Mark each line with [x] when the task is completed.
       Setup'%2C'PersonalSettings') → 403: [{"message":"TotalRequests Limit exceeded.","errorCode":"REQUEST_LIMIT_EXCEEDED"}]
       Context background.js:513 (anonymous function)
 - [ ] add Reports, Files, Dashboards
+- [ ] automatically refresh specific metadata on specific pages, e.g. when creating new object/field, when creating new
+      flow version etc.
