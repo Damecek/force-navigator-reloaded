@@ -1,12 +1,7 @@
 <template lwc:render-mode="light">
-  <div class="slds-scope slds-var-sizing_border slds-p-around_medium">
-    <div class="slds-box">
-      <x-json-editor
-        lwc:ref="editor"
-        read-only={readOnly}
-        value={data}
-      ></x-json-editor>
-    </div>
+  <div class="slds-box slds-scope slds-var-sizing_border slds-p-around_medium">
+    <h2 class="slds-text-heading_small slds-var-m-bottom_small">Settings</h2>
+    <x-json-editor lwc:ref="editor" value={data}></x-json-editor>
     <div class="actions slds-var-m-top_small slds-grid slds-grid_align-end">
       <p
         class="error slds-text-color_error slds-var-m-right_small"

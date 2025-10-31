@@ -24,6 +24,8 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 - **Virtual Scrolling**: Only visible commands are rendered, keeping performance high even with thousands of commands
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
+- **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
+  workflows the most
 
 ### Fuzzy Search
 

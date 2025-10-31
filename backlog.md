@@ -63,4 +63,4 @@ Mark each line with [x] when the task is completed.
 - [ ] add Reports, Files, Dashboards
 - [ ] automatically refresh specific metadata on specific pages, e.g. when creating new object/field, when creating new
       flow version etc.
-- [ ] in option show list command usage
+- [x] in option show list command usage

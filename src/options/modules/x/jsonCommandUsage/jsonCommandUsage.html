@@ -1,0 +1,11 @@
+<template lwc:render-mode="light">
+  <div class="slds-box slds-scope slds-var-sizing_border slds-p-around_medium">
+    <h2 class="slds-text-heading_small slds-var-m-bottom_small">
+      Command Usage
+    </h2>
+    <x-json-editor read-only value={usageData}></x-json-editor>
+    <template lwc:if={usageError}>
+      <p class="slds-text-color_error slds-var-m-top_small">{usageError}</p>
+    </template>
+  </div>
+</template>
