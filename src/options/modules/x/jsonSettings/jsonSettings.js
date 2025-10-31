@@ -1,58 +1,64 @@
 import { LightningElement, track } from 'lwc';
 import { loadSettings, resetSettings, saveSettings } from '../../../../shared';
-import { basicSetup, EditorView } from 'codemirror';
-import { json } from '@codemirror/lang-json';
 
 export default class JsonSettings extends LightningElement {
   static renderMode = 'light';
-  view;
+
+  @track data;
   @track error = '';
 
-  /**
-   * Initialize the CodeMirror editor once after the component renders.
-   * @returns {Promise<void>}
-   */
-  async renderedCallback() {
-    if (!this.view) {
-      const settings = await loadSettings();
-      const parent = this.refs.editor;
-      this.view = new EditorView({
-        doc: JSON.stringify(settings, null, 2),
-        extensions: [basicSetup, json()],
-        parent,
-      });
-    }
+  connectedCallback() {
+    this.loadData();
   }
 
-  /**
-   * Persist the JSON settings entered in the editor.
-   * Displays an error message when the JSON is invalid.
-   * @returns {Promise<void>}
-   */
-  async handleSave() {
+  async loadData() {
     try {
-      const value = this.view.state.doc.toString();
-      const parsed = JSON.parse(value);
-      await saveSettings(parsed);
+      const settings = await loadSettings();
+      this.data = this.cloneValue(settings);
       this.error = '';
     } catch (err) {
-      this.error = 'Invalid JSON';
+      const message = err?.message || 'Unable to load settings';
+      this.error = message;
     }
   }
 
-  /**
-   * Reset the editor contents to the default settings.
-   * @returns {Promise<void>}
-   */
+  async handleSave() {
+    const editor = this.refs?.editor;
+    if (!editor) {
+      return;
+    }
+
+    try {
+      const value = editor.getValue();
+      const parsed = JSON.parse(value);
+      await saveSettings(parsed);
+      this.data = this.cloneValue(parsed);
+      this.error = '';
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        this.error = 'Invalid JSON';
+        return;
+      }
+      const message = err?.message || 'Unable to save settings';
+      this.error = message;
+    }
+  }
+
   async handleReset() {
-    const settings = await resetSettings();
-    this.view.dispatch({
-      changes: {
-        from: 0,
-        to: this.view.state.doc.length,
-        insert: JSON.stringify(settings, null, 2),
-      },
-    });
-    this.error = '';
+    try {
+      const settings = await resetSettings();
+      this.data = this.cloneValue(settings);
+      this.error = '';
+    } catch (err) {
+      const message = err?.message || 'Unable to reset settings';
+      this.error = message;
+    }
+  }
+
+  cloneValue(value) {
+    if (value === null || value === undefined) {
+      return value;
+    }
+    return JSON.parse(JSON.stringify(value));
   }
 }
