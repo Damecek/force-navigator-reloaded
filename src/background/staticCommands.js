@@ -16,6 +16,11 @@
  */
 export const staticCommands = [
   {
+    id: 'new-custom-object',
+    label: 'Object Manager > New Custom Object',
+    path: '/lightning/setup/ObjectManager/new',
+  },
+  {
     id: 'new-flow',
     label: 'Platform Tools > Process Automation > New Flow Automation',
     path: '/builder_platform_interaction/flowBuilder.app',
