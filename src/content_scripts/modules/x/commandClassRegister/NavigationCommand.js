@@ -10,8 +10,8 @@ export default class NavigationCommand extends Command {
    * @param {string} label - Display text for the command.
    * @param {string} path - URL path segment (appended to origin).
    */
-  constructor({ id, label, path }) {
-    super(id, label);
+  constructor({ id, label, path, usage } = {}) {
+    super(id, label, usage);
     this.path = path;
   }
 

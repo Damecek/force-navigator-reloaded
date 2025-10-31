@@ -1,4 +1,7 @@
 import { api, LightningElement } from 'lwc';
+/**
+ * @typedef {import('../commandClassRegister/commandFactory').CommandDescriptor} CommandDescriptor
+ */
 
 /**
  * Represents one command entry in the command palette list.
@@ -7,9 +10,10 @@ export default class CommandItem extends LightningElement {
   static renderMode = 'light';
   /**
    * The command object to render
-   * @type {{ id: string, label: string, execute: Function }}
+   * @type {CommandDescriptor|{ id: string, label: string, execute: Function }}
    */
   @api command;
+  _commandInstance;
 
   /**
    * Whether this item is currently highlighted.
@@ -36,7 +40,12 @@ export default class CommandItem extends LightningElement {
    */
   @api async select(openInNewTab = false) {
     console.log('Executing command', this.command.id);
-    const shouldClose = await this.command.execute({ openInNewTab });
+    const instance = this._getCommandInstance();
+    if (!instance || typeof instance.execute !== 'function') {
+      console.warn('Command instance missing execute function', this.command);
+      return;
+    }
+    const shouldClose = await instance.execute({ openInNewTab });
     if (shouldClose !== false) {
       this.dispatchEvent(new CustomEvent('close', { bubbles: true }));
     }
@@ -49,5 +58,16 @@ export default class CommandItem extends LightningElement {
   async handleClick(event) {
     const openInNewTab = event.shiftKey || event.ctrlKey || event.metaKey;
     await this.select(openInNewTab);
+  }
+
+  _getCommandInstance() {
+    if (!this._commandInstance) {
+      if (this.command && typeof this.command.createInstance === 'function') {
+        this._commandInstance = this.command.createInstance();
+      } else {
+        this._commandInstance = this.command;
+      }
+    }
+    return this._commandInstance;
   }
 }

@@ -12,11 +12,11 @@ export default class ResetCommandListUsageTracking extends Command {
   /**
    * Initializes the refresh command with default id and label.
    */
-  constructor() {
+  constructor({ usage } = {}) {
     super(
       'ResetCommandListUsageTracking',
       'Extension > Reset Command List Usage Tracking',
-      1
+      usage ?? 1
     );
   }
 

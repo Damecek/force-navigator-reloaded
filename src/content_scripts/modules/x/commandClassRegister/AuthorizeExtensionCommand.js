@@ -5,8 +5,8 @@ export default class AuthorizeExtensionCommand extends Command {
   /**
    * Initializes the authorization command with default id and label.
    */
-  constructor() {
-    super('AuthorizeExtensionCommand', 'Extension > Authorize', 2);
+  constructor({ usage } = {}) {
+    super('AuthorizeExtensionCommand', 'Extension > Authorize', usage ?? 2);
   }
 
   /**

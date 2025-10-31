@@ -13,7 +13,7 @@ export default class Command {
     this.id = id;
     this.label = label;
     this.hostname = window.location.hostname;
-    if (defaultUsage) {
+    if (defaultUsage !== undefined) {
       this.usage = defaultUsage;
     } else {
       UsageTracker.instance()

@@ -5,8 +5,8 @@ import { Channel, CHANNEL_OPEN_OPTIONS } from '../../../../shared';
  * Command that navigates the page to a specified path.
  */
 export default class ExtensionOptionsCommand extends Command {
-  constructor() {
-    super('extension-options', 'Extension > Options', 1);
+  constructor({ usage } = {}) {
+    super('extension-options', 'Extension > Options', usage ?? 1);
   }
 
   /**

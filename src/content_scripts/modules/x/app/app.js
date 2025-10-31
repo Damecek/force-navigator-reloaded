@@ -1,5 +1,4 @@
 import { LightningElement, track } from 'lwc';
-import { register } from '../commandClassRegister/commandClassRegister';
 import {
   Channel,
   CHANNEL_COMPLETED_AUTH_FLOW,
@@ -7,12 +6,13 @@ import {
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
 } from '../../../../shared';
+import { createCommandDescriptors } from '../commandClassRegister/commandFactory';
 
 /**
  * App component for the command palette.
  * Renders the palette UI and manages command subscriptions.
  *
- * @property {Array<Command>} commands - Commands available in the palette.
+ * @property {Array<import('../commandClassRegister/commandFactory').CommandDescriptor>} commands - Commands available in the palette.
  * @property {boolean} isCommandPaletteVisible - Whether the palette is visible.
  */
 export default class App extends LightningElement {
@@ -43,14 +43,15 @@ export default class App extends LightningElement {
     return this.publishRefreshCommands();
   };
 
-  _handleCommands = ({ data }) => {
+  _handleCommands = async ({ data }) => {
     console.log('handle commands', data);
     if (data) {
-      this.commands = Object.entries(data)
-        .flatMap(([className, rawArray]) =>
-          rawArray.map((raw) => new register[className](raw))
-        )
-        .sort((a, b) => a.label.localeCompare(b.label));
+      const descriptors = await createCommandDescriptors(data);
+      this.commands = descriptors.sort((a, b) =>
+        a.label.localeCompare(b.label)
+      );
+    } else {
+      this.commands = [];
     }
     return false;
   };
