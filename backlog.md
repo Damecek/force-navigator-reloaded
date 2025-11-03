@@ -63,14 +63,14 @@ another example of such is `New Report`
 
 - [x] fix navigation to events **r and other sobjects which cannot be opened in Lightning
       lightning/o/et4ae5**JB_Flow_Event\_\_e/list
-- [ ] missing /lightning/setup/ObjectManager/Activity/FieldsAndRelationships/view
+- [x] missing /lightning/setup/ObjectManager/Activity/FieldsAndRelationships/view
 - [ ] handle limit reached
       CommandRegister: failed to fetch dynamic commands for carvago6-dev-ed.develop.lightning.force.com Error: Salesforce
       GET
       /tooling/query/?q=SELECT%20FullName%2C%20NodeType%2C%20Label%2C%20Url%0A%20%20%20%20FROM%20SetupNode%0A%20%20%20%20WHERE%20NodeType%20IN%20('
       Setup'%2C'PersonalSettings') → 403: [{"message":"TotalRequests Limit exceeded.","errorCode":"REQUEST_LIMIT_EXCEEDED"}]
       Context background.js:513 (anonymous function)
-- [ ] add Reports, Files, Dashboards
+- [x] add Reports, Files, Dashboards
 - [ ] automatically refresh specific metadata on specific pages, e.g. when creating new object/field, when creating new
       flow version etc.
 - [x] in option show list command usage
