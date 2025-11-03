@@ -41,6 +41,93 @@ import {
 } from './salesforceUtils';
 import { SalesforceConnection } from './salesforceConnection';
 
+const OBJECT_MANAGER_SECTIONS = [
+  {
+    settingKey: SOBJECT_FIELDS_RELATIONSHIPS_ENTITY_TYPE,
+    id: 'fields-and-relationship',
+    label: 'Fields & Relationships',
+    pathSuffix: 'FieldsAndRelationships/view',
+  },
+  {
+    settingKey: SOBJECT_PAGE_LAYOUTS_ENTITY_TYPE,
+    id: 'page-layouts',
+    label: 'Page Layouts',
+    pathSuffix: 'PageLayouts/view',
+  },
+  {
+    settingKey: SOBJECT_LIGHTNING_PAGES_ENTITY_TYPE,
+    id: 'lightning-pages',
+    label: 'Lightning Pages',
+    pathSuffix: 'LightningPages/view',
+  },
+  {
+    settingKey: SOBJECT_BUTTONS_LINKS_ACTIONS_ENTITY_TYPE,
+    id: 'buttons-links-actions',
+    label: 'Buttons, Links, and Actions',
+    pathSuffix: 'ButtonsLinksActions/view',
+  },
+  {
+    settingKey: SOBJECT_COMPACT_LAYOUTS_ENTITY_TYPE,
+    id: 'compact-layouts',
+    label: 'Compact Layouts',
+    pathSuffix: 'CompactLayouts/view',
+  },
+  {
+    settingKey: SOBJECT_FIELD_SETS_ENTITY_TYPE,
+    id: 'field-sets',
+    label: 'Field Sets',
+    pathSuffix: 'FieldSets/view',
+  },
+  {
+    settingKey: SOBJECT_LIMITS_ENTITY_TYPE,
+    id: 'limits',
+    label: 'Object Limits',
+    pathSuffix: 'Limits/view',
+  },
+  {
+    settingKey: SOBJECT_RECORD_TYPES_ENTITY_TYPE,
+    id: 'record-types',
+    label: 'Record Types',
+    pathSuffix: 'RecordTypes/view',
+  },
+  {
+    settingKey: SOBJECT_RELATED_LOOKUP_FILTERS_ENTITY_TYPE,
+    id: 'related-lookup-filters',
+    label: 'Related Lookup Filters',
+    pathSuffix: 'RelatedLookupFilters/view',
+  },
+  {
+    settingKey: SOBJECT_SEARCH_LAYOUTS_ENTITY_TYPE,
+    id: 'search-layouts',
+    label: 'Search Layouts',
+    pathSuffix: 'SearchLayouts/view',
+  },
+  {
+    settingKey: SOBJECT_OBJECT_ACCESS_ENTITY_TYPE,
+    id: 'object-access',
+    label: 'Object Access',
+    pathSuffix: 'ObjectAccess/view',
+  },
+  {
+    settingKey: SOBJECT_APEX_TRIGGERS_ENTITY_TYPE,
+    id: 'apex-triggers',
+    label: 'Apex Triggers',
+    pathSuffix: 'ApexTriggers/view',
+  },
+  {
+    settingKey: SOBJECT_FLOW_TRIGGERS_ENTITY_TYPE,
+    id: 'flow-triggers',
+    label: 'Flow Triggers',
+    pathSuffix: 'FlowTriggers/view',
+  },
+  {
+    settingKey: SOBJECT_VALIDATION_RULES_ENTITY_TYPE,
+    id: 'validation-rules',
+    label: 'Validation Rules',
+    pathSuffix: 'ValidationRules/view',
+  },
+];
+
 /**
  * Retrieves both static and dynamic commands for a given domain hostname.
  * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
@@ -171,14 +258,25 @@ async function getEntityCommands(hostname, connection) {
       ENTITY_DEFINITION_SETTINGS_KEY,
       CUSTOM_METADATA_ENTITY_TYPE,
     ]);
-    const includeSObjectSettings = await getSetting([
-      COMMANDS_SETTINGS_KEY,
-      ENTITY_DEFINITION_SETTINGS_KEY,
-      SOBJECT_ENTITY_TYPE,
-    ]);
+    const includeSObjectSettings =
+      (await getSetting([
+        COMMANDS_SETTINGS_KEY,
+        ENTITY_DEFINITION_SETTINGS_KEY,
+        SOBJECT_ENTITY_TYPE,
+      ])) ?? {};
+    const hasSObjectSettings = hasAnySObjectSettings(includeSObjectSettings);
 
     for (const e of entities) {
-      const { DurableId, KeyPrefix, Label, QualifiedApiName } = e;
+      const {
+        DurableId,
+        KeyPrefix,
+        Label,
+        QualifiedApiName,
+        IsCustomizable,
+        IsEverCreatable,
+        IsCompactLayoutable,
+        IsSearchLayoutable,
+      } = e;
       if (QualifiedApiName.endsWith('__mdt') && includeCustomMetadata) {
         commands.push({
           id: `custommetadata-new-${KeyPrefix}`,
@@ -190,122 +288,38 @@ async function getEntityCommands(hostname, connection) {
           label: `Custom Metadata Types > ${Label} > List`,
           path: `/lightning/setup/CustomMetadata/page?address=/${KeyPrefix}`,
         });
-      } else if (Object.values(includeSObjectSettings).some(Boolean)) {
-        commands.push({
-          id: `sobject-setup-detail-${DurableId}`,
-          label: `Object Manager > ${Label} > Details`,
-          path: `/lightning/setup/ObjectManager/${DurableId}/Details/view`,
-        });
-        if (includeSObjectSettings[SOBJECT_FIELDS_RELATIONSHIPS_ENTITY_TYPE]) {
+      } else {
+        if (IsCustomizable && hasSObjectSettings) {
           commands.push({
-            id: `sobject-setup-fields-and-relationship-${DurableId}`,
-            label: `Object Manager > ${Label} > Fields & Relationships`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/FieldsAndRelationships/view`,
+            id: `sobject-setup-detail-${DurableId}`,
+            label: `Object Manager > ${Label} > Details`,
+            path: `/lightning/setup/ObjectManager/${DurableId}/Details/view`,
+          });
+          for (const section of OBJECT_MANAGER_SECTIONS) {
+            if (includeSObjectSettings[section.settingKey]) {
+              commands.push({
+                id: `sobject-setup-${section.id}-${DurableId}`,
+                label: `Object Manager > ${Label} > ${section.label}`,
+                path: `/lightning/setup/ObjectManager/${DurableId}/${section.pathSuffix}`,
+              });
+            }
+          }
+        }
+
+        if (IsEverCreatable && IsCompactLayoutable) {
+          commands.push({
+            id: `sobject-new-${QualifiedApiName}`,
+            label: `Application > ${Label} > New`,
+            path: `/lightning/o/${QualifiedApiName}/new`,
           });
         }
-        if (includeSObjectSettings[SOBJECT_PAGE_LAYOUTS_ENTITY_TYPE]) {
+        if (IsEverCreatable && IsSearchLayoutable) {
           commands.push({
-            id: `sobject-setup-page-layouts-${DurableId}`,
-            label: `Object Manager > ${Label} > Page Layouts`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/PageLayouts/view`,
+            id: `sobject-list-${QualifiedApiName}`,
+            label: `Application > ${Label} > List View`,
+            path: `/lightning/o/${QualifiedApiName}/home`,
           });
         }
-        if (includeSObjectSettings[SOBJECT_LIGHTNING_PAGES_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-lightning-pages-${DurableId}`,
-            label: `Object Manager > ${Label} > Lightning Pages`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/LightningPages/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_BUTTONS_LINKS_ACTIONS_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-buttons-links-actions-${DurableId}`,
-            label: `Object Manager > ${Label} > Buttons, Links, and Actions`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/ButtonsLinksActions/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_COMPACT_LAYOUTS_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-compact-layouts-${DurableId}`,
-            label: `Object Manager > ${Label} > Compact Layouts`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/CompactLayouts/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_FIELD_SETS_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-field-sets-${DurableId}`,
-            label: `Object Manager > ${Label} > Field Sets`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/FieldSets/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_LIMITS_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-limits-${DurableId}`,
-            label: `Object Manager > ${Label} > Object Limits`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/Limits/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_RECORD_TYPES_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-record-types-${DurableId}`,
-            label: `Object Manager > ${Label} > Record Types`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/RecordTypes/view`,
-          });
-        }
-        if (
-          includeSObjectSettings[SOBJECT_RELATED_LOOKUP_FILTERS_ENTITY_TYPE]
-        ) {
-          commands.push({
-            id: `sobject-setup-related-lookup-filters-${DurableId}`,
-            label: `Object Manager > ${Label} > Related Lookup Filters`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/RelatedLookupFilters/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_SEARCH_LAYOUTS_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-search-layouts-${DurableId}`,
-            label: `Object Manager > ${Label} > Search Layouts`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/SearchLayouts/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_OBJECT_ACCESS_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-object-access-${DurableId}`,
-            label: `Object Manager > ${Label} > Object Access`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/ObjectAccess/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_APEX_TRIGGERS_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-apex-triggers-${DurableId}`,
-            label: `Object Manager > ${Label} > Apex Triggers`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/ApexTriggers/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_FLOW_TRIGGERS_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-flow-triggers-${DurableId}`,
-            label: `Object Manager > ${Label} > Flow Triggers`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/FlowTriggers/view`,
-          });
-        }
-        if (includeSObjectSettings[SOBJECT_VALIDATION_RULES_ENTITY_TYPE]) {
-          commands.push({
-            id: `sobject-setup-validation-rules-${DurableId}`,
-            label: `Object Manager > ${Label} > Validation Rules`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/ValidationRules/view`,
-          });
-        }
-        commands.push({
-          id: `sobject-new-${QualifiedApiName}`,
-          label: `Application > ${Label} > New`,
-          path: `/lightning/o/${QualifiedApiName}/new`,
-        });
-        commands.push({
-          id: `sobject-list-${QualifiedApiName}`,
-          label: `Application > ${Label} > List View`,
-          path: `/lightning/o/${QualifiedApiName}/list`,
-        });
       }
     }
     console.log('Entity Commands', commands.length, commands);
@@ -320,6 +334,10 @@ async function getEntityCommands(hostname, connection) {
     );
     return [];
   }
+}
+
+function hasAnySObjectSettings(settings) {
+  return Boolean(settings && Object.values(settings).some(Boolean));
 }
 
 /**

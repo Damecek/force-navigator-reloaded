@@ -10,7 +10,7 @@ import { COMMANDS_SETTINGS_KEY, getSetting, SETUP_NODE_TYPES } from '../shared';
  */
 
 /**
- * Fetch menu nodes from Salesforce Aura endpoint.
+ * Fetch menu nodes.
  * @param {SalesforceConnection} connection Salesforce connection instance
  * @returns {Promise<SetupNode[]>}
  */
@@ -42,6 +42,10 @@ export async function getSetupNodeTypesFrom() {
  * @property {string} KeyPrefix
  * @property {string} Label
  * @property {string} QualifiedApiName
+ * @property {boolean} IsCustomizable
+ * @property {boolean} IsEverCreatable
+ * @property {boolean} IsCompactLayoutable
+ * @property {boolean} IsSearchLayoutable
  */
 
 /**
@@ -50,13 +54,33 @@ export async function getSetupNodeTypesFrom() {
  * @returns {Promise<EntityDefinition[]>}
  */
 export async function fetchEntityDefinitionsFromSalesforce(connection) {
-  const soql = `SELECT DurableId, KeyPrefix, Label, QualifiedApiName
+  const baseSoql = `SELECT DurableId, KeyPrefix, Label, QualifiedApiName, IsCustomizable, IsEverCreatable, IsSearchLayoutable, IsCompactLayoutable
   FROM EntityDefinition
-  WHERE IsCustomizable = TRUE AND IsCustomSetting = FALSE AND IsDeprecatedAndHidden = FALSE AND IsLayoutable = TRUE
+  WHERE IsCustomSetting = FALSE AND IsDeprecatedAndHidden = FALSE AND IsIdEnabled = TRUE
   ORDER BY QualifiedApiName`;
-  const result = await connection.toolingQuery(soql);
-  console.log('EntityDefinition query:', soql, result);
-  return result;
+  const limit = 2000;
+  let offset = 0;
+  const allRecords = [];
+
+  while (true) {
+    const soql = `${baseSoql} LIMIT ${limit}${
+      offset ? ` OFFSET ${offset}` : ''
+    }`;
+    const batch = await connection.toolingQuery(soql);
+    console.log(
+      'EntityDefinition query batch',
+      soql,
+      Array.isArray(batch) ? batch.length : 'n/a'
+    );
+    allRecords.push(...batch);
+    if (!Array.isArray(batch) || batch.length < limit) {
+      break;
+    }
+    offset += limit;
+  }
+
+  console.log('EntityDefinition total records', allRecords.length);
+  return allRecords;
 }
 
 /**
