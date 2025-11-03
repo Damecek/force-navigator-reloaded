@@ -35,4 +35,9 @@ export const staticCommands = [
     label: 'Application > Home',
     path: '/lightning/page/home',
   },
+  {
+    id: 'files-home',
+    label: 'Application > Files > Home',
+    path: '/lightning/o/ContentDocument/home',
+  },
 ];
