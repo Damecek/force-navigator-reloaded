@@ -74,3 +74,5 @@ another example of such is `New Report`
 - [ ] automatically refresh specific metadata on specific pages, e.g. when creating new object/field, when creating new
       flow version etc.
 - [x] in option show list command usage
+- [ ] next to X icon for closing, add new hover button ? with short help text about extension, closing, opening
+      shortcuts and where to configure them
