@@ -13,6 +13,9 @@ import {
   FLOW_DEFINITION_TYPE,
   FLOW_LATEST_VERSION_TYPE,
   getSetting,
+  LIGHTNING_APP_CACHE_KEY,
+  LIGHTNING_APP_CACHE_TTL,
+  LIGHTNING_APP_SETTINGS_KEY,
   MENU_CACHE_KEY,
   MENU_CACHE_TTL,
   SOBJECT_APEX_TRIGGERS_ENTITY_TYPE,
@@ -37,6 +40,7 @@ import { ensureToken } from './auth/auth.js';
 import {
   fetchEntityDefinitionsFromSalesforce,
   fetchFlowDefinitionsFromSalesforce,
+  fetchLightningAppDefinitionsFromSalesforce,
   fetchMenuNodesFromSalesforce,
 } from './salesforceUtils';
 import { SalesforceConnection } from './salesforceConnection';
@@ -152,6 +156,7 @@ export async function getCommands(hostname) {
     ...(await getSetupCommands(instanceHostname, connection)),
     ...(await getEntityCommands(instanceHostname, connection)),
     ...(await getFlowCommands(instanceHostname, connection)),
+    ...(await getLightningAppCommands(instanceHostname, connection)),
   ];
   const RefreshCommandListCommand = [{}];
   const ResetCommandListUsageTracking = [{}];
@@ -409,4 +414,67 @@ async function getFlowCommands(hostname, connection) {
     );
     return [];
   }
+}
+
+/**
+ * Retrieves Lightning App navigation commands via Salesforce Tooling API.
+ * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, path: string}>>}
+ */
+async function getLightningAppCommands(hostname, connection) {
+  const includeLightningApps = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    LIGHTNING_APP_SETTINGS_KEY,
+  ]);
+  if (!includeLightningApps) {
+    return [];
+  }
+
+  const cache = new CacheManager(hostname);
+  const cachedCommands = await cache.get(LIGHTNING_APP_CACHE_KEY);
+  if (cachedCommands) {
+    return cachedCommands;
+  }
+  try {
+    const apps = await fetchLightningAppDefinitionsFromSalesforce(connection);
+    const commands = apps
+      .filter((app) => app?.DeveloperName)
+      .map((app) => {
+        const appTarget = buildLightningAppTarget(
+          app.NamespacePrefix,
+          app.DeveloperName
+        );
+        return {
+          id: `lightning-app-${appTarget}`,
+          label: `App > ${app.DeveloperName}`,
+          path: `/lightning/app/${appTarget}`,
+        };
+      });
+    console.log('Lightning App Commands', commands.length, commands);
+    if (commands.length > 0) {
+      await cache.set(LIGHTNING_APP_CACHE_KEY, commands, {
+        ttl: LIGHTNING_APP_CACHE_TTL,
+      });
+    }
+    return commands;
+  } catch (err) {
+    console.error(
+      `CommandRegister: failed to fetch lightning app commands for ${hostname}`,
+      err
+    );
+    return [];
+  }
+}
+
+/**
+ * Build Lightning app target name based on namespace rules.
+ * @param {string | null} namespacePrefix
+ * @param {string} developerName
+ * @returns {string}
+ */
+function buildLightningAppTarget(namespacePrefix, developerName) {
+  const prefix = namespacePrefix ? `${namespacePrefix}__` : 'c__';
+  const resolvedPrefix = namespacePrefix === 'standard' ? 'standard__' : prefix;
+  return `${resolvedPrefix}${developerName}`;
 }
