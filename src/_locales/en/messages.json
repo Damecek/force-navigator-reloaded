@@ -1,0 +1,131 @@
+{
+  "extensionName": {
+    "message": "Force Navigator Reloaded"
+  },
+  "extensionDescription": {
+    "message": "Fast, efficient Salesforce Lightning navigation with a command palette—search and act without leaving your keyboard."
+  },
+  "commandTogglePaletteDescription": {
+    "message": "Toggle Command Palette"
+  },
+  "popupMetaDescription": {
+    "message": "Quick reference for Force Navigator Reloaded extension shortcuts and settings."
+  },
+  "popupShortcutHeading": {
+    "message": "Shortcut"
+  },
+  "popupShortcutIntro": {
+    "message": "Open the command palette with"
+  },
+  "popupShortcutWindowsSuffix": {
+    "message": "(Windows) or"
+  },
+  "popupShortcutMacSuffix": {
+    "message": "(Mac)."
+  },
+  "popupShortcutChangeIntro": {
+    "message": "You can change this in"
+  },
+  "popupShortcutLink": {
+    "message": "Chrome Extension Shortcuts"
+  },
+  "popupShortcutClosePrefix": {
+    "message": "Press the shortcut again or"
+  },
+  "popupShortcutCloseSuffix": {
+    "message": "to close the palette."
+  },
+  "popupAdvancedIntro": {
+    "message": "For advanced configuration open"
+  },
+  "popupSettingsLink": {
+    "message": "Settings"
+  },
+  "popupContribute": {
+    "message": "We ❤️ contributions! Feel free to open an issue or send a PR on GitHub."
+  },
+  "popupReviewIntro": {
+    "message": "If you enjoy using Force Navigator Reloaded,"
+  },
+  "popupReviewLink": {
+    "message": "please leave a review"
+  },
+  "popupFooterRepository": {
+    "message": "Repository"
+  },
+  "popupFooterReportIssue": {
+    "message": "Report issue"
+  },
+  "popupFooterAuthor": {
+    "message": "Author"
+  },
+  "optionsPageTitle": {
+    "message": "Force Navigator Settings"
+  },
+  "optionsTitle": {
+    "message": "Force Navigator Reloaded Settings"
+  },
+  "optionsSettingsHeading": {
+    "message": "Settings"
+  },
+  "optionsCommandUsageHeading": {
+    "message": "Command Usage"
+  },
+  "optionsResetDefaults": {
+    "message": "Reset to Defaults"
+  },
+  "optionsSave": {
+    "message": "Save"
+  },
+  "errorLoadSettings": {
+    "message": "Unable to load settings"
+  },
+  "errorSaveSettings": {
+    "message": "Unable to save settings"
+  },
+  "errorResetSettings": {
+    "message": "Unable to reset settings"
+  },
+  "errorInvalidJson": {
+    "message": "Invalid JSON"
+  },
+  "errorLoadUsage": {
+    "message": "Unable to load usage statistics"
+  },
+  "commandPaletteHelpTitle": {
+    "message": "Help"
+  },
+  "commandPaletteHelpAssistive": {
+    "message": "Help"
+  },
+  "commandPaletteCloseAssistive": {
+    "message": "Cancel and close"
+  },
+  "commandPaletteTitle": {
+    "message": "Command Palette"
+  },
+  "commandPaletteCommandLabel": {
+    "message": "Command"
+  },
+  "commandPalettePlaceholder": {
+    "message": "Type a command..."
+  },
+  "commandPaletteShowCommandsTitle": {
+    "message": "Show commands"
+  },
+  "commandPaletteCommandsAriaLabel": {
+    "message": "Commands"
+  },
+  "commandLabelRefreshCommandList": {
+    "message": "Extension > Refresh Command List"
+  },
+  "commandLabelResetUsageTracking": {
+    "message": "Extension > Reset Command List Usage Tracking"
+  },
+  "commandLabelAuthorize": {
+    "message": "Extension > Authorize"
+  },
+  "commandLabelOptions": {
+    "message": "Extension > Options"
+  }
+}

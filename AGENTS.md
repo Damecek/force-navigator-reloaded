@@ -48,3 +48,5 @@
 - Use JSDoc comments to document public APIs and to introduce types for parameters and return values.
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.
+- When adding user-facing text, add a matching entry to `src/_locales/en/messages.json` and use `getMessage` or
+  `applyI18n` to surface localized strings.

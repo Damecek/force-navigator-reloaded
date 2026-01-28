@@ -1,6 +1,8 @@
 <template lwc:render-mode="light">
   <div class="slds-box slds-scope slds-var-sizing_border slds-p-around_medium">
-    <h2 class="slds-text-heading_small slds-var-m-bottom_small">Settings</h2>
+    <h2 class="slds-text-heading_small slds-var-m-bottom_small">
+      {labels.settingsHeading}
+    </h2>
     <x-json-editor lwc:ref="editor" value={data}></x-json-editor>
     <div class="actions slds-var-m-top_small slds-grid slds-grid_align-end">
       <p
@@ -10,13 +12,13 @@
         {error}
       </p>
       <button class="slds-button slds-button_neutral" onclick={handleReset}>
-        Reset to Defaults
+        {labels.resetDefaults}
       </button>
       <button
         class="slds-button slds-button_brand slds-var-m-left_x-small"
         onclick={handleSave}
       >
-        Save
+        {labels.save}
       </button>
     </div>
   </div>

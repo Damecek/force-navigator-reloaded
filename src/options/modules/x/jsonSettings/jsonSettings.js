@@ -1,8 +1,25 @@
 import { LightningElement, track } from 'lwc';
-import { loadSettings, resetSettings, saveSettings } from '../../../../shared';
+import {
+  getMessage,
+  loadSettings,
+  resetSettings,
+  saveSettings,
+} from '../../../../shared';
+
+const labels = {
+  settingsHeading: getMessage('optionsSettingsHeading'),
+  resetDefaults: getMessage('optionsResetDefaults'),
+  save: getMessage('optionsSave'),
+  errorLoadSettings: getMessage('errorLoadSettings'),
+  errorSaveSettings: getMessage('errorSaveSettings'),
+  errorResetSettings: getMessage('errorResetSettings'),
+  errorInvalidJson: getMessage('errorInvalidJson'),
+};
 
 export default class JsonSettings extends LightningElement {
   static renderMode = 'light';
+
+  labels = labels;
 
   @track data;
   @track error = '';
@@ -17,7 +34,7 @@ export default class JsonSettings extends LightningElement {
       this.data = this.cloneValue(settings);
       this.error = '';
     } catch (err) {
-      const message = err?.message || 'Unable to load settings';
+      const message = err?.message || this.labels.errorLoadSettings;
       this.error = message;
     }
   }
@@ -36,10 +53,10 @@ export default class JsonSettings extends LightningElement {
       this.error = '';
     } catch (err) {
       if (err instanceof SyntaxError) {
-        this.error = 'Invalid JSON';
+        this.error = this.labels.errorInvalidJson;
         return;
       }
-      const message = err?.message || 'Unable to save settings';
+      const message = err?.message || this.labels.errorSaveSettings;
       this.error = message;
     }
   }
@@ -50,7 +67,7 @@ export default class JsonSettings extends LightningElement {
       this.data = this.cloneValue(settings);
       this.error = '';
     } catch (err) {
-      const message = err?.message || 'Unable to reset settings';
+      const message = err?.message || this.labels.errorResetSettings;
       this.error = message;
     }
   }

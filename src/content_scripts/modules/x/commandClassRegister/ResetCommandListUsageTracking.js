@@ -2,8 +2,13 @@ import Command from './Command';
 import {
   Channel,
   CHANNEL_REFRESH_COMMANDS,
+  getMessage,
   UsageTracker,
 } from '../../../../shared';
+
+const labels = {
+  resetUsageTracking: getMessage('commandLabelResetUsageTracking'),
+};
 
 /**
  * Command to reset command list usage tracking.
@@ -15,7 +20,7 @@ export default class ResetCommandListUsageTracking extends Command {
   constructor({ usage } = {}) {
     super(
       'ResetCommandListUsageTracking',
-      'Extension > Reset Command List Usage Tracking',
+      labels.resetUsageTracking,
       usage ?? 1
     );
   }
