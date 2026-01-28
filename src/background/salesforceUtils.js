@@ -120,7 +120,7 @@ export async function fetchLightningAppDefinitionsFromSalesforce(connection) {
     FROM AppDefinition
     WHERE UiType = 'Lightning' AND IsLargeFormFactorSupported = TRUE
     ORDER BY DeveloperName`;
-  const result = await connection.toolingQuery(soql);
+  const result = await connection.query(soql);
   console.log('AppDefinition query:', soql, result);
   return result;
 }

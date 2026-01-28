@@ -447,7 +447,7 @@ async function getLightningAppCommands(hostname, connection) {
         );
         return {
           id: `lightning-app-${appTarget}`,
-          label: `App > ${app.Label}`,
+          label: `Lightning App > ${app.Label}`,
           path: `/lightning/app/${appTarget}`,
         };
       });
