@@ -55,7 +55,7 @@ version might occasionally lag behind the latest release.
 3. Type commands or search terms to find what you need
 4. Press Enter to execute the selected command
 5. Press `Esc` or the same shortcut again to close the command palette when it has focus
-6. Open the extension popup from the toolbar icon for quick help and a link to Settings
+6. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts and Settings
 7. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows, custom commands) appear in the palette
 
 ### Supported Domains
