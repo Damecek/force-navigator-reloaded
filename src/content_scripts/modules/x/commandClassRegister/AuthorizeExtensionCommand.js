@@ -2,19 +2,21 @@ import Command from './Command';
 import {
   Channel,
   CHANNEL_INVOKE_AUTH_FLOW,
-  getMessage,
+  getLabels,
 } from '../../../../shared';
 
-const labels = {
-  authorize: getMessage('commandLabelAuthorize'),
-};
+const labels = getLabels(['commandLabelAuthorize']);
 
 export default class AuthorizeExtensionCommand extends Command {
   /**
    * Initializes the authorization command with default id and label.
    */
   constructor({ usage } = {}) {
-    super('AuthorizeExtensionCommand', labels.authorize, usage ?? 2);
+    super(
+      'AuthorizeExtensionCommand',
+      labels.commandLabelAuthorize,
+      usage ?? 2
+    );
   }
 
   /**

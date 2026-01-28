@@ -1,18 +1,18 @@
 import { api, LightningElement, track } from 'lwc';
 import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
-import { Channel, CHANNEL_OPEN_POPUP, getMessage } from '../../../../shared';
+import { Channel, CHANNEL_OPEN_POPUP, getLabels } from '../../../../shared';
 
-const labels = {
-  helpTitle: getMessage('commandPaletteHelpTitle'),
-  helpAssistive: getMessage('commandPaletteHelpAssistive'),
-  closeAssistive: getMessage('commandPaletteCloseAssistive'),
-  title: getMessage('commandPaletteTitle'),
-  commandLabel: getMessage('commandPaletteCommandLabel'),
-  commandPlaceholder: getMessage('commandPalettePlaceholder'),
-  showCommandsTitle: getMessage('commandPaletteShowCommandsTitle'),
-  commandsAriaLabel: getMessage('commandPaletteCommandsAriaLabel'),
-};
+const labels = getLabels([
+  'commandPaletteHelpTitle',
+  'commandPaletteHelpAssistive',
+  'commandPaletteCloseAssistive',
+  'commandPaletteTitle',
+  'commandPaletteCommandLabel',
+  'commandPalettePlaceholder',
+  'commandPaletteShowCommandsTitle',
+  'commandPaletteCommandsAriaLabel',
+]);
 
 export default class CommandPallet extends LightningElement {
   static renderMode = 'light';

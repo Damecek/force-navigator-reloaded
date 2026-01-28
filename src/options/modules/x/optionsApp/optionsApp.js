@@ -1,9 +1,7 @@
 import { LightningElement } from 'lwc';
-import { getMessage } from '../../../../shared';
+import { getLabels } from '../../../../shared';
 
-const labels = {
-  optionsTitle: getMessage('optionsTitle'),
-};
+const labels = getLabels(['optionsTitle']);
 
 /**
  * Root component for the options page.

@@ -1,10 +1,7 @@
 import { LightningElement, track } from 'lwc';
-import { getMessage, UsageTracker } from '../../../../shared';
+import { getLabels, UsageTracker } from '../../../../shared';
 
-const labels = {
-  commandUsageHeading: getMessage('optionsCommandUsageHeading'),
-  errorLoadUsage: getMessage('errorLoadUsage'),
-};
+const labels = getLabels(['optionsCommandUsageHeading', 'errorLoadUsage']);
 
 export default class JsonCommandUsage extends LightningElement {
   static renderMode = 'light';

@@ -1,20 +1,20 @@
 import { LightningElement, track } from 'lwc';
 import {
-  getMessage,
+  getLabels,
   loadSettings,
   resetSettings,
   saveSettings,
 } from '../../../../shared';
 
-const labels = {
-  settingsHeading: getMessage('optionsSettingsHeading'),
-  resetDefaults: getMessage('optionsResetDefaults'),
-  save: getMessage('optionsSave'),
-  errorLoadSettings: getMessage('errorLoadSettings'),
-  errorSaveSettings: getMessage('errorSaveSettings'),
-  errorResetSettings: getMessage('errorResetSettings'),
-  errorInvalidJson: getMessage('errorInvalidJson'),
-};
+const labels = getLabels([
+  'optionsSettingsHeading',
+  'optionsResetDefaults',
+  'optionsSave',
+  'errorLoadSettings',
+  'errorSaveSettings',
+  'errorResetSettings',
+  'errorInvalidJson',
+]);
 
 export default class JsonSettings extends LightningElement {
   static renderMode = 'light';

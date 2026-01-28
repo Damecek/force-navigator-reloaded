@@ -12,6 +12,23 @@ export function getMessage(key, substitutions) {
 }
 
 /**
+ * Create a map of localized labels from a list of keys.
+ * @param {string[]} keys
+ * @returns {Record<string, string>}
+ */
+export function getLabels(keys) {
+  if (!Array.isArray(keys)) {
+    return {};
+  }
+  return keys.reduce((labels, key) => {
+    if (key) {
+      labels[key] = getMessage(key);
+    }
+    return labels;
+  }, {});
+}
+
+/**
  * Apply localized messages to elements with data attributes.
  * @param {Document|HTMLElement} root
  * @returns {void}
