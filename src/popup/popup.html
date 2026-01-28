@@ -4,40 +4,62 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <title>Force Navigator Reloaded</title>
-    <meta
-      content="Quick reference for Force Navigator Reloaded extension shortcuts and settings."
-      name="description"
-    />
+    <meta data-i18n-attr="content:popupMetaDescription" name="description" />
     <link href="popup.css" rel="stylesheet" />
   </head>
   <body>
     <header>
-      <h1>Force Navigator Reloaded</h1>
+      <h1 data-i18n="extensionName">Force Navigator Reloaded</h1>
     </header>
 
     <main>
       <section aria-labelledby="shortcuts-title">
-        <h2 class="visually-hidden" id="shortcuts-title">Shortcut</h2>
+        <h2
+          class="visually-hidden"
+          data-i18n="popupShortcutHeading"
+          id="shortcuts-title"
+        >
+          Shortcut
+        </h2>
         <p class="shortcut">
-          Open the command palette with
+          <span data-i18n="popupShortcutIntro"
+            >Open the command palette with</span
+          >
           <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>L</kbd>
-          (Windows) or
-          <kbd>⌘</kbd><kbd>Shift</kbd><kbd>P</kbd> (Mac). <br />
-          You can change this in
-          <a href="#" id="shortcuts-link">Chrome Extension Shortcuts</a>.
-          <br />Press the shortcut again or <kbd>Esc</kbd> to close the palette.
+          <span data-i18n="popupShortcutWindowsSuffix">(Windows) or</span>
+          <kbd>⌘</kbd><kbd>Shift</kbd><kbd>P</kbd>
+          <span data-i18n="popupShortcutMacSuffix">(Mac).</span>
+          <br />
+          <span data-i18n="popupShortcutChangeIntro"
+            >You can change this in</span
+          >
+          <a data-i18n="popupShortcutLink" href="#" id="shortcuts-link">
+            Chrome Extension Shortcuts
+          </a>
+          <br />
+          <span data-i18n="popupShortcutClosePrefix">
+            Press the shortcut again or
+          </span>
+          <kbd>Esc</kbd>
+          <span data-i18n="popupShortcutCloseSuffix"
+            >to close the palette.</span
+          >
         </p>
       </section>
 
       <section>
         <p>
-          For advanced configuration open
-          <a href="#" id="settings-link">Settings</a>.
+          <span data-i18n="popupAdvancedIntro"
+            >For advanced configuration open</span
+          >
+          <a data-i18n="popupSettingsLink" href="#" id="settings-link">
+            Settings </a
+          >.
         </p>
       </section>
 
       <section>
-        <p>
+        <p data-i18n="popupContribute">
           We ❤️ contributions! Feel free to open an issue or send a PR on
           GitHub.
         </p>
@@ -45,12 +67,16 @@
 
       <section>
         <p>
-          If you enjoy using Force Navigator Reloaded,
+          <span data-i18n="popupReviewIntro">
+            If you enjoy using Force Navigator Reloaded,
+          </span>
           <a
             href="https://chromewebstore.google.com/detail/force-navigator-reloaded/iniflnopffblekndhplennjijdcfkeak/reviews?utm_source=github"
             rel="noreferrer"
             target="_blank"
-            >please leave a review</a
+            data-i18n="popupReviewLink"
+          >
+            please leave a review </a
           >.
         </p>
       </section>
@@ -64,8 +90,10 @@
             id="github-link"
             rel="noreferrer"
             target="_blank"
-            >Repository</a
+            data-i18n="popupFooterRepository"
           >
+            Repository
+          </a>
         </li>
         <li>
           <a
@@ -73,13 +101,20 @@
             id="issues-link"
             rel="noreferrer"
             target="_blank"
-            >Report issue</a
+            data-i18n="popupFooterReportIssue"
           >
+            Report issue
+          </a>
         </li>
         <li>
-          <a href="https://github.com/damecek" rel="noreferrer" target="_blank"
-            >Author</a
+          <a
+            data-i18n="popupFooterAuthor"
+            href="https://github.com/damecek"
+            rel="noreferrer"
+            target="_blank"
           >
+            Author
+          </a>
         </li>
       </ul>
     </footer>

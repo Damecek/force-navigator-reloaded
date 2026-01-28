@@ -73,13 +73,14 @@ module.exports = (env, argv) => {
             transform(content) {
               const manifest = JSON.parse(content.toString());
               manifest.key = isProd ? PROD_KEY : DEV_KEY;
-              manifest.name = manifest.name + (isProd ? '' : ' (Dev)');
+              manifest.name = isProd ? manifest.name : `${manifest.name} (Dev)`;
               manifest.oauth2.client_id = isProd
                 ? PROD_CLIENT_ID
                 : DEV_CLIENT_ID;
               return JSON.stringify(manifest, null, 2);
             },
           },
+          { from: 'src/_locales', to: '_locales' },
           { from: 'src/popup/popup.html', to: 'popup.html' },
           { from: 'src/popup/popup.css', to: 'popup.css' },
           { from: 'src/options/options.html', to: 'options.html' },

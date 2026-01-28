@@ -1,12 +1,14 @@
 import Command from './Command';
-import { Channel, CHANNEL_OPEN_OPTIONS } from '../../../../shared';
+import { Channel, CHANNEL_OPEN_OPTIONS, getLabels } from '../../../../shared';
+
+const labels = getLabels(['commandLabelOptions']);
 
 /**
  * Command that navigates the page to a specified path.
  */
 export default class ExtensionOptionsCommand extends Command {
   constructor({ usage } = {}) {
-    super('extension-options', 'Extension > Options', usage ?? 1);
+    super('extension-options', labels.commandLabelOptions, usage ?? 1);
   }
 
   /**
