@@ -106,6 +106,7 @@ export async function fetchFlowDefinitionsFromSalesforce(connection) {
 /**
  * @typedef {Object} LightningAppDefinition
  * @property {string} DeveloperName
+ * @property {string} Label
  * @property {string | null} NamespacePrefix
  */
 
@@ -115,7 +116,7 @@ export async function fetchFlowDefinitionsFromSalesforce(connection) {
  * @returns {Promise<LightningAppDefinition[]>}
  */
 export async function fetchLightningAppDefinitionsFromSalesforce(connection) {
-  const soql = `SELECT DeveloperName, NamespacePrefix
+  const soql = `SELECT DeveloperName, Label, NamespacePrefix
     FROM AppDefinition
     WHERE UiType = 'Lightning' AND IsLargeFormFactorSupported = TRUE
     ORDER BY DeveloperName`;

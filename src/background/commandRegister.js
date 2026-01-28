@@ -447,7 +447,7 @@ async function getLightningAppCommands(hostname, connection) {
         );
         return {
           id: `lightning-app-${appTarget}`,
-          label: `App > ${app.DeveloperName}`,
+          label: `App > ${app.Label}`,
           path: `/lightning/app/${appTarget}`,
         };
       });
@@ -474,7 +474,6 @@ async function getLightningAppCommands(hostname, connection) {
  * @returns {string}
  */
 function buildLightningAppTarget(namespacePrefix, developerName) {
-  const prefix = namespacePrefix ? `${namespacePrefix}__` : 'c__';
-  const resolvedPrefix = namespacePrefix === 'standard' ? 'standard__' : prefix;
+  const resolvedPrefix = namespacePrefix ? `${namespacePrefix}__` : 'c__';
   return `${resolvedPrefix}${developerName}`;
 }
