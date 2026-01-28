@@ -40,4 +40,14 @@ export const staticCommands = [
     label: 'Application > Files > Home',
     path: '/lightning/o/ContentDocument/home',
   },
+  {
+    id: 'developer-console',
+    label: 'Developer Console',
+    path: '/_ui/common/apex/debug/ApexCSIPage',
+  },
+  {
+    id: 'agentforce-vibes',
+    label: 'Agentforce Vibes',
+    path: '/runtime_developerplatform_codebuilder/codebuilder.app?launch=true',
+  },
 ];
