@@ -11,10 +11,12 @@
         <button
           class="slds-button slds-button_icon slds-modal__close"
           onclick={handleHelp}
-          title="Help"
+          title={labels.commandPaletteHelpTitle}
         >
           <span aria-hidden="true" class="command-pallet__help-icon">?</span>
-          <span class="slds-assistive-text">Help</span>
+          <span class="slds-assistive-text">
+            {labels.commandPaletteHelpAssistive}
+          </span>
         </button>
         <button
           class="slds-button slds-button_icon slds-modal__close"
@@ -33,17 +35,21 @@
               ></path>
             </g>
           </svg>
-          <span class="slds-assistive-text">Cancel and close</span>
+          <span class="slds-assistive-text">
+            {labels.commandPaletteCloseAssistive}
+          </span>
         </button>
       </div>
       <div class="slds-modal__header">
         <h1 class="slds-modal__title slds-hyphenate" tabindex="-1">
-          Command Palette
+          {labels.commandPaletteTitle}
         </h1>
       </div>
       <div class="slds-modal__content slds-p-around_medium">
         <div class="slds-form-element">
-          <label class="slds-form-element__label">Command</label>
+          <label class="slds-form-element__label">
+            {labels.commandPaletteCommandLabel}
+          </label>
           <div class="slds-form-element__control">
             <div class="slds-combobox_container">
               <div
@@ -69,12 +75,12 @@
                     name="command-input"
                     oninput={handleInput}
                     onkeydown={handleKeyDown}
-                    placeholder="Type a command..."
+                    placeholder={labels.commandPalettePlaceholder}
                     type="text"
                   />
                   <span
                     class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right"
-                    title="Show commands"
+                    title={labels.commandPaletteShowCommandsTitle}
                   >
                     <svg
                       aria-hidden="true"
@@ -93,7 +99,7 @@
                   </span>
                 </div>
                 <div
-                  aria-label="Commands"
+                  aria-label={labels.commandPaletteCommandsAriaLabel}
                   class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
                   role="listbox"
                   lwc:ref="listbox"

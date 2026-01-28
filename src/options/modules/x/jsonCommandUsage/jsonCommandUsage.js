@@ -1,8 +1,12 @@
 import { LightningElement, track } from 'lwc';
-import { UsageTracker } from '../../../../shared';
+import { getLabels, UsageTracker } from '../../../../shared';
+
+const labels = getLabels(['optionsCommandUsageHeading', 'errorLoadUsage']);
 
 export default class JsonCommandUsage extends LightningElement {
   static renderMode = 'light';
+
+  labels = labels;
 
   @track usageData = {};
   @track usageError = '';
@@ -18,7 +22,7 @@ export default class JsonCommandUsage extends LightningElement {
       this.usageData = this.cloneValue(usageMap) || {};
       this.usageError = '';
     } catch (err) {
-      const message = err?.message || 'Unable to load usage statistics';
+      const message = err?.message || this.labels.errorLoadUsage;
       this.usageError = message;
       this.usageData = {};
     }

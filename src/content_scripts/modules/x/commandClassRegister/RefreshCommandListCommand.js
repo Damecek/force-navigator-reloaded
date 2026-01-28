@@ -4,8 +4,11 @@ import {
   Channel,
   CHANNEL_REFRESH_COMMANDS,
   COMMAND_CACHE_KEYS,
+  getLabels,
   toLightningHostname,
 } from '../../../../shared';
+
+const labels = getLabels(['commandLabelRefreshCommandList']);
 
 /**
  * Command to refresh the list of dynamic commands in the command palette.
@@ -18,7 +21,7 @@ export default class RefreshCommandListCommand extends Command {
   constructor({ usage } = {}) {
     super(
       'RefreshCommandListCommand',
-      'Extension > Refresh Command List',
+      labels.commandLabelRefreshCommandList,
       usage ?? 1
     );
   }

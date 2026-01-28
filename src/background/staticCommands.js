@@ -3,6 +3,18 @@
  * These commands are common for all domains.
  */
 
+import { getLabels } from '../shared';
+
+const labels = getLabels([
+  'commandStaticNewCustomObject',
+  'commandStaticNewFlow',
+  'commandStaticFlowTriggerExplorer',
+  'commandStaticAppHome',
+  'commandStaticFilesHome',
+  'commandStaticDeveloperConsole',
+  'commandStaticAgentforceVibes',
+]);
+
 /**
  * @typedef {Object} Command
  * @property {string} id - Unique identifier of the command
@@ -17,37 +29,37 @@
 export const staticCommands = [
   {
     id: 'new-custom-object',
-    label: 'Object Manager > New Custom Object',
+    label: labels.commandStaticNewCustomObject,
     path: '/lightning/setup/ObjectManager/new',
   },
   {
     id: 'new-flow',
-    label: 'Platform Tools > Process Automation > New Flow Automation',
+    label: labels.commandStaticNewFlow,
     path: '/builder_platform_interaction/flowBuilder.app',
   },
   {
     id: 'flow-trigger-explorer',
-    label: 'Platform Tools > Process Automation > Flow Trigger Explorer',
+    label: labels.commandStaticFlowTriggerExplorer,
     path: '/interaction_explorer/flowExplorer.app',
   },
   {
     id: 'app-home',
-    label: 'Application > Home',
+    label: labels.commandStaticAppHome,
     path: '/lightning/page/home',
   },
   {
     id: 'files-home',
-    label: 'Application > Files > Home',
+    label: labels.commandStaticFilesHome,
     path: '/lightning/o/ContentDocument/home',
   },
   {
     id: 'developer-console',
-    label: 'Developer Console',
+    label: labels.commandStaticDeveloperConsole,
     path: '/_ui/common/apex/debug/ApexCSIPage',
   },
   {
     id: 'agentforce-vibes',
-    label: 'Agentforce Vibes',
+    label: labels.commandStaticAgentforceVibes,
     path: '/runtime_developerplatform_codebuilder/codebuilder.app?launch=true',
   },
 ];

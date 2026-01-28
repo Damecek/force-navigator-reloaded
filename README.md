@@ -26,6 +26,8 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
   workflows the most
+- **Localization-ready UI**: Uses the Chrome i18n system for extension strings across the popup, options, and command
+  palette
 
 ### Fuzzy Search
 

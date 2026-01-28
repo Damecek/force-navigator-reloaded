@@ -12,6 +12,8 @@ import {
   FLOW_DEFINITION_SETTINGS_KEY,
   FLOW_DEFINITION_TYPE,
   FLOW_LATEST_VERSION_TYPE,
+  getMessage,
+  getLabels,
   getSetting,
   MENU_CACHE_KEY,
   MENU_CACHE_TTL,
@@ -41,89 +43,106 @@ import {
 } from './salesforceUtils';
 import { SalesforceConnection } from './salesforceConnection';
 
+const labels = getLabels([
+  'objectManagerFieldsRelationships',
+  'objectManagerPageLayouts',
+  'objectManagerLightningPages',
+  'objectManagerButtonsLinksActions',
+  'objectManagerCompactLayouts',
+  'objectManagerFieldSets',
+  'objectManagerObjectLimits',
+  'objectManagerRecordTypes',
+  'objectManagerRelatedLookupFilters',
+  'objectManagerSearchLayouts',
+  'objectManagerObjectAccess',
+  'objectManagerApexTriggers',
+  'objectManagerFlowTriggers',
+  'objectManagerValidationRules',
+]);
+
 const OBJECT_MANAGER_SECTIONS = [
   {
     settingKey: SOBJECT_FIELDS_RELATIONSHIPS_ENTITY_TYPE,
     id: 'fields-and-relationship',
-    label: 'Fields & Relationships',
+    label: labels.objectManagerFieldsRelationships,
     pathSuffix: 'FieldsAndRelationships/view',
   },
   {
     settingKey: SOBJECT_PAGE_LAYOUTS_ENTITY_TYPE,
     id: 'page-layouts',
-    label: 'Page Layouts',
+    label: labels.objectManagerPageLayouts,
     pathSuffix: 'PageLayouts/view',
   },
   {
     settingKey: SOBJECT_LIGHTNING_PAGES_ENTITY_TYPE,
     id: 'lightning-pages',
-    label: 'Lightning Pages',
+    label: labels.objectManagerLightningPages,
     pathSuffix: 'LightningPages/view',
   },
   {
     settingKey: SOBJECT_BUTTONS_LINKS_ACTIONS_ENTITY_TYPE,
     id: 'buttons-links-actions',
-    label: 'Buttons, Links, and Actions',
+    label: labels.objectManagerButtonsLinksActions,
     pathSuffix: 'ButtonsLinksActions/view',
   },
   {
     settingKey: SOBJECT_COMPACT_LAYOUTS_ENTITY_TYPE,
     id: 'compact-layouts',
-    label: 'Compact Layouts',
+    label: labels.objectManagerCompactLayouts,
     pathSuffix: 'CompactLayouts/view',
   },
   {
     settingKey: SOBJECT_FIELD_SETS_ENTITY_TYPE,
     id: 'field-sets',
-    label: 'Field Sets',
+    label: labels.objectManagerFieldSets,
     pathSuffix: 'FieldSets/view',
   },
   {
     settingKey: SOBJECT_LIMITS_ENTITY_TYPE,
     id: 'limits',
-    label: 'Object Limits',
+    label: labels.objectManagerObjectLimits,
     pathSuffix: 'Limits/view',
   },
   {
     settingKey: SOBJECT_RECORD_TYPES_ENTITY_TYPE,
     id: 'record-types',
-    label: 'Record Types',
+    label: labels.objectManagerRecordTypes,
     pathSuffix: 'RecordTypes/view',
   },
   {
     settingKey: SOBJECT_RELATED_LOOKUP_FILTERS_ENTITY_TYPE,
     id: 'related-lookup-filters',
-    label: 'Related Lookup Filters',
+    label: labels.objectManagerRelatedLookupFilters,
     pathSuffix: 'RelatedLookupFilters/view',
   },
   {
     settingKey: SOBJECT_SEARCH_LAYOUTS_ENTITY_TYPE,
     id: 'search-layouts',
-    label: 'Search Layouts',
+    label: labels.objectManagerSearchLayouts,
     pathSuffix: 'SearchLayouts/view',
   },
   {
     settingKey: SOBJECT_OBJECT_ACCESS_ENTITY_TYPE,
     id: 'object-access',
-    label: 'Object Access',
+    label: labels.objectManagerObjectAccess,
     pathSuffix: 'ObjectAccess/view',
   },
   {
     settingKey: SOBJECT_APEX_TRIGGERS_ENTITY_TYPE,
     id: 'apex-triggers',
-    label: 'Apex Triggers',
+    label: labels.objectManagerApexTriggers,
     pathSuffix: 'ApexTriggers/view',
   },
   {
     settingKey: SOBJECT_FLOW_TRIGGERS_ENTITY_TYPE,
     id: 'flow-triggers',
-    label: 'Flow Triggers',
+    label: labels.objectManagerFlowTriggers,
     pathSuffix: 'FlowTriggers/view',
   },
   {
     settingKey: SOBJECT_VALIDATION_RULES_ENTITY_TYPE,
     id: 'validation-rules',
-    label: 'Validation Rules',
+    label: labels.objectManagerValidationRules,
     pathSuffix: 'ValidationRules/view',
   },
 ];
@@ -280,26 +299,29 @@ async function getEntityCommands(hostname, connection) {
       if (QualifiedApiName.endsWith('__mdt') && includeCustomMetadata) {
         commands.push({
           id: `custommetadata-new-${KeyPrefix}`,
-          label: `Custom Metadata Types > ${Label} > New`,
+          label: getMessage('commandLabelCustomMetadataNew', Label),
           path: `/lightning/setup/CustomMetadata/page?address=/${KeyPrefix}/e`,
         });
         commands.push({
           id: `custommetadata-list-${KeyPrefix}`,
-          label: `Custom Metadata Types > ${Label} > List`,
+          label: getMessage('commandLabelCustomMetadataList', Label),
           path: `/lightning/setup/CustomMetadata/page?address=/${KeyPrefix}`,
         });
       } else {
         if (IsCustomizable && hasSObjectSettings) {
           commands.push({
             id: `sobject-setup-detail-${DurableId}`,
-            label: `Object Manager > ${Label} > Details`,
+            label: getMessage('commandLabelObjectManagerDetails', Label),
             path: `/lightning/setup/ObjectManager/${DurableId}/Details/view`,
           });
           for (const section of OBJECT_MANAGER_SECTIONS) {
             if (includeSObjectSettings[section.settingKey]) {
               commands.push({
                 id: `sobject-setup-${section.id}-${DurableId}`,
-                label: `Object Manager > ${Label} > ${section.label}`,
+                label: getMessage('commandLabelObjectManagerSection', [
+                  Label,
+                  section.label,
+                ]),
                 path: `/lightning/setup/ObjectManager/${DurableId}/${section.pathSuffix}`,
               });
             }
@@ -309,14 +331,14 @@ async function getEntityCommands(hostname, connection) {
         if (IsEverCreatable && IsCompactLayoutable) {
           commands.push({
             id: `sobject-new-${QualifiedApiName}`,
-            label: `Application > ${Label} > New`,
+            label: getMessage('commandLabelApplicationNew', Label),
             path: `/lightning/o/${QualifiedApiName}/new`,
           });
         }
         if (IsEverCreatable && IsSearchLayoutable) {
           commands.push({
             id: `sobject-list-${QualifiedApiName}`,
-            label: `Application > ${Label} > List View`,
+            label: getMessage('commandLabelApplicationListView', Label),
             path: `/lightning/o/${QualifiedApiName}/home`,
           });
         }
@@ -377,21 +399,21 @@ async function getFlowCommands(hostname, connection) {
         if (includeDefinition) {
           commands.push({
             id: `flow-definition-${f.Id}`,
-            label: `Flow > Definition > ${label}`,
+            label: getMessage('commandLabelFlowDefinition', label),
             path: `/lightning/setup/Flows/page?address=%2F${f.Id}`,
           });
         }
         if (f.LatestVersionId && includeLatest) {
           commands.push({
             id: `flow-latest-${f.Id}`,
-            label: `Flow > Latest Version > ${label}`,
+            label: getMessage('commandLabelFlowLatest', label),
             path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.LatestVersionId}`,
           });
         }
         if (f.ActiveVersionId && includeActive) {
           commands.push({
             id: `flow-active-${f.Id}`,
-            label: `Flow > Active Version > ${label}`,
+            label: getMessage('commandLabelFlowActive', label),
             path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.ActiveVersionId}`,
           });
         }

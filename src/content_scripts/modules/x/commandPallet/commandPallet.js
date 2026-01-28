@@ -1,10 +1,23 @@
 import { api, LightningElement, track } from 'lwc';
 import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
-import { Channel, CHANNEL_OPEN_POPUP } from '../../../../shared';
+import { Channel, CHANNEL_OPEN_POPUP, getLabels } from '../../../../shared';
+
+const labels = getLabels([
+  'commandPaletteHelpTitle',
+  'commandPaletteHelpAssistive',
+  'commandPaletteCloseAssistive',
+  'commandPaletteTitle',
+  'commandPaletteCommandLabel',
+  'commandPalettePlaceholder',
+  'commandPaletteShowCommandsTitle',
+  'commandPaletteCommandsAriaLabel',
+]);
 
 export default class CommandPallet extends LightningElement {
   static renderMode = 'light';
+
+  labels = labels;
 
   /**
    * Fuzzy search engine instance
