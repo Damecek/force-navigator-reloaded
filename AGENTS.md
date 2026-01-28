@@ -7,6 +7,7 @@
 
 - The user will provide a task.
 - Wait for all terminal commands to be completed (or terminate them) before finishing.
+- When adding new command sources, update the related constants, default settings, README.md, and backlog.md.
 
 # AGENTS.md spec
 

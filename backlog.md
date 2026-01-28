@@ -71,6 +71,7 @@ another example of such is `New Report`
       Setup'%2C'PersonalSettings') → 403: [{"message":"TotalRequests Limit exceeded.","errorCode":"REQUEST_LIMIT_EXCEEDED"}]
       Context background.js:513 (anonymous function)
 - [x] add Reports, Files, Dashboards
+- [x] add Lightning app navigation commands
 - [ ] automatically refresh specific metadata on specific pages, e.g. when creating new object/field, when creating new
       flow version etc.
 - [x] in option show list command usage
