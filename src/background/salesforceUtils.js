@@ -102,3 +102,25 @@ export async function fetchFlowDefinitionsFromSalesforce(connection) {
   console.log('FlowDefinition query:', soql, result);
   return result;
 }
+
+/**
+ * @typedef {Object} LightningAppDefinition
+ * @property {string} DeveloperName
+ * @property {string} Label
+ * @property {string | null} NamespacePrefix
+ */
+
+/**
+ * Fetch Lightning AppDefinition records via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<LightningAppDefinition[]>}
+ */
+export async function fetchLightningAppDefinitionsFromSalesforce(connection) {
+  const soql = `SELECT DeveloperName, Label, NamespacePrefix
+    FROM AppDefinition
+    WHERE UiType = 'Lightning' AND IsLargeFormFactorSupported = TRUE
+    ORDER BY DeveloperName`;
+  const result = await connection.query(soql);
+  console.log('AppDefinition query:', soql, result);
+  return result;
+}
