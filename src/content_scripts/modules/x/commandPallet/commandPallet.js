@@ -1,6 +1,7 @@
 import { api, LightningElement, track } from 'lwc';
 import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
+import { Channel, CHANNEL_OPEN_POPUP } from '../../../../shared';
 
 export default class CommandPallet extends LightningElement {
   static renderMode = 'light';
@@ -148,6 +149,13 @@ export default class CommandPallet extends LightningElement {
 
   handleClose() {
     this.dispatchEvent(new CustomEvent('close', { bubbles: true }));
+  }
+
+  /**
+   * Open the extension popup with shortcuts and settings.
+   */
+  handleHelp() {
+    new Channel(CHANNEL_OPEN_POPUP).publish();
   }
 
   /**

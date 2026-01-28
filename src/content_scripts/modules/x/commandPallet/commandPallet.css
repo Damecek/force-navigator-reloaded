@@ -24,3 +24,13 @@ x-command-pallet .modal-container.slds-modal__container {
     max-width: 50rem;
     padding-bottom: 20rem;
 }
+
+x-command-pallet .command-pallet__help-icon {
+    align-items: center;
+    display: inline-flex;
+    font-size: 1.1rem;
+    font-weight: 600;
+    height: 1.5rem;
+    justify-content: center;
+    width: 1.5rem;
+}
