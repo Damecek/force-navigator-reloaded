@@ -1,5 +1,6 @@
 import Command from './Command';
 import { toLightningUrl } from '../../../../shared';
+import { dispatchLightningNavigation } from '../../../lightningNavigationBridge';
 
 /**
  * Command that navigates the page to a specified path.
@@ -27,7 +28,10 @@ export default class NavigationCommand extends Command {
     if (openInNewTab) {
       window.open(url, '_blank');
     } else {
-      window.location.href = url;
+      const handled = dispatchLightningNavigation(url);
+      if (!handled) {
+        window.location.href = url;
+      }
     }
     return true;
   }
