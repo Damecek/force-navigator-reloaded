@@ -17,6 +17,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
   `Cmd+Shift+P` on Mac),
   this can be configured in the chrome shortcut settings (`chrome://extensions/shortcuts`)
 - **Fast Navigation**: Quickly search and navigate to Salesforce records, flows, list views, and setup pages
+- **Aura Navigation**: Uses Salesforce Aura navigation events when available, with URL fallback for reliability
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
 - **Modern Architecture**: Built with [LWC OSS](https://lwc.dev/) (Lightning Web Components) for composable UI
 - **Dynamic & Configurable Commands**: Fetches and caches Salesforce setup menu items, SObjects, Flows, and Lightning

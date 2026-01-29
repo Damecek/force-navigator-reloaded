@@ -43,5 +43,15 @@
       ],
       "js": ["content.js"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["lightningNavigation.js"],
+      "matches": [
+        "https://*.force.com/*",
+        "https://*.salesforce-setup.com/*",
+        "https://*.builder.salesforce-experience.com/*"
+      ]
+    }
   ]
 }
