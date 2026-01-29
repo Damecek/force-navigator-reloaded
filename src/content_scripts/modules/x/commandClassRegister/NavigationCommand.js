@@ -28,8 +28,19 @@ export default class NavigationCommand extends Command {
     if (openInNewTab) {
       window.open(url, '_blank');
     } else {
-      const handled = dispatchLightningNavigation(url);
-      if (!handled) {
+      const isLightningPath =
+        this.path.startsWith('/lightning/o/') ||
+        this.path.startsWith('/lightning/page/');
+      const isLightningLocation =
+        window.location.pathname.startsWith('/lightning/o/') ||
+        window.location.pathname.startsWith('/lightning/page/');
+
+      if (isLightningPath && isLightningLocation) {
+        const handled = dispatchLightningNavigation(url);
+        if (!handled) {
+          window.location.href = url;
+        }
+      } else {
         window.location.href = url;
       }
     }
