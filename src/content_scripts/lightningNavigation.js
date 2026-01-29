@@ -24,13 +24,12 @@ document.addEventListener('forceNavigatorNavigate', (event) => {
     }
     navigationEvent.setParams({ url });
     navigationEvent.fire();
-    event.preventDefault();
   } catch (error) {
     console.error(
       'Lightning navigation failed, falling back to default navigation:',
       error.message
     );
-    window.open(url, '_top');
-    event.preventDefault();
+    window.location.href;
   }
+  event.preventDefault();
 });
