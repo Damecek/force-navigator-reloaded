@@ -1,0 +1,8 @@
+.command-palette-container {
+  position: relative;
+}
+
+.command-palette-container .slds-spinner_container {
+  inset: 0;
+  position: absolute;
+}

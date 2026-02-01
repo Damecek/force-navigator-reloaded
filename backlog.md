@@ -47,7 +47,7 @@ another example of such is `New Report`
 
 - [ ] [internationalize](https://developer.chrome.com/docs/extensions/reference/api/i18n#concepts_and_usage) the
       extension
-- [ ] visualize the user running process, e.g. on command refresh, either spinner or toast or some other indication that
+- [x] visualize the user running process, e.g. on command refresh, either spinner or toast or some other indication that
       task started and finished
 - [ ] improve error handling when connection have expired token. implement client class which will create connection and
       expose command creator methods, on 401, it will call ensure token

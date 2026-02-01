@@ -18,6 +18,7 @@ import { createCommandDescriptors } from '../commandClassRegister/commandFactory
 export default class App extends LightningElement {
   static renderMode = 'light';
   @track commands = [];
+  @track isRefreshing = false;
   isCommandPaletteVisible = false;
 
   /**
@@ -35,6 +36,7 @@ export default class App extends LightningElement {
   }
 
   publishRefreshCommands() {
+    this.isRefreshing = true;
     return new Channel(CHANNEL_REFRESH_COMMANDS).publish();
   }
 
@@ -45,13 +47,17 @@ export default class App extends LightningElement {
 
   _handleCommands = async ({ data }) => {
     console.log('handle commands', data);
-    if (data) {
-      const descriptors = await createCommandDescriptors(data);
-      this.commands = descriptors.sort((a, b) =>
-        a.label.localeCompare(b.label)
-      );
-    } else {
-      this.commands = [];
+    try {
+      if (data) {
+        const descriptors = await createCommandDescriptors(data);
+        this.commands = descriptors.sort((a, b) =>
+          a.label.localeCompare(b.label)
+        );
+      } else {
+        this.commands = [];
+      }
+    } finally {
+      this.isRefreshing = false;
     }
     return false;
   };
