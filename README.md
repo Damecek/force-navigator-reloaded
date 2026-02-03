@@ -28,6 +28,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
   workflows the most
+- **Welcome Page**: Automatically opens after first install with a quick start guide, shortcut tips, and review link
 
 ### Fuzzy Search
 

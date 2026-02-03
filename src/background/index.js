@@ -90,4 +90,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
     await CacheManager.clearAll();
     await loadSettings();
   }
+
+  if (reason === 'install') {
+    const url = chrome.runtime.getURL('welcome.html');
+    await chrome.tabs.create({ url });
+  }
 });

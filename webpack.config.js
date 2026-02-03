@@ -84,6 +84,14 @@ module.exports = (env, argv) => {
           { from: 'src/popup/popup.css', to: 'popup.css' },
           { from: 'src/options/options.html', to: 'options.html' },
           { from: 'src/options/dark-mode.css', to: 'dark-mode.css' },
+          { from: 'src/welcome/welcome.html', to: 'welcome.html' },
+          { from: 'src/welcome/welcome.css', to: 'welcome.css' },
+          { from: 'src/welcome/welcome.js', to: 'welcome.js' },
+          {
+            from: 'src/welcome/images',
+            to: 'images',
+            noErrorOnMissing: true,
+          },
           {
             from: 'src/content_scripts/lightningNavigation.js',
             to: 'lightningNavigation.js',
