@@ -108,7 +108,7 @@ action.
 - **Content Script** (`src/content_scripts`): Injects the LWC app into Salesforce pages and handles communication with
   the background script
 - **LWC Components** (`src/content_scripts/modules/x`): Lightning Web Components that provide the UI for the command
-  palette
+  palette (including the `commandPalette` component)
 - **Popup** (`src/popup`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme
   styling
 - **Options Page** (`src/options` and `src/options/modules`): Settings UI built with LWC

@@ -8,24 +8,24 @@
     z-index: 10000;
 }
 
-x-command-pallet .slds-modal__content {
+x-command-palette .slds-modal__content {
     overflow: visible;
 }
 
-x-command-pallet .slds-modal {
+x-command-palette .slds-modal {
     z-index: 9060;
 }
 
-x-command-pallet .slds-scope .slds-modal__content {
+x-command-palette .slds-scope .slds-modal__content {
     overflow: visible;
 }
 
-x-command-pallet .modal-container.slds-modal__container {
+x-command-palette .modal-container.slds-modal__container {
     max-width: 50rem;
     padding-bottom: 20rem;
 }
 
-x-command-pallet .command-pallet__help-icon {
+x-command-palette .command-palette__help-icon {
     align-items: center;
     display: inline-flex;
     font-size: 1.1rem;

@@ -3,7 +3,7 @@ import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
 import { Channel, CHANNEL_OPEN_POPUP } from '../../../../shared';
 
-export default class CommandPallet extends LightningElement {
+export default class CommandPalette extends LightningElement {
   static renderMode = 'light';
 
   /**
@@ -34,7 +34,7 @@ export default class CommandPallet extends LightningElement {
   set commands(value) {
     this._commands = Array.isArray(value) ? value : [];
     this.filteredCommands = [...this._commands].sort(this.usageSort);
-    console.log('CommandPallet commands set:', this.filteredCommands);
+    console.log('CommandPalette commands set:', this.filteredCommands);
     this.selectedIndex = 0;
     this._visibleStart = 0;
     this._visibleEnd = 20;
