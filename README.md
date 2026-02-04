@@ -28,6 +28,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
   workflows the most
+- **Welcome Page**: Automatically opens after first install with a quick start guide, shortcut tips, and review link
 
 ### Fuzzy Search
 
@@ -107,7 +108,7 @@ action.
 - **Content Script** (`src/content_scripts`): Injects the LWC app into Salesforce pages and handles communication with
   the background script
 - **LWC Components** (`src/content_scripts/modules/x`): Lightning Web Components that provide the UI for the command
-  palette
+  palette (including the `commandPalette` component)
 - **Popup** (`src/popup`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme
   styling
 - **Options Page** (`src/options` and `src/options/modules`): Settings UI built with LWC

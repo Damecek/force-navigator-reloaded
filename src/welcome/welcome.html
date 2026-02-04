@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Welcome to Force Navigator Reloaded</title>
+    <link
+      href="https://unpkg.com/@salesforce-ux/design-system/assets/styles/salesforce-lightning-design-system.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="dark-mode.css"
+      media="(prefers-color-scheme: dark)"
+      rel="stylesheet"
+    />
+    <link href="welcome.css" rel="stylesheet" />
+  </head>
+  <body class="slds-scope slds-theme_default">
+    <main class="welcome-page">
+      <section
+        class="slds-page-header slds-page-header_record-home welcome-hero"
+      >
+        <div class="slds-grid slds-wrap slds-gutters">
+          <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-12">
+            <img
+              alt="Force Navigator Reloaded"
+              class="welcome-logo"
+              src="icons/icon128.png"
+            />
+          </div>
+          <div class="slds-col slds-size_1-of-1 slds-large-size_11-of-12">
+            <p class="slds-text-title_caps welcome-eyebrow">
+              Thanks for installing
+            </p>
+            <h1 class="slds-text-heading_large">Force Navigator Reloaded</h1>
+            <p class="slds-text-body_regular welcome-lead">
+              A fast command palette for Salesforce Lightning. Search, launch,
+              and navigate without leaving the keyboard.
+            </p>
+            <div class="welcome-actions">
+              <button
+                class="slds-button slds-button_brand"
+                data-action="open-options"
+              >
+                Open Settings
+              </button>
+              <button
+                class="slds-button slds-button_neutral"
+                data-action="open-shortcuts"
+              >
+                Configure Shortcut
+              </button>
+            </div>
+            <p class="slds-text-body_small welcome-footnote">
+              Works only in Salesforce Lightning (not in Classic).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="welcome-section">
+        <h2 class="slds-text-heading_medium">Get started in 60 seconds</h2>
+        <ol class="welcome-steps">
+          <li class="slds-box slds-theme_default">
+            <h3 class="slds-text-heading_small">Open Lightning</h3>
+            <p class="slds-text-body_regular">
+              Navigate to any Lightning page in your org. Supported domains are
+              force.com, salesforce-setup.com, and
+              builder.salesforce-experience.com.
+            </p>
+            <a class="slds-text-link" hidden href="#" id="open-lightning-link">
+              Open your first Lightning tab
+            </a>
+          </li>
+          <li class="slds-box slds-theme_default">
+            <h3 class="slds-text-heading_small">Open the command palette</h3>
+            <p class="slds-text-body_regular">
+              Press <strong>Ctrl+Shift+L</strong> (Windows) or
+              <strong>Cmd+Shift+P</strong> (Mac). Press the shortcut again or
+              <strong>Esc</strong> to close it.
+            </p>
+          </li>
+          <li class="slds-box slds-theme_default">
+            <h3 class="slds-text-heading_small">Search and launch</h3>
+            <p class="slds-text-body_regular">
+              Type a command, object, flow, or setup page name and press Enter.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="welcome-section">
+        <h2 class="slds-text-heading_medium">What it can do</h2>
+        <div class="slds-grid slds-wrap slds-gutters">
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+            <article class="slds-card">
+              <div class="slds-card__body slds-card__body_inner">
+                <h3 class="slds-text-heading_small">Instant search</h3>
+                <p class="slds-text-body_regular">
+                  Fuzzy search with usage-based ranking for fast discovery.
+                </p>
+              </div>
+            </article>
+          </div>
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+            <article class="slds-card">
+              <div class="slds-card__body slds-card__body_inner">
+                <h3 class="slds-text-heading_small">Setup, objects, flows</h3>
+                <p class="slds-text-body_regular">
+                  Navigate setup, object metadata, flows, and admin pages
+                  quickly.
+                </p>
+              </div>
+            </article>
+          </div>
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+            <article class="slds-card">
+              <div class="slds-card__body slds-card__body_inner">
+                <h3 class="slds-text-heading_small">Customizable sources</h3>
+                <p class="slds-text-body_regular">
+                  Edit JSON settings to add custom commands or hide sources.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="welcome-section">
+        <h2 class="slds-text-heading_medium">Screenshots</h2>
+        <p class="slds-text-body_regular welcome-lead">
+          Drop the screenshots into the placeholders below. Each tile notes the
+          exact image we want to show.
+        </p>
+        <div class="slds-grid slds-wrap slds-gutters welcome-shots-grid">
+          <div
+            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-align-middle"
+          >
+            <figure class="welcome-shot">
+              <div class="welcome-shot__frame">
+                <img
+                  alt="Command palette search in a Lightning application"
+                  class="welcome-shot__image"
+                  src="images/command-palette.png"
+                />
+              </div>
+              <figcaption class="slds-text-body_small">
+                Search in a Lightning application (e.g. Application > Home).
+              </figcaption>
+            </figure>
+          </div>
+          <div
+            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-align-middle"
+          >
+            <figure class="welcome-shot">
+              <div class="welcome-shot__frame">
+                <img
+                  alt="Options page with JSON configuration and command usage panel"
+                  class="welcome-shot__image"
+                  src="images/options.png"
+                />
+              </div>
+              <figcaption class="slds-text-body_small">
+                Settings page with JSON configuration and command usage panel.
+              </figcaption>
+            </figure>
+          </div>
+          <div
+            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-align-middle"
+          >
+            <figure class="welcome-shot">
+              <div class="welcome-shot__frame">
+                <img
+                  alt="Command palette search in Salesforce Setup"
+                  class="welcome-shot__image"
+                  src="images/fuzzy-search.png"
+                />
+              </div>
+              <figcaption class="slds-text-body_small">
+                Search in Setup (e.g. Setup Home highlighted).
+              </figcaption>
+            </figure>
+          </div>
+          <div
+            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-align-middle"
+          >
+            <figure class="welcome-shot">
+              <div class="welcome-shot__frame">
+                <img
+                  alt="Extension popup with shortcut help and review link"
+                  class="welcome-shot__image"
+                  src="images/popup.png"
+                />
+              </div>
+              <figcaption class="slds-text-body_small">
+                Extension popup with shortcuts and review link.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="slds-card welcome-callout">
+        <div class="slds-card__body slds-card__body_inner">
+          <div>
+            <h2 class="slds-text-heading_medium">Set your own shortcut</h2>
+            <p class="slds-text-body_regular">
+              Open Chrome Extensions shortcuts and choose a key combo that fits
+              your workflow.
+            </p>
+          </div>
+          <button
+            class="slds-button slds-button_brand"
+            data-action="open-shortcuts"
+          >
+            Open chrome://extensions/shortcuts
+          </button>
+        </div>
+      </section>
+
+      <section class="slds-card welcome-callout">
+        <div class="slds-card__body slds-card__body_inner">
+          <div>
+            <h2 class="slds-text-heading_medium">Leave a review</h2>
+            <p class="slds-text-body_regular">
+              If Force Navigator Reloaded saves you time, please leave a quick
+              review. It helps adoption and future development.
+            </p>
+          </div>
+          <a
+            class="slds-button slds-button_neutral"
+            href="https://chromewebstore.google.com/detail/force-navigator-reloaded/iniflnopffblekndhplennjijdcfkeak/reviews?utm_source=welcome"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Open reviews
+          </a>
+        </div>
+      </section>
+
+      <footer class="welcome-footer">
+        <p class="slds-text-body_small">
+          Thanks for using Force Navigator Reloaded. Ideas or feedback? Share
+          them in the GitHub repository or open a new issue.
+        </p>
+        <div class="welcome-footer__links">
+          <a
+            class="slds-text-link"
+            href="https://github.com/Damecek/force-navigator-reloaded"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Repository
+          </a>
+          <a
+            class="slds-text-link"
+            href="https://github.com/Damecek/force-navigator-reloaded/issues/new"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Open an issue
+          </a>
+        </div>
+      </footer>
+    </main>
+
+    <script src="welcome.js"></script>
+  </body>
+</html>

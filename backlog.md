@@ -4,6 +4,7 @@ Below are the main steps to achieve the MVP of the Command Palette for the Sales
 Mark each line with [x] when the task is completed.
 
 - [ ] Error Handling: centralized input validation and error reporting in the UI
+- [x] Post-install welcome page with quick start, shortcut setup, and review link
 - [ ] Command `Login as <username>` (User Switcher)
 - [ ] Implement record search using `?` prefix
 
