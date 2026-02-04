@@ -2,18 +2,10 @@
   <div class="command-palette-container">
     <x-command-palette
       commands={commands}
+      is-loading={isLoading}
       lwc:if={isCommandPaletteVisible}
       onclose={handleClose}
       lwc:ref="palette"
     ></x-command-palette>
-    <template lwc:if={isRefreshing}>
-      <div class="slds-spinner_container" aria-live="assertive">
-        <div class="slds-spinner slds-spinner_medium" role="status">
-          <span class="slds-assistive-text">Loading</span>
-          <div class="slds-spinner__dot-a"></div>
-          <div class="slds-spinner__dot-b"></div>
-        </div>
-      </div>
-    </template>
   </div>
 </template>

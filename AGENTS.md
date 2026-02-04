@@ -49,3 +49,4 @@
 - Use JSDoc comments to document public APIs and to introduce types for parameters and return values.
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.
+- For long-running command executions, emit explicit loading events from command classes so `app` can toggle loading indicators without command-id filtering.

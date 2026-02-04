@@ -7,6 +7,7 @@ import {
   CHANNEL_TOGGLE_COMMAND_PALETTE,
 } from '../../../../shared';
 import { createCommandDescriptors } from '../commandClassRegister/commandFactory';
+import { COMMAND_LOADING_EVENT } from '../loading/loadingEvents';
 
 /**
  * App component for the command palette.
@@ -18,7 +19,7 @@ import { createCommandDescriptors } from '../commandClassRegister/commandFactory
 export default class App extends LightningElement {
   static renderMode = 'light';
   @track commands = [];
-  @track isRefreshing = false;
+  @track isLoading = false;
   isCommandPaletteVisible = false;
 
   /**
@@ -31,18 +32,25 @@ export default class App extends LightningElement {
       this._handleToggleCommandPalette
     );
     new Channel(CHANNEL_COMPLETED_AUTH_FLOW).subscribe(this._handleAuth);
+    window.addEventListener(COMMAND_LOADING_EVENT, this._handleCommandLoading);
     window.addEventListener('keydown', this._handleEscape);
     this.publishRefreshCommands();
   }
 
   publishRefreshCommands() {
-    this.isRefreshing = true;
+    this.isLoading = true;
     return new Channel(CHANNEL_REFRESH_COMMANDS).publish();
   }
 
   _handleAuth = () => {
     console.log('auth completed');
     return this.publishRefreshCommands();
+  };
+
+  _handleCommandLoading = ({ detail }) => {
+    if (typeof detail?.isLoading === 'boolean') {
+      this.isLoading = detail.isLoading;
+    }
   };
 
   _handleCommands = async ({ data }) => {
@@ -57,7 +65,7 @@ export default class App extends LightningElement {
         this.commands = [];
       }
     } finally {
-      this.isRefreshing = false;
+      this.isLoading = false;
     }
     return false;
   };

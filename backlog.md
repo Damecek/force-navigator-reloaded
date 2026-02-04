@@ -50,6 +50,7 @@ another example of such is `New Report`
       extension
 - [x] visualize the user running process, e.g. on command refresh, either spinner or toast or some other indication that
       task started and finished
+- [x] show spinner while running refresh commands directly from the command palette
 - [ ] improve error handling when connection have expired token. implement client class which will create connection and
       expose command creator methods, on 401, it will call ensure token
 

@@ -34,3 +34,36 @@ x-command-palette .command-palette__help-icon {
     justify-content: center;
     width: 1.5rem;
 }
+
+x-command-palette .command-palette__loading-visibility {
+    align-items: center;
+    display: inline-flex;
+    margin-right: 0.5rem;
+    opacity: 0;
+    transition: opacity 400ms ease-in-out;
+}
+
+x-command-palette .command-palette__loading-visibility_visible {
+    opacity: 1;
+}
+
+x-command-palette .command-palette__loading-dot {
+    animation: command-palette-spin 800ms linear infinite;
+    border: 2px solid var(--slds-g-color-border-base-2, #c9c7c5);
+    border-right-color: var(--slds-g-color-brand-base-50, #0176d3);
+    border-radius: 50%;
+    box-sizing: border-box;
+    display: inline-block;
+    height: 0.95rem;
+    width: 0.95rem;
+}
+
+@keyframes command-palette-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

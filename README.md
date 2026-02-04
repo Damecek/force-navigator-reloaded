@@ -24,6 +24,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
   apps directly from your org. Edit the JSON settings to include or exclude specific sources and custom commands from
   the palette.
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
+- **Loading Feedback**: A spinner is displayed while refresh-oriented commands are rebuilding the command list
 - **Virtual Scrolling**: Only visible commands are rendered, keeping performance high even with thousands of commands
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
