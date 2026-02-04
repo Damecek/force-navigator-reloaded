@@ -1,11 +1,9 @@
 <template lwc:render-mode="light">
-  <div class="command-palette-container">
-    <x-command-palette
-      commands={commands}
-      is-loading={isLoading}
-      lwc:if={isCommandPaletteVisible}
-      onclose={handleClose}
-      lwc:ref="palette"
-    ></x-command-palette>
-  </div>
+  <x-command-palette
+    commands={commands}
+    is-loading={isLoading}
+    lwc:if={isCommandPaletteVisible}
+    onclose={handleClose}
+    lwc:ref="palette"
+  ></x-command-palette>
 </template>

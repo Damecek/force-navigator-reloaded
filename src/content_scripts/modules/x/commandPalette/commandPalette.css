@@ -38,7 +38,7 @@ x-command-palette .command-palette__help-icon {
 x-command-palette .command-palette__loading-visibility {
     align-items: center;
     display: inline-flex;
-    margin-right: 0.5rem;
+    pointer-events: none;
     opacity: 0;
     transition: opacity 400ms ease-in-out;
 }
