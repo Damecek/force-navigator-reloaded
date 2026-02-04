@@ -11,25 +11,25 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.20",
-    "@babel/eslint-parser": "^7.22.20",
-    "@babel/preset-env": "^7.22.20",
+    "@babel/core": "^7.29.0",
+    "@babel/eslint-parser": "^7.28.6",
+    "@babel/preset-env": "^7.29.0",
     "@lwc/eslint-plugin-lwc": "^3.0.0",
-    "@lwc/eslint-plugin-lwc-platform": "^6.0.0",
-    "@lwc/module-resolver": "^8.19.1",
-    "@salesforce/eslint-config-lwc": "^4.0.0",
+    "@lwc/eslint-plugin-lwc-platform": "^6.3.0",
+    "@lwc/module-resolver": "^8.28.2",
+    "@salesforce/eslint-config-lwc": "^4.1.2",
     "babel-loader": "^9.1.3",
-    "copy-webpack-plugin": "^11.0.0",
-    "eslint": "^9.27.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-import": "^2.29.4",
-    "husky": "^8.0.0",
-    "lwc": "^8.19.1",
+    "copy-webpack-plugin": "^13.0.1",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "husky": "^9.1.7",
+    "lwc": "^8.28.2",
     "lwc-webpack-plugin": "^3.1.0",
-    "prettier": "^3.0.0",
-    "terser-webpack-plugin": "^5.3.3",
-    "webpack": "^5.99.9",
-    "webpack-cli": "^5.1.4"
+    "prettier": "^3.8.1",
+    "terser-webpack-plugin": "^5.3.16",
+    "webpack": "^5.105.0",
+    "webpack-cli": "^6.0.1"
   },
   "lint-staged": {
     "*.{js,json,md,html}": "prettier --write"
@@ -41,9 +41,9 @@
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.2",
-    "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.38.0",
-    "@leeoniya/ufuzzy": "^1.0.18",
+    "@codemirror/state": "^6.5.4",
+    "@codemirror/view": "^6.39.12",
+    "@leeoniya/ufuzzy": "^1.0.19",
     "@webcomponents/custom-elements": "^1.6.0",
     "codemirror": "^6.0.2"
   }
