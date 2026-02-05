@@ -34,7 +34,7 @@ export default class RefreshCommandListCommand extends Command {
     publishCommandLoading(true);
     try {
       const cache = new CacheManager(toLightningHostname(this.hostname));
-      await COMMAND_CACHE_KEYS.forEach((key) => cache.clear(key));
+      await Promise.all(COMMAND_CACHE_KEYS.map((key) => cache.clear(key)));
       await new Channel(CHANNEL_REFRESH_COMMANDS).publish();
     } finally {
       publishCommandLoading(false);
