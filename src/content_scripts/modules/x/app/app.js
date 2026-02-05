@@ -2,11 +2,13 @@ import { LightningElement, track } from 'lwc';
 import {
   Channel,
   CHANNEL_COMPLETED_AUTH_FLOW,
+  CHANNEL_FAILED_AUTH_FLOW,
   CHANNEL_REFRESH_COMMANDS,
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
 } from '../../../../shared';
 import { createCommandDescriptors } from '../commandClassRegister/commandFactory';
+import { COMMAND_LOADING_EVENT } from '../loading/loadingEvents';
 
 /**
  * App component for the command palette.
@@ -18,6 +20,7 @@ import { createCommandDescriptors } from '../commandClassRegister/commandFactory
 export default class App extends LightningElement {
   static renderMode = 'light';
   @track commands = [];
+  @track isLoading = false;
   isCommandPaletteVisible = false;
 
   /**
@@ -30,11 +33,14 @@ export default class App extends LightningElement {
       this._handleToggleCommandPalette
     );
     new Channel(CHANNEL_COMPLETED_AUTH_FLOW).subscribe(this._handleAuth);
+    new Channel(CHANNEL_FAILED_AUTH_FLOW).subscribe(this._handleAuthFailure);
+    window.addEventListener(COMMAND_LOADING_EVENT, this._handleCommandLoading);
     window.addEventListener('keydown', this._handleEscape);
     this.publishRefreshCommands();
   }
 
   publishRefreshCommands() {
+    this.isLoading = true;
     return new Channel(CHANNEL_REFRESH_COMMANDS).publish();
   }
 
@@ -43,15 +49,31 @@ export default class App extends LightningElement {
     return this.publishRefreshCommands();
   };
 
+  _handleAuthFailure = ({ data }) => {
+    console.error('auth failed', data);
+    this.isLoading = false;
+    return false;
+  };
+
+  _handleCommandLoading = ({ detail }) => {
+    if (typeof detail?.isLoading === 'boolean') {
+      this.isLoading = detail.isLoading;
+    }
+  };
+
   _handleCommands = async ({ data }) => {
     console.log('handle commands', data);
-    if (data) {
-      const descriptors = await createCommandDescriptors(data);
-      this.commands = descriptors.sort((a, b) =>
-        a.label.localeCompare(b.label)
-      );
-    } else {
-      this.commands = [];
+    try {
+      if (data) {
+        const descriptors = await createCommandDescriptors(data);
+        this.commands = descriptors.sort((a, b) =>
+          a.label.localeCompare(b.label)
+        );
+      } else {
+        this.commands = [];
+      }
+    } finally {
+      this.isLoading = false;
     }
     return false;
   };

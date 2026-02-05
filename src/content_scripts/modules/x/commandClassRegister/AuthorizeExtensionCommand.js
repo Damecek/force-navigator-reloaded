@@ -1,5 +1,6 @@
 import Command from './Command';
 import { Channel, CHANNEL_INVOKE_AUTH_FLOW } from '../../../../shared';
+import { publishCommandLoading } from '../loading/loadingEvents';
 
 export default class AuthorizeExtensionCommand extends Command {
   /**
@@ -16,6 +17,7 @@ export default class AuthorizeExtensionCommand extends Command {
    */
   async execute(options) {
     console.log('AuthorizeExtensionCommand.execute');
+    publishCommandLoading(true);
     await new Channel(CHANNEL_INVOKE_AUTH_FLOW).publish();
     console.log('auth flow invoked');
     return false;

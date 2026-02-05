@@ -25,6 +25,7 @@ export default class CommandPalette extends LightningElement {
   @track _visibleEnd = 20;
 
   _commands = [];
+  _isLoading = false;
 
   @api
   get commands() {
@@ -40,8 +41,24 @@ export default class CommandPalette extends LightningElement {
     this._visibleEnd = 20;
   }
 
+  @api
+  get isLoading() {
+    return this._isLoading;
+  }
+
+  set isLoading(value) {
+    this._isLoading = Boolean(value);
+    if (this._isLoading) {
+      this._scroller = undefined;
+    }
+  }
+
   usageSort(a, b) {
     return (b.usage || 0) - (a.usage || 0);
+  }
+
+  get loadingIndicatorClass() {
+    return `slds-button slds-button_icon slds-modal__close command-palette__loading-visibility${this._isLoading ? ' command-palette__loading-visibility_visible' : ''}`;
   }
 
   /**

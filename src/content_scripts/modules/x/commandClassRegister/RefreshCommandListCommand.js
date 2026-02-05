@@ -6,6 +6,7 @@ import {
   COMMAND_CACHE_KEYS,
   toLightningHostname,
 } from '../../../../shared';
+import { publishCommandLoading } from '../loading/loadingEvents';
 
 /**
  * Command to refresh the list of dynamic commands in the command palette.
@@ -30,8 +31,9 @@ export default class RefreshCommandListCommand extends Command {
    */
   async execute(options) {
     console.log('RefreshCommandListCommand.execute');
+    publishCommandLoading(true);
     const cache = new CacheManager(toLightningHostname(this.hostname));
-    await COMMAND_CACHE_KEYS.forEach((key) => cache.clear(key));
+      await Promise.all(COMMAND_CACHE_KEYS.map((key) => cache.clear(key)));
     await new Channel(CHANNEL_REFRESH_COMMANDS).publish();
     return false;
   }

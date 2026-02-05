@@ -8,6 +8,10 @@
   >
     <div class="modal-container slds-modal__container">
       <div class="slds-grid slds-align-bottom">
+        <button class={loadingIndicatorClass} title="Loading" type="button">
+          <span class="command-palette__loading-dot" aria-hidden="true"></span>
+          <span class="slds-assistive-text">Loading</span>
+        </button>
         <button
           class="slds-button slds-button_icon slds-modal__close"
           onclick={handleHelp}

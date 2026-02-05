@@ -8,6 +8,8 @@
 - The user will provide a task.
 - Wait for all terminal commands to be completed (or terminate them) before finishing.
 - When adding new command sources, update the related constants, default settings, README.md, and backlog.md.
+- When running a development build during agent work, use `npm run dev-build` unless the task explicitly requires watch
+  mode.
 
 # AGENTS.md spec
 
@@ -49,3 +51,4 @@
 - Use JSDoc comments to document public APIs and to introduce types for parameters and return values.
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.
+- For long-running command executions, emit explicit loading events from command classes so `app` can toggle loading indicators without command-id filtering.

@@ -24,6 +24,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
   apps directly from your org. Edit the JSON settings to include or exclude specific sources and custom commands from
   the palette.
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
+- **Loading Feedback**: A spinner is displayed while refresh-oriented commands are rebuilding the command list
 - **Virtual Scrolling**: Only visible commands are rendered, keeping performance high even with thousands of commands
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
@@ -97,7 +98,8 @@ action.
 
 1. Clone this repository
 2. Run `npm install` to install dependencies
-3. Run `npm run dev` to build the extension in watch mode
+3. Run `npm run dev-build` for a one-time development build (preferred for automation/agent usage), or `npm run dev` to
+   build the extension in watch mode
 4. Open Chrome and navigate to `chrome://extensions/`
 5. Enable **Developer mode** and load the `dist` directory as an unpacked extension
 
@@ -126,6 +128,7 @@ action.
 ### Available Scripts
 
 - `npm run build`: Build the extension for production
+- `npm run dev-build`: Build the extension for development
 - `npm run dev`: Build with watch mode for development
 - `npm run lint`: Run ESLint on source files
 - `npm run lint-fix`: Fix ESLint issues automatically

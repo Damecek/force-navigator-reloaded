@@ -2,6 +2,7 @@ import {
   CacheManager,
   Channel,
   CHANNEL_COMPLETED_AUTH_FLOW,
+  CHANNEL_FAILED_AUTH_FLOW,
   CHANNEL_INVOKE_AUTH_FLOW,
   CHANNEL_OPEN_OPTIONS,
   CHANNEL_OPEN_POPUP,
@@ -46,10 +47,18 @@ new Channel(CHANNEL_REFRESH_COMMANDS).subscribe(async ({ sender }) => {
 
 new Channel(CHANNEL_INVOKE_AUTH_FLOW).subscribe(async ({ sender }) => {
   const hostname = getSenderHostname(sender);
-  await interactiveLogin(hostname);
-  return new Channel(CHANNEL_COMPLETED_AUTH_FLOW).publish({
-    tabId: sender.tab.id,
-  });
+  try {
+    await interactiveLogin(hostname);
+    return new Channel(CHANNEL_COMPLETED_AUTH_FLOW).publish({
+      tabId: sender.tab.id,
+    });
+  } catch (error) {
+    console.error('Auth flow failed', error);
+    return new Channel(CHANNEL_FAILED_AUTH_FLOW).publish({
+      data: { message: error?.message || 'Auth flow failed' },
+      tabId: sender.tab.id,
+    });
+  }
 });
 
 new Channel(CHANNEL_OPEN_OPTIONS).subscribe(() => {
