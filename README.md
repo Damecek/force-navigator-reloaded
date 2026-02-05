@@ -98,7 +98,8 @@ action.
 
 1. Clone this repository
 2. Run `npm install` to install dependencies
-3. Run `npm run dev` to build the extension in watch mode
+3. Run `npm run dev-build` for a one-time development build (preferred for automation/agent usage), or `npm run dev` to
+   build the extension in watch mode
 4. Open Chrome and navigate to `chrome://extensions/`
 5. Enable **Developer mode** and load the `dist` directory as an unpacked extension
 
@@ -127,6 +128,7 @@ action.
 ### Available Scripts
 
 - `npm run build`: Build the extension for production
+- `npm run dev-build`: Build the extension for development
 - `npm run dev`: Build with watch mode for development
 - `npm run lint`: Run ESLint on source files
 - `npm run lint-fix`: Fix ESLint issues automatically

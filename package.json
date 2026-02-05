@@ -3,6 +3,7 @@
   "version": "5.7.2",
   "scripts": {
     "build": "rm -rf dist && webpack --mode production",
+    "dev-build": "webpack --mode development",
     "dev": "webpack --mode development --watch",
     "lint": "eslint \"src/**/*.js\"",
     "lint-fix": "eslint \"src/**/*.js\" --fix",
