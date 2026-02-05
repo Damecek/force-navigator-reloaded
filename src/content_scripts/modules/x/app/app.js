@@ -2,6 +2,7 @@ import { LightningElement, track } from 'lwc';
 import {
   Channel,
   CHANNEL_COMPLETED_AUTH_FLOW,
+  CHANNEL_FAILED_AUTH_FLOW,
   CHANNEL_REFRESH_COMMANDS,
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
@@ -32,6 +33,7 @@ export default class App extends LightningElement {
       this._handleToggleCommandPalette
     );
     new Channel(CHANNEL_COMPLETED_AUTH_FLOW).subscribe(this._handleAuth);
+    new Channel(CHANNEL_FAILED_AUTH_FLOW).subscribe(this._handleAuthFailure);
     window.addEventListener(COMMAND_LOADING_EVENT, this._handleCommandLoading);
     window.addEventListener('keydown', this._handleEscape);
     this.publishRefreshCommands();
@@ -45,6 +47,12 @@ export default class App extends LightningElement {
   _handleAuth = () => {
     console.log('auth completed');
     return this.publishRefreshCommands();
+  };
+
+  _handleAuthFailure = ({ data }) => {
+    console.error('auth failed', data);
+    this.isLoading = false;
+    return false;
   };
 
   _handleCommandLoading = ({ detail }) => {
