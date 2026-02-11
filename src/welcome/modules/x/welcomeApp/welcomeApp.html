@@ -1,0 +1,195 @@
+<template lwc:render-mode="light">
+  <div class="slds-scope slds-theme_default">
+    <main class="welcome-page">
+      <section
+        class="slds-page-header slds-page-header_record-home welcome-hero"
+      >
+        <div class="slds-grid slds-wrap slds-gutters">
+          <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-12">
+            <img
+              alt="Force Navigator Reloaded"
+              class="welcome-logo"
+              src="icons/icon128.png"
+            />
+          </div>
+          <div class="slds-col slds-size_1-of-1 slds-large-size_11-of-12">
+            <p class="slds-text-title_caps welcome-eyebrow">
+              Thanks for installing
+            </p>
+            <h1 class="slds-text-heading_large">Force Navigator Reloaded</h1>
+            <p class="slds-text-body_regular welcome-lead">
+              A fast command palette for Salesforce Lightning. Search, launch,
+              and navigate without leaving the keyboard.
+            </p>
+            <div class="welcome-actions">
+              <button
+                class="slds-button slds-button_brand"
+                onclick={handleOpenOptionsClick}
+              >
+                Open Settings
+              </button>
+              <button
+                class="slds-button slds-button_neutral"
+                onclick={handleOpenShortcutsClick}
+              >
+                Configure Shortcut
+              </button>
+            </div>
+            <p class="slds-text-body_small welcome-footnote">
+              Works only in Salesforce Lightning (not in Classic).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <x-welcome-section title="Get started in 60 seconds">
+        <ol class="welcome-steps">
+          <li class="slds-box slds-theme_default">
+            <h3 class="slds-text-heading_small">Open Lightning</h3>
+            <p class="slds-text-body_regular">
+              Navigate to any Lightning page in your org. Supported domains are
+              force.com, salesforce-setup.com, and
+              builder.salesforce-experience.com.
+            </p>
+            <template if:true={hasLightningTab}>
+              <a
+                class="slds-text-link"
+                href="#"
+                onclick={handleOpenLightningLinkClick}
+              >
+                Open your first Lightning tab
+              </a>
+            </template>
+            <template if:false={hasLightningTab}>
+              <p class="slds-text-body_small slds-text-color_error">
+                Open any Salesforce Lightning tab first.
+              </p>
+            </template>
+          </li>
+          <li class="slds-box slds-theme_default">
+            <h3 class="slds-text-heading_small">Open the command palette</h3>
+            <p class="slds-text-body_regular">
+              Press <kbd>{shortcutText}</kbd>&nbsp; to open the command palette.
+              Press the shortcut again or <kbd>Esc</kbd> to close it.
+            </p>
+          </li>
+          <li class="slds-box slds-theme_default">
+            <h3 class="slds-text-heading_small">Search and launch</h3>
+            <p class="slds-text-body_regular">
+              Type a command, object, flow, or setup page name and press Enter.
+            </p>
+          </li>
+        </ol>
+      </x-welcome-section>
+
+      <x-welcome-section title="What it can do">
+        <div class="slds-grid slds-wrap slds-gutters">
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+            <x-welcome-feature-card
+              description="Fuzzy search with usage-based ranking for fast discovery."
+              title="Instant search"
+            ></x-welcome-feature-card>
+          </div>
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+            <x-welcome-feature-card
+              description="Navigate setup, object metadata, flows, and admin pages quickly."
+              title="Setup, objects, flows"
+            ></x-welcome-feature-card>
+          </div>
+          <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+            <x-welcome-feature-card
+              description="Edit JSON settings to add custom commands or hide sources."
+              title="Customizable sources"
+            ></x-welcome-feature-card>
+          </div>
+        </div>
+      </x-welcome-section>
+
+      <x-welcome-section title="Screenshots">
+        <p class="slds-text-body_regular welcome-lead">
+          Drop the screenshots into the placeholders below. Each tile notes the
+          exact image we want to show.
+        </p>
+        <div class="slds-grid slds-wrap slds-gutters welcome-shots-grid">
+          <x-welcome-screenshot
+            alt="Command palette search in a Lightning application"
+            caption="Search in a Lightning application (e.g. Application > Home)."
+            class="slds-col slds-align-middle slds-medium-size_1-of-2 slds-size_1-of-1"
+            src="images/command-palette.png"
+          ></x-welcome-screenshot>
+          <x-welcome-screenshot
+            alt="Options page with JSON configuration and command usage panel"
+            caption="Settings page with JSON configuration and command usage panel."
+            class="slds-col slds-align-middle slds-medium-size_1-of-2 slds-size_1-of-1"
+            src="images/options.png"
+          ></x-welcome-screenshot>
+          <x-welcome-screenshot
+            alt="Command palette search in Salesforce Setup"
+            caption="Search in Setup (e.g. Setup Home highlighted)."
+            class="slds-col slds-align-middle slds-medium-size_1-of-2 slds-size_1-of-1"
+            src="images/fuzzy-search.png"
+          ></x-welcome-screenshot>
+          <x-welcome-screenshot
+            alt="Extension popup with shortcut help and review link"
+            caption="Extension popup with shortcuts and review link."
+            class="slds-col slds-align-middle slds-medium-size_1-of-2 slds-size_1-of-1"
+            src="images/popup.png"
+          ></x-welcome-screenshot>
+        </div>
+      </x-welcome-section>
+
+      <x-welcome-callout
+        description="Open Chrome Extensions shortcuts and choose a key combo that fits your workflow."
+        title="Set your own shortcut"
+      >
+        <button
+          class="slds-button slds-button_brand"
+          onclick={handleOpenShortcutsClick}
+          slot="action"
+        >
+          Open chrome://extensions/shortcuts
+        </button>
+      </x-welcome-callout>
+
+      <x-welcome-callout
+        description="If Force Navigator Reloaded saves you time, please leave a quick review. It helps adoption and future development."
+        title="Leave a review"
+      >
+        <a
+          class="slds-button slds-button_neutral"
+          href="https://chromewebstore.google.com/detail/force-navigator-reloaded/iniflnopffblekndhplennjijdcfkeak/reviews?utm_source=welcome"
+          rel="noreferrer"
+          slot="action"
+          target="_blank"
+        >
+          Open reviews
+        </a>
+      </x-welcome-callout>
+
+      <footer class="welcome-footer">
+        <p class="slds-text-body_small">
+          Thanks for using Force Navigator Reloaded. Ideas or feedback? Share
+          them in the GitHub repository or open a new issue.
+        </p>
+        <div class="welcome-footer__links">
+          <a
+            class="slds-text-link"
+            href="https://github.com/Damecek/force-navigator-reloaded"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Repository
+          </a>
+          <a
+            class="slds-text-link"
+            href="https://github.com/Damecek/force-navigator-reloaded/issues/new"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Open an issue
+          </a>
+        </div>
+      </footer>
+    </main>
+  </div>
+</template>

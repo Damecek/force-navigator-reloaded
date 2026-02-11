@@ -114,6 +114,7 @@ action.
 - **Popup** (`src/popup`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme
   styling
 - **Options Page** (`src/options` and `src/options/modules`): Settings UI built with LWC
+- **Welcome Page** (`src/welcome` and `src/welcome/modules`): Post-install onboarding page built with LWC
 - **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper and settings management
 
 ### Build & Toolchain

@@ -5,6 +5,9 @@
     },
     {
       "dir": "src/options/modules"
+    },
+    {
+      "dir": "src/welcome/modules"
     }
   ]
 }

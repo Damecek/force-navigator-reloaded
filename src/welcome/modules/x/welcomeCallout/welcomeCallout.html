@@ -1,0 +1,11 @@
+<template lwc:render-mode="light">
+  <section class="slds-card welcome-callout">
+    <div class="slds-card__body slds-card__body_inner">
+      <div>
+        <h2 class="slds-text-heading_medium">{title}</h2>
+        <p class="slds-text-body_regular">{description}</p>
+      </div>
+      <slot name="action"></slot>
+    </div>
+  </section>
+</template>

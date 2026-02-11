@@ -5,6 +5,7 @@ Mark each line with [x] when the task is completed.
 
 - [ ] Error Handling: centralized input validation and error reporting in the UI
 - [x] Post-install welcome page with quick start, shortcut setup, and review link
+- [x] Refactor welcome page to LWC architecture (same pattern as options page)
 - [ ] Command `Login as <username>` (User Switcher)
 - [ ] Implement record search using `?` prefix
 
