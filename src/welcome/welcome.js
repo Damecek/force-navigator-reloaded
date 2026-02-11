@@ -8,6 +8,9 @@ const LIGHTNING_URLS = [
   'https://*.salesforce-setup.com/*',
   'https://*.builder.salesforce-experience.com/*',
 ];
+const APPLE_PLATFORM_REGEX = /(mac|iphone|ipad|ipod)/i;
+const IPAD_OS_REGEX = /MacIntel/i;
+let firstLightningTabId = null;
 
 /**
  * Open a Chrome internal page in a new tab.
@@ -24,7 +27,7 @@ function openChromePage(url) {
  * @returns {void}
  */
 function handleActionClick(event) {
-  const target = event.target;
+  const target = event.currentTarget;
   if (!(target instanceof HTMLElement)) {
     return;
   }
@@ -40,7 +43,83 @@ function handleActionClick(event) {
   }
 }
 
-document.addEventListener('click', handleActionClick);
+/**
+ * Attach click handlers only to explicit action elements.
+ * @returns {void}
+ */
+function setupActionListeners() {
+  const actionElements = document.querySelectorAll('[data-action]');
+  actionElements.forEach((element) => {
+    element.addEventListener('click', handleActionClick);
+  });
+}
+
+/**
+ * Return true when running on Apple platform (Mac/iOS/iPadOS).
+ * @returns {boolean}
+ */
+function isApplePlatform() {
+  const userAgentDataPlatform = navigator.userAgentData?.platform;
+  if (
+    typeof userAgentDataPlatform === 'string' &&
+    APPLE_PLATFORM_REGEX.test(userAgentDataPlatform)
+  ) {
+    return true;
+  }
+  if (APPLE_PLATFORM_REGEX.test(navigator.platform)) {
+    return true;
+  }
+  return (
+    IPAD_OS_REGEX.test(navigator.platform) &&
+    typeof navigator.maxTouchPoints === 'number' &&
+    navigator.maxTouchPoints > 1
+  );
+}
+
+/**
+ * Render shortcut text according to current platform.
+ * @returns {void}
+ */
+function setupShortcutCopy() {
+  const shortcutElement = document.getElementById('command-palette-shortcut');
+  if (!shortcutElement) {
+    return;
+  }
+  if (isApplePlatform()) {
+    shortcutElement.textContent = 'Cmd+Shift+P';
+    return;
+  }
+  shortcutElement.textContent = 'Ctrl+Shift+L';
+}
+
+/**
+ * Focus the first detected Lightning tab.
+ * @param {MouseEvent} event
+ * @returns {void}
+ */
+function handleOpenLightningLinkClick(event) {
+  event.preventDefault();
+  if (typeof firstLightningTabId !== 'number') {
+    return;
+  }
+  chrome.tabs.update(firstLightningTabId, { active: true }, (tab) => {
+    if (chrome.runtime.lastError || !tab) {
+      return;
+    }
+    if (typeof tab.windowId !== 'number') {
+      return;
+    }
+    chrome.windows.update(
+      tab.windowId,
+      { focused: true, state: 'normal' },
+      () => {
+        if (chrome.runtime.lastError) {
+          return;
+        }
+      }
+    );
+  });
+}
 
 /**
  * Show a link to the first Lightning tab found in the current browser session.
@@ -51,18 +130,18 @@ async function setupLightningLink() {
   if (!link) {
     return;
   }
+  link.addEventListener('click', handleOpenLightningLinkClick);
   const tabs = await new Promise((resolve) => {
     chrome.tabs.query({ url: LIGHTNING_URLS }, resolve);
   });
   const firstTab = tabs?.[0];
-  if (!firstTab?.url || !firstTab.id) {
+  if (!firstTab?.url || typeof firstTab.id !== 'number') {
     return;
   }
+  firstLightningTabId = firstTab.id;
   link.hidden = false;
-  link.addEventListener('click', (event) => {
-    event.preventDefault();
-    chrome.tabs.update(firstTab.id, { active: true });
-  });
 }
 
+setupActionListeners();
+setupShortcutCopy();
 setupLightningLink();
