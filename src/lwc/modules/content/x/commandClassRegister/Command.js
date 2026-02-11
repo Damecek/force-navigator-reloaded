@@ -1,7 +1,7 @@
 /**
  * Abstract base class for commands in the command palette.
  */
-import { UsageTracker } from '../../../../shared';
+import { UsageTracker } from '../../../../../shared';
 
 export default class Command {
   /**

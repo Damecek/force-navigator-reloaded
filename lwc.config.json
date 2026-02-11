@@ -1,13 +1,16 @@
 {
   "modules": [
     {
-      "dir": "src/content_scripts/modules"
+      "dir": "src/lwc/modules/shared"
     },
     {
-      "dir": "src/options/modules"
+      "dir": "src/lwc/modules/content"
     },
     {
-      "dir": "src/welcome/modules"
+      "dir": "src/lwc/modules/options"
+    },
+    {
+      "dir": "src/lwc/modules/welcome"
     }
   ]
 }

@@ -6,7 +6,7 @@ import {
   CHANNEL_REFRESH_COMMANDS,
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
-} from '../../../../shared';
+} from '../../../../../shared';
 import { createCommandDescriptors } from '../commandClassRegister/commandFactory';
 import { COMMAND_LOADING_EVENT } from '../loading/loadingEvents';
 

@@ -1,5 +1,5 @@
 import { LightningElement, track } from 'lwc';
-import { UsageTracker } from '../../../../shared';
+import { UsageTracker } from '../../../../../shared';
 
 export default class JsonCommandUsage extends LightningElement {
   static renderMode = 'light';

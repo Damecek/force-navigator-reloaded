@@ -1,6 +1,6 @@
 import Command from './Command';
-import { toLightningUrl } from '../../../../shared';
-import { dispatchLightningNavigation } from '../../../lightningNavigationBridge';
+import { toLightningUrl } from '../../../../../shared';
+import { dispatchLightningNavigation } from '../../../../../content_scripts/lightningNavigationBridge';
 
 /**
  * Command that navigates the page to a specified path.

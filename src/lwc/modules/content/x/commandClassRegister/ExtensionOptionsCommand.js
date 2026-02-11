@@ -1,5 +1,5 @@
 import Command from './Command';
-import { Channel, CHANNEL_OPEN_OPTIONS } from '../../../../shared';
+import { Channel, CHANNEL_OPEN_OPTIONS } from '../../../../../shared';
 
 /**
  * Command that navigates the page to a specified path.

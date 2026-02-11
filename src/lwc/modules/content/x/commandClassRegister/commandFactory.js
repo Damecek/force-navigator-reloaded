@@ -1,4 +1,4 @@
-import { UsageTracker } from '../../../../shared';
+import { UsageTracker } from '../../../../../shared';
 import { register } from './commandClassRegister';
 
 /**

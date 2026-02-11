@@ -1,7 +1,7 @@
 import { api, LightningElement, track } from 'lwc';
 import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
-import { Channel, CHANNEL_OPEN_POPUP } from '../../../../shared';
+import { Channel, CHANNEL_OPEN_POPUP } from '../../../../../shared';
 
 export default class CommandPalette extends LightningElement {
   static renderMode = 'light';

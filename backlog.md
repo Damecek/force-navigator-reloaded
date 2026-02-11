@@ -4,6 +4,7 @@ Below are the main steps to achieve the MVP of the Command Palette for the Sales
 Mark each line with [x] when the task is completed.
 
 - [ ] Error Handling: centralized input validation and error reporting in the UI
+- [x] Consolidate LWC module roots under `src/lwc/modules/{shared,content,options,welcome}`
 - [x] Post-install welcome page with quick start, shortcut setup, and review link
 - [x] Refactor welcome page to LWC architecture (same pattern as options page)
 - [ ] Command `Login as <username>` (User Switcher)

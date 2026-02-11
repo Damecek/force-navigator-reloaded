@@ -3,7 +3,7 @@ import {
   Channel,
   CHANNEL_REFRESH_COMMANDS,
   UsageTracker,
-} from '../../../../shared';
+} from '../../../../../shared';
 
 /**
  * Command to reset command list usage tracking.

@@ -109,12 +109,15 @@ action.
   commands, and handles cross-context communication
 - **Content Script** (`src/content_scripts`): Injects the LWC app into Salesforce pages and handles communication with
   the background script
-- **LWC Components** (`src/content_scripts/modules/x`): Lightning Web Components that provide the UI for the command
-  palette (including the `commandPalette` component)
+- **LWC Components** (`src/lwc/modules`): Lightning Web Components grouped by context:
+  - `shared` for reusable components
+  - `content` for content-script command palette modules
+  - `options` for options-page modules
+  - `welcome` for welcome-page modules
 - **Popup** (`src/popup`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme
   styling
-- **Options Page** (`src/options` and `src/options/modules`): Settings UI built with LWC
-- **Welcome Page** (`src/welcome` and `src/welcome/modules`): Post-install onboarding page built with LWC
+- **Options Page** (`src/options`): Settings UI built with LWC modules from `src/lwc/modules/options`
+- **Welcome Page** (`src/welcome`): Post-install onboarding page built with LWC modules from `src/lwc/modules/welcome`
 - **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper and settings management
 
 ### Build & Toolchain

@@ -5,7 +5,7 @@ import {
   CHANNEL_REFRESH_COMMANDS,
   COMMAND_CACHE_KEYS,
   toLightningHostname,
-} from '../../../../shared';
+} from '../../../../../shared';
 import { publishCommandLoading } from '../loading/loadingEvents';
 
 /**
@@ -33,7 +33,7 @@ export default class RefreshCommandListCommand extends Command {
     console.log('RefreshCommandListCommand.execute');
     publishCommandLoading(true);
     const cache = new CacheManager(toLightningHostname(this.hostname));
-      await Promise.all(COMMAND_CACHE_KEYS.map((key) => cache.clear(key)));
+    await Promise.all(COMMAND_CACHE_KEYS.map((key) => cache.clear(key)));
     await new Channel(CHANNEL_REFRESH_COMMANDS).publish();
     return false;
   }

@@ -1,5 +1,9 @@
 import { LightningElement, track } from 'lwc';
-import { loadSettings, resetSettings, saveSettings } from '../../../../shared';
+import {
+  loadSettings,
+  resetSettings,
+  saveSettings,
+} from '../../../../../shared';
 
 export default class JsonSettings extends LightningElement {
   static renderMode = 'light';

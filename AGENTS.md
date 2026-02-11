@@ -40,6 +40,8 @@
   - Initialization logic, event listeners, and business logic should each reside in their own modules.
   - For example, in `src/content_scripts`, `content.js` mounts the LWC app.
   - In `src/background`, `index.js` delegates command handling to `commandListener.js`.
+  - Place all LWC modules under `src/lwc/modules` and keep them split by context:
+    `shared`, `content`, `options`, `welcome`.
   - When adding new features, maintain this pattern to ensure clarity, testability, and ease of maintenance.
 - Prefer using ES6 modules (`import`/`export`) over CommonJS (`require`) for modularity.
 - Prefer using async/await to .then().catch() to callbacks for async operations.

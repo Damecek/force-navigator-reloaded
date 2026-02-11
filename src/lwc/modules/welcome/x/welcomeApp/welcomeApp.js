@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
-import { CONTENT_SCRIPT_ENABLED_BASE_DOMAINS } from '../../../../shared';
+import { CONTENT_SCRIPT_ENABLED_BASE_DOMAINS } from '../../../../../shared';
 
 const LIGHTNING_URLS = CONTENT_SCRIPT_ENABLED_BASE_DOMAINS.map(
   (baseDomain) => `https://*${baseDomain}/*`

@@ -1,5 +1,5 @@
 import Command from './Command';
-import { Channel, CHANNEL_INVOKE_AUTH_FLOW } from '../../../../shared';
+import { Channel, CHANNEL_INVOKE_AUTH_FLOW } from '../../../../../shared';
 import { publishCommandLoading } from '../loading/loadingEvents';
 
 export default class AuthorizeExtensionCommand extends Command {
