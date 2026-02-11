@@ -68,7 +68,7 @@ export const DEFAULT_SETTINGS = {
     [FLOW_DEFINITION_SETTINGS_KEY]: {
       [FLOW_DEFINITION_TYPE]: true,
       [FLOW_LATEST_VERSION_TYPE]: true,
-      [FLOW_ACTIVE_VERSION_TYPE]: true,
+      [FLOW_ACTIVE_VERSION_TYPE]: false,
     },
     [LIGHTNING_APP_SETTINGS_KEY]: true,
   },
