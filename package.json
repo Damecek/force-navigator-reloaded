@@ -1,6 +1,6 @@
 {
   "name": "force-navigator-reloaded",
-  "version": "5.7.3",
+  "version": "5.7.4",
   "scripts": {
     "build": "rm -rf dist && webpack --mode production",
     "dev-build": "webpack --mode development",
