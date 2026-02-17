@@ -7,6 +7,8 @@ Mark each line with [x] when the task is completed.
 - [x] Consolidate LWC module roots under `src/lwc/modules/{shared,content,options,welcome}`
 - [x] Post-install welcome page with quick start, shortcut setup, and review link
 - [x] Refactor welcome page to LWC architecture (same pattern as options page)
+- [x] Auto-login on My Domain login pages when org is already authorized
+- [x] Add options toggle to enable/disable My Domain auto-login
 - [ ] Command `Login as <username>` (User Switcher)
 - [ ] Implement record search using `?` prefix
 

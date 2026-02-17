@@ -42,6 +42,10 @@
         "https://*.builder.salesforce-experience.com/*"
       ],
       "js": ["content.js"]
+    },
+    {
+      "matches": ["https://*.my.salesforce.com/*"],
+      "js": ["mySalesforceContent.js"]
     }
   ],
   "web_accessible_resources": [

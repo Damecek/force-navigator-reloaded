@@ -2,7 +2,7 @@
 import {
   CacheManager,
   CLIENT_ID,
-  SCOPES,
+  isAutologinEnabled,
   SF_TOKEN_CACHE_KEY,
   toCoreUrl,
   toLightningHostname,
@@ -30,13 +30,14 @@ import { makePkcePair } from './authUtil';
 export async function interactiveLogin(hostname) {
   const { verifier, challenge } = await makePkcePair();
   const loginBase = toLightningUrl(hostname);
+  const scopes = await buildOauthScopes();
   const authUrl =
     `${loginBase}/services/oauth2/authorize?response_type=code` +
     `&client_id=${encodeURIComponent(CLIENT_ID)}` +
     `&redirect_uri=${encodeURIComponent(chrome.identity.getRedirectURL('oauth2'))}` +
-    `&scope=${encodeURIComponent(SCOPES)}` +
+    `&scope=${encodeURIComponent(scopes)}` +
     `&code_challenge=${challenge}&code_challenge_method=S256`;
-  console.log('Invoking OAuth2 flow', authUrl);
+  console.log('Invoking OAuth2 flow', { hostname, loginBase, scopes, authUrl });
   const redirectUrl = await chrome.identity.launchWebAuthFlow({
     url: authUrl,
     interactive: true,
@@ -68,12 +69,52 @@ export async function interactiveLogin(hostname) {
     throw new Error(`Token request failed: ${await resp.text()}`);
   }
   const token = await resp.json();
+  console.log('OAuth2 token response', {
+    hostname,
+    instance_url: token?.instance_url,
+    scope: token?.scope,
+  });
   await storeToken(token);
   return token;
 }
 
 /**
+ * Ensures token is ready for My Domain auto-login flow.
+ * Returns existing token when it already has `web` scope, otherwise
+ * performs interactive login to request required scopes.
+ *
+ * @param {string} hostname
+ * @returns {Promise<Token|null>}
+ */
+export async function ensureWebScopedToken(hostname) {
+  let token = await ensureToken(hostname);
+  console.log('ensureWebScopedToken: ensured token', {
+    hostname,
+    hasToken: !!token,
+    instance_url: token?.instance_url,
+    scope: token?.scope,
+  });
+  if (!token) {
+    return null;
+  }
+  const cache = new CacheManager(toLightningHostname(hostname));
+  const refreshedToken = await refreshToken(token, cache);
+  if (refreshedToken) {
+    token = refreshedToken;
+  }
+  const autologinEnabled = await isAutologinEnabled();
+  if (autologinEnabled && !tokenHasScope(token, 'web')) {
+    console.log(
+      'Auto-login requires web scope. Starting interactive OAuth to re-authorize scopes.'
+    );
+    token = await interactiveLogin(hostname);
+  }
+  return token;
+}
+
+/**
  * Ensures a valid access token, refreshes if needed or returns null
+ * @param {string} hostname
  * @returns {Promise<Token|null>}
  */
 export async function ensureToken(hostname) {
@@ -127,8 +168,37 @@ export async function refreshToken(hostname) {
 
   const fresh = await resp.json();
   fresh.refresh_token = fresh.refresh_token || cachedToken.refresh_token;
+  fresh.scope = fresh.scope || cachedToken.scope;
+  console.log('OAuth2 refresh response', {
+    cached_instance_url: cachedToken?.instance_url,
+    fresh_instance_url: fresh?.instance_url,
+    fresh_scope: fresh?.scope,
+  });
   await storeToken(fresh);
   return fresh;
+}
+
+/**
+ * Builds OAuth scopes based on extension settings.
+ * @returns {Promise<string>}
+ */
+async function buildOauthScopes() {
+  const autologinEnabled = await isAutologinEnabled();
+  return autologinEnabled ? 'web api refresh_token' : 'api refresh_token';
+}
+
+/**
+ * Returns whether a token contains a given OAuth scope.
+ * @param {Token} token
+ * @param {string} scope
+ * @returns {boolean}
+ */
+function tokenHasScope(token, scope) {
+  const scopes = (token?.scope || '')
+    .split(/\s+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return scopes.includes(scope);
 }
 
 function storeToken(token) {
