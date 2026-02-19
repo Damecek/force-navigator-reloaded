@@ -89,7 +89,25 @@ export async function ensureToken(hostname) {
   if (Date.now() - cachedToken.issued_at < refreshTime - grace) {
     return cachedToken;
   }
-  console.log('Token expired, refreshing...');
+  return refreshToken(hostname);
+}
+
+/**
+ * Force refreshes cached token for the provided Salesforce hostname.
+ * Returns null and clears cache when refresh is not possible or fails.
+ * @param {string} hostname
+ * @returns {Promise<Token|null>}
+ */
+export async function refreshToken(hostname) {
+  const loginBase = toLightningHostname(hostname);
+  const cache = new CacheManager(loginBase);
+  const cachedToken = await cache.get(SF_TOKEN_CACHE_KEY);
+  if (!cachedToken?.refresh_token) {
+    await cache.clear(SF_TOKEN_CACHE_KEY);
+    return null;
+  }
+
+  console.log('Refreshing Salesforce token for', loginBase);
   const tokenEndpoint = `${cachedToken.instance_url.replace(/\/+$/, '')}/services/oauth2/token`;
   const params = new URLSearchParams({
     grant_type: 'refresh_token',
@@ -106,6 +124,7 @@ export async function ensureToken(hostname) {
     await cache.clear(SF_TOKEN_CACHE_KEY);
     return null;
   }
+
   const fresh = await resp.json();
   fresh.refresh_token = fresh.refresh_token || cachedToken.refresh_token;
   await storeToken(fresh);

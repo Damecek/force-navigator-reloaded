@@ -1,4 +1,16 @@
-import { interactiveLogin } from './auth/auth';
+import { refreshToken } from './auth/auth';
+import { toLightningHostname } from '../shared';
+
+const AUTH_REFRESH_FAILED_CODE = 'AUTH_REFRESH_FAILED';
+
+/**
+ * Check whether an error means token refresh failed and re-authorization is required.
+ * @param {unknown} error
+ * @returns {boolean}
+ */
+export function isAuthRefreshFailedError(error) {
+  return error?.code === AUTH_REFRESH_FAILED_CODE;
+}
 
 export class SalesforceConnection {
   /**
@@ -9,8 +21,8 @@ export class SalesforceConnection {
    */
   constructor({ instanceUrl, accessToken, version = '62.0' }) {
     this.base = `${instanceUrl.replace(/\/$/, '')}/services/data/v${version}`;
+    this.hostname = toLightningHostname(instanceUrl);
     this.headers = this.getHeaders(accessToken);
-    this.refreshToken = interactiveLogin;
   }
 
   getHeaders(accessToken) {
@@ -43,9 +55,15 @@ export class SalesforceConnection {
           '→ 401 Unauthorized, refreshing token',
           this.headers.Authorization
         );
-        this.headers = this.getHeaders(
-          (await this.refreshToken(this.base)).access_token
-        );
+        const token = await refreshToken(this.hostname);
+        if (!token) {
+          const error = new Error(
+            `Salesforce GET ${path} → 401: refresh token failed`
+          );
+          error.code = AUTH_REFRESH_FAILED_CODE;
+          throw error;
+        }
+        this.headers = this.getHeaders(token.access_token);
         return this._get(path, 0);
       }
       const msg = await res.text();

@@ -54,7 +54,7 @@ another example of such is `New Report`
       task started and finished
 - [x] show spinner while running refresh commands directly from the command palette
 - [x] stop loading state when auth flow fails
-- [ ] improve error handling when connection have expired token. implement client class which will create connection and
+- [x] improve error handling when connection have expired token. implement client class which will create connection and
       expose command creator methods, on 401, it will call ensure token
 
 > CommandRegister: failed to fetch flow commands for carvago--devas.sandbox.lightning.force.com Error: Salesforce GET

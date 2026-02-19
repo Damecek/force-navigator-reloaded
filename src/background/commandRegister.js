@@ -43,7 +43,10 @@ import {
   fetchLightningAppDefinitionsFromSalesforce,
   fetchMenuNodesFromSalesforce,
 } from './salesforceUtils';
-import { SalesforceConnection } from './salesforceConnection';
+import {
+  isAuthRefreshFailedError,
+  SalesforceConnection,
+} from './salesforceConnection';
 
 const OBJECT_MANAGER_SECTIONS = [
   {
@@ -138,26 +141,38 @@ const OBJECT_MANAGER_SECTIONS = [
  * @returns {Promise<{NavigationCommand: import('./staticCommands').Command[], RefreshCommandListCommand: import('./staticCommands').Command[]}>} Object containing navigation commands and refresh command list.
  */
 export async function getCommands(hostname) {
-  const token = await ensureToken(hostname);
   const ExtensionOptionsCommand = [{}];
+  const unauthorizedCommands = {
+    AuthorizeExtensionCommand: [{}],
+    ExtensionOptionsCommand,
+  };
+  const token = await ensureToken(hostname);
   if (!token) {
-    return {
-      AuthorizeExtensionCommand: [{}],
-      ExtensionOptionsCommand,
-    };
+    return unauthorizedCommands;
   }
   const instanceHostname = toLightningHostname(hostname);
   const connection = new SalesforceConnection({
     instanceUrl: token.instance_url,
     accessToken: token.access_token,
   });
-  const NavigationCommand = [
-    ...staticCommands,
-    ...(await getSetupCommands(instanceHostname, connection)),
-    ...(await getEntityCommands(instanceHostname, connection)),
-    ...(await getFlowCommands(instanceHostname, connection)),
-    ...(await getLightningAppCommands(instanceHostname, connection)),
-  ];
+  let NavigationCommand = [];
+  try {
+    NavigationCommand = [
+      ...staticCommands,
+      ...(await getSetupCommands(instanceHostname, connection)),
+      ...(await getEntityCommands(instanceHostname, connection)),
+      ...(await getFlowCommands(instanceHostname, connection)),
+      ...(await getLightningAppCommands(instanceHostname, connection)),
+    ];
+  } catch (error) {
+    if (isAuthRefreshFailedError(error)) {
+      console.warn(
+        'CommandRegister: authentication expired, falling back to authorize command set.'
+      );
+      return unauthorizedCommands;
+    }
+    throw error;
+  }
   const RefreshCommandListCommand = [{}];
   const ResetCommandListUsageTracking = [{}];
   return {
@@ -235,6 +250,9 @@ async function getSetupCommands(hostname, connection) {
     }
     return dedupedCommands;
   } catch (err) {
+    if (isAuthRefreshFailedError(err)) {
+      throw err;
+    }
     console.error(
       `CommandRegister: failed to fetch dynamic commands for ${hostname}`,
       err
@@ -333,6 +351,9 @@ async function getEntityCommands(hostname, connection) {
     }
     return commands;
   } catch (err) {
+    if (isAuthRefreshFailedError(err)) {
+      throw err;
+    }
     console.error(
       `CommandRegister: failed to fetch entity commands for ${hostname}`,
       err
@@ -408,6 +429,9 @@ async function getFlowCommands(hostname, connection) {
     }
     return commands;
   } catch (err) {
+    if (isAuthRefreshFailedError(err)) {
+      throw err;
+    }
     console.error(
       `CommandRegister: failed to fetch flow commands for ${hostname}`,
       err
@@ -459,6 +483,9 @@ async function getLightningAppCommands(hostname, connection) {
     }
     return commands;
   } catch (err) {
+    if (isAuthRefreshFailedError(err)) {
+      throw err;
+    }
     console.error(
       `CommandRegister: failed to fetch lightning app commands for ${hostname}`,
       err
