@@ -38,8 +38,12 @@ export const COMMAND_USAGE_KEY = 'commandUsage';
  * @type {string}
  */
 export const CLIENT_ID = __CLIENT_ID__;
+export const IS_PROD_BUILD = __IS_PROD_BUILD__;
 export const SCOPES = 'api refresh_token';
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
+export const CONNECTED_APP_INSTALL_APPROVAL_PATH = IS_PROD_BUILD
+  ? '/identity/app/AppInstallApprovalPage.apexp?app_id=0CigL0000002uuA&app_org_id=00DgL000004HUsE'
+  : '/identity/app/AppInstallApprovalPage.apexp?app_id=0CigL0000002uu9&app_org_id=00DgL000004HUsE';
 
 export const COMMANDS_SETTINGS_KEY = 'Commands';
 
@@ -85,4 +89,5 @@ export const CHANNEL_COMPLETED_AUTH_FLOW = 'completedAuthFlow';
 export const CHANNEL_FAILED_AUTH_FLOW = 'failedAuthFlow';
 export const CHANNEL_OPEN_OPTIONS = 'openOptions';
 export const CHANNEL_OPEN_POPUP = 'openPopup';
+export const CHANNEL_OPEN_AUTH_HELP = 'openAuthHelp';
 export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';

@@ -36,6 +36,7 @@ export default class WelcomeApp extends LightningElement {
   static renderMode = 'light';
 
   firstLightningTabId = null;
+  firstLightningHostname = null;
   hasLightningTab = false;
 
   connectedCallback() {
@@ -96,6 +97,26 @@ export default class WelcomeApp extends LightningElement {
   }
 
   /**
+   * Open guided auth page with current Lightning host context when available.
+   * @returns {void}
+   */
+  handleOpenGuidedAuthClick() {
+    const params = new URLSearchParams();
+    if (this.firstLightningHostname) {
+      params.set('host', this.firstLightningHostname);
+    }
+    if (typeof this.firstLightningTabId === 'number') {
+      params.set('sourceTabId', String(this.firstLightningTabId));
+    }
+    const query = params.toString();
+    const suffix = query ? `?${query}` : '';
+    chrome.tabs.create({
+      url: chrome.runtime.getURL(`authHelp.html${suffix}`),
+      active: true,
+    });
+  }
+
+  /**
    * Show a link to the first Lightning tab found in the current browser session.
    * @returns {Promise<void>}
    */
@@ -108,6 +129,7 @@ export default class WelcomeApp extends LightningElement {
       return;
     }
     this.firstLightningTabId = firstTab.id;
+    this.firstLightningHostname = new URL(firstTab.url).hostname;
     this.hasLightningTab = true;
   }
 }

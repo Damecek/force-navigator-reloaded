@@ -152,6 +152,19 @@
       </x-welcome-callout>
 
       <x-welcome-callout
+        description="Salesforce enforces restrictions for uninstalled connected apps. If authorization fails, use Guided Auth for admin steps and retry."
+        title="Need authorization help?"
+      >
+        <button
+          class="slds-button slds-button_neutral"
+          onclick={handleOpenGuidedAuthClick}
+          slot="action"
+        >
+          Open Guided Auth
+        </button>
+      </x-welcome-callout>
+
+      <x-welcome-callout
         description="If Force Navigator Reloaded saves you time, please leave a quick review. It helps adoption and future development."
         title="Leave a review"
       >

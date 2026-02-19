@@ -22,6 +22,8 @@ module.exports = (env, argv) => {
       popup: path.resolve(__dirname, 'src/popup/popup.js'),
       options: path.resolve(__dirname, 'src/options/options.js'),
       welcome: path.resolve(__dirname, 'src/welcome/welcome.js'),
+      authHelp: path.resolve(__dirname, 'src/authHelp/authHelp.js'),
+      guidedAuth: path.resolve(__dirname, 'src/guidedAuth/guidedAuth.js'),
     },
     output: {
       filename: '[name].js',
@@ -59,6 +61,7 @@ module.exports = (env, argv) => {
     plugins: [
       new webpack.DefinePlugin({
         __CLIENT_ID__: JSON.stringify(isProd ? PROD_CLIENT_ID : DEV_CLIENT_ID),
+        __IS_PROD_BUILD__: JSON.stringify(isProd),
       }),
       new LwcWebpackPlugin(),
       new CopyWebpackPlugin({
@@ -87,6 +90,10 @@ module.exports = (env, argv) => {
           { from: 'src/options/dark-mode.css', to: 'dark-mode.css' },
           { from: 'src/welcome/welcome.html', to: 'welcome.html' },
           { from: 'src/welcome/welcome.css', to: 'welcome.css' },
+          { from: 'src/authHelp/authHelp.html', to: 'authHelp.html' },
+          { from: 'src/authHelp/authHelp.css', to: 'authHelp.css' },
+          { from: 'src/guidedAuth/guidedAuth.html', to: 'guidedAuth.html' },
+          { from: 'src/guidedAuth/guidedAuth.css', to: 'guidedAuth.css' },
           {
             from: 'src/welcome/images',
             to: 'images',

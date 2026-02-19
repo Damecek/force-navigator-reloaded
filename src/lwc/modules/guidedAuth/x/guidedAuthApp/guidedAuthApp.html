@@ -1,0 +1,145 @@
+<template lwc:render-mode="light">
+  <div class="slds-scope slds-theme_default">
+    <main class="guided-auth-page">
+      <section
+        class="slds-page-header slds-page-header_record-home guided-auth-hero"
+      >
+        <div class="slds-grid slds-wrap slds-gutters">
+          <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-12">
+            <img
+              alt="Force Navigator Reloaded"
+              class="guided-auth-logo"
+              src="icons/icon128.png"
+            />
+          </div>
+          <div class="slds-col slds-size_1-of-1 slds-large-size_11-of-12">
+            <p class="slds-text-title_caps guided-auth-eyebrow">Guided Auth</p>
+            <h1 class="slds-text-heading_large">Connected App Access Guide</h1>
+            <p class="slds-text-body_regular">{introMessage}</p>
+            <p class="slds-text-body_small">
+              Current host context: <strong>{hostLabel}</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slds-card">
+        <div class="slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+              <h2 class="slds-card__header-title">
+                <span>What happened</span>
+              </h2>
+            </div>
+          </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+          <p class="slds-text-body_regular">
+            Your org returned OAuth error: <strong>{errorSummary}</strong>
+          </p>
+          <p class="slds-text-body_regular">
+            If you previously saw \"app must be installed into org\" or \"this
+            app is blocked by admin\", install the connected app and retry
+            authorization.
+          </p>
+        </div>
+      </section>
+
+      <section class="slds-card">
+        <div class="slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+              <h2 class="slds-card__header-title">
+                <span>What admins need</span>
+              </h2>
+            </div>
+          </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+          <p class="slds-text-body_regular">
+            To install a connected app in Salesforce, the admin needs
+            <strong>Customize Application</strong> and either
+            <strong>Modify All Data</strong> or
+            <strong>Manage Connected Apps</strong>.
+          </p>
+        </div>
+      </section>
+
+      <section class="slds-card">
+        <div class="slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+              <h2 class="slds-card__header-title">
+                <span>Do these steps</span>
+              </h2>
+            </div>
+          </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+          <div class="guided-auth-actions">
+            <template if:true={isBlockedRemediation}>
+              <template if:true={hasConnectedAppsUsageUrl}>
+                <a
+                  class="slds-button slds-button_brand"
+                  href={connectedAppsUsageUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  1. Open Connected Apps OAuth Usage
+                </a>
+              </template>
+            </template>
+            <template if:false={isBlockedRemediation}>
+              <template if:true={hasInstallUrl}>
+                <a
+                  class="slds-button slds-button_brand"
+                  href={installUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  1. Install Connected App
+                </a>
+              </template>
+              <template if:false={hasInstallUrl}>
+                <p class="slds-text-body_small">
+                  Install URL is unavailable. Contact your admin to install the
+                  Force Navigator Reloaded connected app.
+                </p>
+              </template>
+            </template>
+            <template if:true={isBlockedRemediation}>
+              <button
+                class="slds-button slds-button_neutral"
+                disabled={isWorking}
+                onclick={handleAuthorizeAfterInstallClick}
+                type="button"
+              >
+                2. Retry Authorization
+              </button>
+            </template>
+            <template if:false={isBlockedRemediation}>
+              <button
+                class="slds-button slds-button_neutral"
+                disabled={isWorking}
+                onclick={handleAuthorizeAfterInstallClick}
+                type="button"
+              >
+                2. Authorize After Install
+              </button>
+            </template>
+          </div>
+          <template if:true={statusMessage}>
+            <p class={statusClassName}>{statusMessage}</p>
+          </template>
+          <template if:false={hasSourceTabId}>
+            <p class="slds-text-body_small slds-m-top_small">
+              Source tab id is unavailable. After successful auth, return to
+              Salesforce and run
+              <strong>Extension &gt; Refresh Command List</strong>.
+            </p>
+          </template>
+        </div>
+      </section>
+    </main>
+  </div>
+</template>

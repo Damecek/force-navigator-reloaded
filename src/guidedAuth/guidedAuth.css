@@ -1,0 +1,100 @@
+body {
+    margin: 0;
+    background: var(--slds-g-color-neutral-base-95, #f3f2f2);
+}
+
+.guided-auth-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.guided-auth-hero {
+    border-radius: 12px;
+    background: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.guided-auth-logo {
+    width: 72px;
+}
+
+.guided-auth-eyebrow {
+    letter-spacing: 0.12em;
+}
+
+.guided-auth-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.guided-auth-status {
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid var(--slds-g-color-border-base-1, #dddbda);
+    background: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.guided-auth-status_error {
+    border-color: #ba0517;
+    background: #fef1ee;
+}
+
+.guided-auth-status_success {
+    border-color: #2e844a;
+    background: #f1fff5;
+}
+
+.guided-auth-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.guided-auth-list li + li {
+    margin-top: 8px;
+}
+
+@media (max-width: 720px) {
+    .guided-auth-page {
+        padding: 24px 16px 32px;
+    }
+
+    .guided-auth-logo {
+        width: 56px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #1a1a1a;
+    }
+
+    .guided-auth-page {
+        color: #f5f5f5;
+    }
+
+    .guided-auth-hero,
+    .slds-card,
+    .guided-auth-status {
+        background: #2b2b2b;
+        border-color: #555;
+    }
+
+    .guided-auth-status_error {
+        background: #4a1a1f;
+        border-color: #ba0517;
+    }
+
+    .guided-auth-status_success {
+        background: #1d3f2a;
+        border-color: #2e844a;
+    }
+
+    .guided-auth-page a {
+        color: #4aa7ff;
+    }
+}

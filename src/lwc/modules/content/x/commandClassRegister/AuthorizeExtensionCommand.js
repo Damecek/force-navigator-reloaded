@@ -11,15 +11,15 @@ export default class AuthorizeExtensionCommand extends Command {
   }
 
   /**
-   * Executes the command: invokes auth flow,  calls refresh command list.
-   * @param {object} [options] Execution options (unused).
+   * Executes the command by invoking interactive auth flow.
    * @returns {Promise<boolean>} whether the palette should close
    */
-  async execute(options) {
+  async execute() {
     console.log('AuthorizeExtensionCommand.execute');
     publishCommandLoading(true);
-    await new Channel(CHANNEL_INVOKE_AUTH_FLOW).publish();
-    console.log('auth flow invoked');
+    await new Channel(CHANNEL_INVOKE_AUTH_FLOW).publish({
+      data: { hostname: this.hostname },
+    });
     return false;
   }
 }

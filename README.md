@@ -30,6 +30,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
   workflows the most
 - **Welcome Page**: Automatically opens after first install with a quick start guide, shortcut tips, and review link
+- **Guided Auth**: `Extension > Authorize` runs OAuth first and opens Guided Auth only when org policy requires connected-app installation
 
 ### Fuzzy Search
 
@@ -61,6 +62,7 @@ version might occasionally lag behind the latest release.
 5. Press `Esc` or the same shortcut again to close the command palette when it has focus
 6. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts and Settings
 7. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows, custom commands) appear in the palette
+8. If auth is required, run `Extension > Authorize` to invoke OAuth directly. If your org blocks uninstalled connected apps, the extension opens Guided Auth with install instructions and retry authorization.
 
 ### Supported Domains
 
@@ -84,13 +86,22 @@ Force Navigator Reloaded authorises to Salesforce via the **OAuth 2.0 PKCE** flo
 
 ### Do I have to deploy the connected app to my org?
 
-**No.** The connected app is needed only during the OAuth handshake; it is _not_ deployed to, nor stored in, your
-Salesforce org. Simply install the extension and approve its access once—nothing else is required.
+From Salesforce's connected-app usage restriction rollout (started in September 2025), some orgs can block uninstalled
+connected apps for end users. In those orgs, extension authorization can fail until the app is installed or allowed by
+an administrator.
 
 Even if the original developer org is deleted, Salesforce retains the connected-app metadata in its infrastructure. At
 that point the app becomes read-only. Any future changes (e.g. redirect URIs, scopes, secret rotation) would require the
 author to redeploy a fresh connected app and update the extension’s consumer key—end-users do **not** need to take
 action.
+
+### What should admins do if users hit OAuth errors?
+
+- Open Salesforce Setup > **Connected Apps OAuth Usage**
+- Review uninstalled connected apps and install trusted ones
+- Validate access policy in **Manage Connected Apps**
+- Ensure installer/admin users have required permissions:
+  **Customize Application** and either **Modify All Data** or **Manage Connected Apps**
 
 ## Development
 
@@ -114,10 +125,12 @@ action.
   - `content` for content-script command palette modules
   - `options` for options-page modules
   - `welcome` for welcome-page modules
+  - `guidedAuth` for guided-auth page modules
 - **Popup** (`src/popup`): Provides quick usage tips and links to settings and GitHub, with automatic light/dark theme
   styling
 - **Options Page** (`src/options`): Settings UI built with LWC modules from `src/lwc/modules/options`
 - **Welcome Page** (`src/welcome`): Post-install onboarding page built with LWC modules from `src/lwc/modules/welcome`
+- **Guided Auth Page** (`src/guidedAuth`): OAuth troubleshooting and remediation flow, built with modules from `src/lwc/modules/guidedAuth`
 - **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper and settings management
 
 ### Build & Toolchain
