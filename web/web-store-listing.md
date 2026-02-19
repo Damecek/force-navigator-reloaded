@@ -15,6 +15,10 @@ command palette via the extension settings—simply edit the JSON configuration 
 • Live, Dynamic Commands  
 The extension pulls object metadata and Setup menu items directly from your org and caches them for instant reuse.
 
+• Guided Auth for Connected App Restrictions
+If your org blocks uninstalled connected apps, the extension opens Guided Auth with the install approval link and a
+retry-authorization step.
+
 • Native Salesforce Look & Feel  
 Built with Lightning Web Components and the Salesforce Lightning Design System, so it feels like it’s part of the
 platform.

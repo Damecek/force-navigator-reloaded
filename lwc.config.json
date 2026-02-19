@@ -11,6 +11,9 @@
     },
     {
       "dir": "src/lwc/modules/welcome"
+    },
+    {
+      "dir": "src/lwc/modules/guidedAuth"
     }
   ]
 }

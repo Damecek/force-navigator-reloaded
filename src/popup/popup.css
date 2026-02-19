@@ -37,6 +37,13 @@ section + section {
     margin-top: 1rem;
 }
 
+.notice {
+    border: 1px solid #dddbda;
+    border-radius: 8px;
+    padding: 0.75rem;
+    background: #f3f2f2;
+}
+
 a {
     color: var(--link-color);
     text-decoration: none;
@@ -59,6 +66,11 @@ a:focus {
 @media (prefers-color-scheme: dark) {
     .shortcut kbd {
         background: #333;
+    }
+
+    .notice {
+        background: #2b2b2b;
+        border-color: #555;
     }
 }
 

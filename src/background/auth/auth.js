@@ -37,39 +37,65 @@ export async function interactiveLogin(hostname) {
     `&scope=${encodeURIComponent(SCOPES)}` +
     `&code_challenge=${challenge}&code_challenge_method=S256`;
   console.log('Invoking OAuth2 flow', authUrl);
-  const redirectUrl = await chrome.identity.launchWebAuthFlow({
-    url: authUrl,
-    interactive: true,
-  });
-  const returnedUrl = new URL(redirectUrl);
-  console.log('OAuth2 redirect URL', redirectUrl);
-  const code = returnedUrl.searchParams.get('code');
-  if (!code) {
-    throw new Error(
-      'OAuth2 login failed: no code received. Received instead: ' + returnedUrl
-    );
-  }
+  try {
+    const redirectUrl = await chrome.identity.launchWebAuthFlow({
+      url: authUrl,
+      interactive: true,
+    });
+    if (!redirectUrl) {
+      const error = new Error(
+        'OAuth2 login failed: authorization popup was closed before redirect.'
+      );
+      error.oauthError = 'authorization_canceled';
+      throw error;
+    }
+    const returnedUrl = new URL(redirectUrl);
+    console.log('OAuth2 redirect URL', redirectUrl);
+    const oauthError = returnedUrl.searchParams.get('error');
+    if (oauthError) {
+      const oauthErrorDescription =
+        returnedUrl.searchParams.get('error_description') ||
+        'OAuth authorization failed';
+      const error = new Error(
+        `OAuth2 login failed: ${oauthError} (${oauthErrorDescription})`
+      );
+      error.oauthError = oauthError;
+      error.oauthErrorDescription = oauthErrorDescription;
+      error.oauthRedirectUrl = returnedUrl.toString();
+      throw error;
+    }
+    const code = returnedUrl.searchParams.get('code');
+    if (!code) {
+      throw new Error(
+        'OAuth2 login failed: no code received. Received instead: ' +
+          returnedUrl
+      );
+    }
 
-  const tokenBase = toCoreUrl(hostname);
-  const tokenEndpoint = `${tokenBase}/services/oauth2/token`;
-  const params = new URLSearchParams({
-    grant_type: 'authorization_code',
-    client_id: CLIENT_ID,
-    code,
-    redirect_uri: chrome.identity.getRedirectURL('oauth2'),
-    code_verifier: verifier,
-  });
-  const resp = await fetch(tokenEndpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString(),
-  });
-  if (!resp.ok) {
-    throw new Error(`Token request failed: ${await resp.text()}`);
+    const tokenBase = toCoreUrl(hostname);
+    const tokenEndpoint = `${tokenBase}/services/oauth2/token`;
+    const params = new URLSearchParams({
+      grant_type: 'authorization_code',
+      client_id: CLIENT_ID,
+      code,
+      redirect_uri: chrome.identity.getRedirectURL('oauth2'),
+      code_verifier: verifier,
+    });
+    const resp = await fetch(tokenEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    });
+    if (!resp.ok) {
+      throw new Error(`Token request failed: ${await resp.text()}`);
+    }
+    const token = await resp.json();
+    await storeToken(token);
+    return token;
+  } catch (error) {
+    console.log('OAuth2 login failed:', error);
+    throw error;
   }
-  const token = await resp.json();
-  await storeToken(token);
-  return token;
 }
 
 /**
