@@ -219,46 +219,75 @@ function buildBreadcrumbs(menuNodes) {
 }
 
 /**
+ * Loads command list from cache or builder callback and applies shared error handling.
+ * @param {Object} options
+ * @param {string} options.hostname
+ * @param {string} options.cacheKey
+ * @param {number} options.ttl
+ * @param {() => Promise<import('./staticCommands').Command[]>} options.buildCommands
+ * @param {string} options.sourceName
+ * @returns {Promise<import('./staticCommands').Command[]>}
+ */
+async function getCommandsWithCache({
+  hostname,
+  cacheKey,
+  ttl,
+  buildCommands,
+  sourceName,
+}) {
+  const cache = new CacheManager(hostname);
+  const cachedCommands = await cache.get(cacheKey);
+  if (cachedCommands) {
+    return cachedCommands;
+  }
+
+  try {
+    const commands = await buildCommands();
+    console.log(sourceName, commands.length, commands);
+    if (commands.length > 0) {
+      await cache.set(cacheKey, commands, { ttl });
+    }
+    return commands;
+  } catch (err) {
+    if (isAuthRefreshFailedError(err)) {
+      throw err;
+    }
+    console.error(
+      `CommandRegister: failed to fetch ${sourceName} for ${hostname}`,
+      err
+    );
+    return [];
+  }
+}
+
+/**
  * Retrieves dynamic commands for a given domain via Salesforce API and cache.
  * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
  * @param connection {SalesforceConnection} Salesforce connection instance
  * @returns {Promise<import('./staticCommands').Command[]>} Array of dynamic Command instances.
  */
 async function getSetupCommands(hostname, connection) {
-  const cache = new CacheManager(hostname);
-  const cachedCommands = await cache.get(MENU_CACHE_KEY);
-  if (cachedCommands) {
-    return cachedCommands;
-  }
-  try {
-    const menuNodes = await fetchMenuNodesFromSalesforce(connection);
-    const breadcrumbs = buildBreadcrumbs(menuNodes);
-    console.log('Breadcrumbs built', breadcrumbs);
-    const commands = menuNodes
-      .filter((node) => node.Url)
-      .map((node) => ({
-        id: `${node.NodeType}-${node.FullName}`,
-        label: breadcrumbs[node.FullName],
-        path: buildLightningUrl(node.FullName, node.NodeType),
-      }));
-    const dedupedCommands = [
-      ...new Map(commands.map((c) => [c.id, c])).values(),
-    ];
-    console.log('Setup Commands', dedupedCommands.length, dedupedCommands);
-    if (dedupedCommands.length > 0) {
-      await cache.set(MENU_CACHE_KEY, dedupedCommands, { ttl: MENU_CACHE_TTL });
-    }
-    return dedupedCommands;
-  } catch (err) {
-    if (isAuthRefreshFailedError(err)) {
-      throw err;
-    }
-    console.error(
-      `CommandRegister: failed to fetch dynamic commands for ${hostname}`,
-      err
-    );
-    return [];
-  }
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: MENU_CACHE_KEY,
+    ttl: MENU_CACHE_TTL,
+    sourceName: 'getSetupCommands',
+    buildCommands: async () => {
+      const menuNodes = await fetchMenuNodesFromSalesforce(connection);
+      const breadcrumbs = buildBreadcrumbs(menuNodes);
+      console.log('Breadcrumbs built', breadcrumbs);
+      const commands = menuNodes
+        .filter((node) => node.Url)
+        .map((node) => ({
+          id: `${node.NodeType}-${node.FullName}`,
+          label: breadcrumbs[node.FullName],
+          path: buildLightningUrl(node.FullName, node.NodeType),
+        }));
+      return [
+        ...new Map(commands.map((command) => [command.id, command])).values(),
+      ];
+    },
+  });
 }
 
 /**
@@ -268,98 +297,87 @@ async function getSetupCommands(hostname, connection) {
  * @returns {Promise<Array<{id: string, label: string, path: string}>>}
  */
 async function getEntityCommands(hostname, connection) {
-  const cache = new CacheManager(hostname);
-  const cachedCommands = await cache.get(ENTITY_CACHE_KEY);
-  if (cachedCommands) {
-    return cachedCommands;
-  }
-  try {
-    const entities = await fetchEntityDefinitionsFromSalesforce(connection);
-    const commands = [];
-    const includeCustomMetadata = await getSetting([
-      COMMANDS_SETTINGS_KEY,
-      ENTITY_DEFINITION_SETTINGS_KEY,
-      CUSTOM_METADATA_ENTITY_TYPE,
-    ]);
-    const includeSObjectSettings =
-      (await getSetting([
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: ENTITY_CACHE_KEY,
+    ttl: ENTITY_CACHE_TTL,
+    sourceName: 'getEntityCommands',
+    buildCommands: async () => {
+      const entities = await fetchEntityDefinitionsFromSalesforce(connection);
+      const commands = [];
+      const includeCustomMetadata = await getSetting([
         COMMANDS_SETTINGS_KEY,
         ENTITY_DEFINITION_SETTINGS_KEY,
-        SOBJECT_ENTITY_TYPE,
-      ])) ?? {};
-    const hasSObjectSettings = hasAnySObjectSettings(includeSObjectSettings);
+        CUSTOM_METADATA_ENTITY_TYPE,
+      ]);
+      const includeSObjectSettings =
+        (await getSetting([
+          COMMANDS_SETTINGS_KEY,
+          ENTITY_DEFINITION_SETTINGS_KEY,
+          SOBJECT_ENTITY_TYPE,
+        ])) ?? {};
+      const hasSObjectSettings = hasAnySObjectSettings(includeSObjectSettings);
 
-    for (const e of entities) {
-      const {
-        DurableId,
-        KeyPrefix,
-        Label,
-        QualifiedApiName,
-        IsCustomizable,
-        IsEverCreatable,
-        IsCompactLayoutable,
-        IsSearchLayoutable,
-      } = e;
-      if (QualifiedApiName.endsWith('__mdt') && includeCustomMetadata) {
-        commands.push({
-          id: `custommetadata-new-${KeyPrefix}`,
-          label: `Custom Metadata Types > ${Label} > New`,
-          path: `/lightning/setup/CustomMetadata/page?address=/${KeyPrefix}/e`,
-        });
-        commands.push({
-          id: `custommetadata-list-${KeyPrefix}`,
-          label: `Custom Metadata Types > ${Label} > List`,
-          path: `/lightning/setup/CustomMetadata/page?address=/${KeyPrefix}`,
-        });
-      } else {
-        if (IsCustomizable && hasSObjectSettings) {
+      for (const e of entities) {
+        const {
+          DurableId,
+          KeyPrefix,
+          Label,
+          QualifiedApiName,
+          IsCustomizable,
+          IsEverCreatable,
+          IsCompactLayoutable,
+          IsSearchLayoutable,
+        } = e;
+        if (QualifiedApiName.endsWith('__mdt') && includeCustomMetadata) {
           commands.push({
-            id: `sobject-setup-detail-${DurableId}`,
-            label: `Object Manager > ${Label} > Details`,
-            path: `/lightning/setup/ObjectManager/${DurableId}/Details/view`,
+            id: `custommetadata-new-${KeyPrefix}`,
+            label: `Custom Metadata Types > ${Label} > New`,
+            path: `/lightning/setup/CustomMetadata/page?address=/${KeyPrefix}/e`,
           });
-          for (const section of OBJECT_MANAGER_SECTIONS) {
-            if (includeSObjectSettings[section.settingKey]) {
-              commands.push({
-                id: `sobject-setup-${section.id}-${DurableId}`,
-                label: `Object Manager > ${Label} > ${section.label}`,
-                path: `/lightning/setup/ObjectManager/${DurableId}/${section.pathSuffix}`,
-              });
+          commands.push({
+            id: `custommetadata-list-${KeyPrefix}`,
+            label: `Custom Metadata Types > ${Label} > List`,
+            path: `/lightning/setup/CustomMetadata/page?address=/${KeyPrefix}`,
+          });
+        } else {
+          if (IsCustomizable && hasSObjectSettings) {
+            commands.push({
+              id: `sobject-setup-detail-${DurableId}`,
+              label: `Object Manager > ${Label} > Details`,
+              path: `/lightning/setup/ObjectManager/${DurableId}/Details/view`,
+            });
+            for (const section of OBJECT_MANAGER_SECTIONS) {
+              if (includeSObjectSettings[section.settingKey]) {
+                commands.push({
+                  id: `sobject-setup-${section.id}-${DurableId}`,
+                  label: `Object Manager > ${Label} > ${section.label}`,
+                  path: `/lightning/setup/ObjectManager/${DurableId}/${section.pathSuffix}`,
+                });
+              }
             }
           }
-        }
 
-        if (IsEverCreatable && IsCompactLayoutable) {
-          commands.push({
-            id: `sobject-new-${QualifiedApiName}`,
-            label: `Application > ${Label} > New`,
-            path: `/lightning/o/${QualifiedApiName}/new`,
-          });
-        }
-        if (IsEverCreatable && IsSearchLayoutable) {
-          commands.push({
-            id: `sobject-list-${QualifiedApiName}`,
-            label: `Application > ${Label} > List View`,
-            path: `/lightning/o/${QualifiedApiName}/home`,
-          });
+          if (IsEverCreatable && IsCompactLayoutable) {
+            commands.push({
+              id: `sobject-new-${QualifiedApiName}`,
+              label: `Application > ${Label} > New`,
+              path: `/lightning/o/${QualifiedApiName}/new`,
+            });
+          }
+          if (IsEverCreatable && IsSearchLayoutable) {
+            commands.push({
+              id: `sobject-list-${QualifiedApiName}`,
+              label: `Application > ${Label} > List View`,
+              path: `/lightning/o/${QualifiedApiName}/home`,
+            });
+          }
         }
       }
-    }
-    console.log('Entity Commands', commands.length, commands);
-    if (commands.length > 0) {
-      await cache.set(ENTITY_CACHE_KEY, commands, { ttl: ENTITY_CACHE_TTL });
-    }
-    return commands;
-  } catch (err) {
-    if (isAuthRefreshFailedError(err)) {
-      throw err;
-    }
-    console.error(
-      `CommandRegister: failed to fetch entity commands for ${hostname}`,
-      err
-    );
-    return [];
-  }
+
+      return commands;
+    },
+  });
 }
 
 function hasAnySObjectSettings(settings) {
@@ -373,71 +391,60 @@ function hasAnySObjectSettings(settings) {
  * @returns {Promise<Array<{id: string, label: string, path: string}>>}
  */
 async function getFlowCommands(hostname, connection) {
-  const cache = new CacheManager(hostname);
-  const cachedCommands = await cache.get(FLOW_CACHE_KEY);
-  if (cachedCommands) {
-    return cachedCommands;
-  }
-  try {
-    const flows = await fetchFlowDefinitionsFromSalesforce(connection);
-    const commands = [];
-    const includeDefinition = await getSetting([
-      COMMANDS_SETTINGS_KEY,
-      FLOW_DEFINITION_SETTINGS_KEY,
-      FLOW_DEFINITION_TYPE,
-    ]);
-    const includeLatest = await getSetting([
-      COMMANDS_SETTINGS_KEY,
-      FLOW_DEFINITION_SETTINGS_KEY,
-      FLOW_LATEST_VERSION_TYPE,
-    ]);
-    const includeActive = await getSetting([
-      COMMANDS_SETTINGS_KEY,
-      FLOW_DEFINITION_SETTINGS_KEY,
-      FLOW_ACTIVE_VERSION_TYPE,
-    ]);
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: FLOW_CACHE_KEY,
+    ttl: FLOW_CACHE_TTL,
+    sourceName: 'getFlowCommands',
+    buildCommands: async () => {
+      const flows = await fetchFlowDefinitionsFromSalesforce(connection);
+      const commands = [];
+      const includeDefinition = await getSetting([
+        COMMANDS_SETTINGS_KEY,
+        FLOW_DEFINITION_SETTINGS_KEY,
+        FLOW_DEFINITION_TYPE,
+      ]);
+      const includeLatest = await getSetting([
+        COMMANDS_SETTINGS_KEY,
+        FLOW_DEFINITION_SETTINGS_KEY,
+        FLOW_LATEST_VERSION_TYPE,
+      ]);
+      const includeActive = await getSetting([
+        COMMANDS_SETTINGS_KEY,
+        FLOW_DEFINITION_SETTINGS_KEY,
+        FLOW_ACTIVE_VERSION_TYPE,
+      ]);
 
-    for (const f of flows) {
-      const label = f?.LatestVersion?.MasterLabel;
-      if (label) {
-        if (includeDefinition) {
-          commands.push({
-            id: `flow-definition-${f.Id}`,
-            label: `Flow > Definition > ${label}`,
-            path: `/lightning/setup/Flows/page?address=%2F${f.Id}`,
-          });
-        }
-        if (f.LatestVersionId && includeLatest) {
-          commands.push({
-            id: `flow-latest-${f.Id}`,
-            label: `Flow > Latest Version > ${label}`,
-            path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.LatestVersionId}`,
-          });
-        }
-        if (f.ActiveVersionId && includeActive) {
-          commands.push({
-            id: `flow-active-${f.Id}`,
-            label: `Flow > Active Version > ${label}`,
-            path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.ActiveVersionId}`,
-          });
+      for (const f of flows) {
+        const label = f?.LatestVersion?.MasterLabel;
+        if (label) {
+          if (includeDefinition) {
+            commands.push({
+              id: `flow-definition-${f.Id}`,
+              label: `Flow > Definition > ${label}`,
+              path: `/lightning/setup/Flows/page?address=%2F${f.Id}`,
+            });
+          }
+          if (f.LatestVersionId && includeLatest) {
+            commands.push({
+              id: `flow-latest-${f.Id}`,
+              label: `Flow > Latest Version > ${label}`,
+              path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.LatestVersionId}`,
+            });
+          }
+          if (f.ActiveVersionId && includeActive) {
+            commands.push({
+              id: `flow-active-${f.Id}`,
+              label: `Flow > Active Version > ${label}`,
+              path: `/builder_platform_interaction/flowBuilder.app?flowId=${f.ActiveVersionId}`,
+            });
+          }
         }
       }
-    }
-    console.log('Flow Commands', commands.length, commands);
-    if (commands.length > 0) {
-      await cache.set(FLOW_CACHE_KEY, commands, { ttl: FLOW_CACHE_TTL });
-    }
-    return commands;
-  } catch (err) {
-    if (isAuthRefreshFailedError(err)) {
-      throw err;
-    }
-    console.error(
-      `CommandRegister: failed to fetch flow commands for ${hostname}`,
-      err
-    );
-    return [];
-  }
+
+      return commands;
+    },
+  });
 }
 
 /**
@@ -455,43 +462,28 @@ async function getLightningAppCommands(hostname, connection) {
     return [];
   }
 
-  const cache = new CacheManager(hostname);
-  const cachedCommands = await cache.get(LIGHTNING_APP_CACHE_KEY);
-  if (cachedCommands) {
-    return cachedCommands;
-  }
-  try {
-    const apps = await fetchLightningAppDefinitionsFromSalesforce(connection);
-    const commands = apps
-      .filter((app) => app?.DeveloperName)
-      .map((app) => {
-        const appTarget = buildLightningAppTarget(
-          app.NamespacePrefix,
-          app.DeveloperName
-        );
-        return {
-          id: `lightning-app-${appTarget}`,
-          label: `Lightning App > ${app.Label}`,
-          path: `/lightning/app/${appTarget}`,
-        };
-      });
-    console.log('Lightning App Commands', commands.length, commands);
-    if (commands.length > 0) {
-      await cache.set(LIGHTNING_APP_CACHE_KEY, commands, {
-        ttl: LIGHTNING_APP_CACHE_TTL,
-      });
-    }
-    return commands;
-  } catch (err) {
-    if (isAuthRefreshFailedError(err)) {
-      throw err;
-    }
-    console.error(
-      `CommandRegister: failed to fetch lightning app commands for ${hostname}`,
-      err
-    );
-    return [];
-  }
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: LIGHTNING_APP_CACHE_KEY,
+    ttl: LIGHTNING_APP_CACHE_TTL,
+    sourceName: 'getLightningAppCommands',
+    buildCommands: async () => {
+      const apps = await fetchLightningAppDefinitionsFromSalesforce(connection);
+      return apps
+        .filter((app) => app?.DeveloperName)
+        .map((app) => {
+          const appTarget = buildLightningAppTarget(
+            app.NamespacePrefix,
+            app.DeveloperName
+          );
+          return {
+            id: `lightning-app-${appTarget}`,
+            label: `Lightning App > ${app.Label}`,
+            path: `/lightning/app/${appTarget}`,
+          };
+        });
+    },
+  });
 }
 
 /**
