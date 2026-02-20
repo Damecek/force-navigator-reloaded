@@ -1,7 +1,9 @@
 import {
+  buildFrontdoorUrl,
   CacheManager,
   Channel,
   CHANNEL_COMPLETED_AUTH_FLOW,
+  CHANNEL_AUTOLOGIN_MYDOMAIN,
   CHANNEL_FAILED_AUTH_FLOW,
   CHANNEL_INVOKE_AUTH_FLOW,
   CHANNEL_OPEN_OPTIONS,
@@ -13,7 +15,7 @@ import {
   loadSettings,
 } from '../shared';
 import { getCommands } from './commandRegister';
-import { interactiveLogin } from './auth/auth';
+import { ensureWebScopedToken, interactiveLogin } from './auth/auth';
 
 chrome.commands.onCommand.addListener((command, tab) => {
   const url = tab?.url;
@@ -61,6 +63,35 @@ new Channel(CHANNEL_INVOKE_AUTH_FLOW).subscribe(async ({ sender }) => {
   }
 });
 
+new Channel(CHANNEL_AUTOLOGIN_MYDOMAIN).subscribe(async ({ sender }) => {
+  const tabId = sender?.tab?.id;
+  const orgHostname = getSenderHostname(sender);
+  const retURL = getSenderRetURL(sender) || '/lightning/page/home';
+  console.log('MyDomain auto-login requested', {
+    tabId,
+    orgHostname,
+    senderUrl: sender?.tab?.url,
+    retURL,
+  });
+  try {
+    if (typeof tabId !== 'number') {
+      throw new Error('Missing sender tab id');
+    }
+    if (typeof orgHostname !== 'string' || !orgHostname) {
+      throw new Error('Missing org hostname');
+    }
+    const token = await ensureWebScopedToken(orgHostname);
+    if (!token?.access_token) {
+      throw new Error(`No authorized token for ${orgHostname}`);
+    }
+    const url = buildFrontdoorUrl(orgHostname, token.access_token, retURL);
+    console.log('MyDomain auto-login redirect', { orgHostname, url });
+    await chrome.tabs.update(tabId, { url });
+  } catch (error) {
+    console.error('MyDomain auto-login failed', error, { tabId, orgHostname });
+  }
+});
+
 new Channel(CHANNEL_OPEN_OPTIONS).subscribe(() => {
   if (chrome.runtime.openOptionsPage) {
     return chrome.runtime.openOptionsPage();
@@ -87,6 +118,31 @@ function getSenderHostname(sender) {
     return sender.tab && new URL(sender.tab.url).hostname;
   } catch {
     console.error('Failed to get sender hostname', sender);
+    return null;
+  }
+}
+
+/**
+ * Extract raw retURL query parameter from sender tab URL if present.
+ * @param {chrome.runtime.MessageSender} sender
+ * @returns {string|null}
+ */
+function getSenderRetURL(sender) {
+  try {
+    const tabUrl = sender?.tab?.url;
+    if (typeof tabUrl !== 'string') {
+      return null;
+    }
+    const retUrlMatch = tabUrl.match(/[?&]retURL=([^&]+)/);
+    if (retUrlMatch?.[1]) {
+      return retUrlMatch[1];
+    }
+    const startUrlMatch = tabUrl.match(/[?&]startURL=([^&]+)/);
+    if (startUrlMatch?.[1]) {
+      return decodeURIComponent(startUrlMatch[1]);
+    }
+    return null;
+  } catch {
     return null;
   }
 }

@@ -1,5 +1,6 @@
 /* global chrome */
 import {
+  AUTOLOGIN_SETTINGS_KEY,
   COMMANDS_SETTINGS_KEY,
   CUSTOM_METADATA_ENTITY_TYPE,
   ENTITY_DEFINITION_SETTINGS_KEY,
@@ -40,6 +41,7 @@ export const SETTINGS_KEY = 'settings';
  * Default extension settings.
  */
 export const DEFAULT_SETTINGS = {
+  [AUTOLOGIN_SETTINGS_KEY]: false,
   [COMMANDS_SETTINGS_KEY]: {
     [SETUP_NODE_TYPES]: {
       [SETUP_SETUP_NODE]: true,
@@ -153,4 +155,12 @@ export async function getSetting(keyPath) {
   }, settings);
   console.log('Setting value for key', keyPath, value);
   return value;
+}
+
+/**
+ * Returns whether My Domain auto-login is enabled.
+ * @returns {Promise<boolean>}
+ */
+export async function isAutologinEnabled() {
+  return (await getSetting([AUTOLOGIN_SETTINGS_KEY])) === true;
 }

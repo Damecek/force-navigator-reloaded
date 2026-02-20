@@ -38,8 +38,8 @@ export const COMMAND_USAGE_KEY = 'commandUsage';
  * @type {string}
  */
 export const CLIENT_ID = __CLIENT_ID__;
-export const SCOPES = 'api refresh_token';
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
+export const AUTOLOGIN_SETTINGS_KEY = 'AutoLogin';
 
 export const COMMANDS_SETTINGS_KEY = 'Commands';
 
@@ -86,3 +86,4 @@ export const CHANNEL_FAILED_AUTH_FLOW = 'failedAuthFlow';
 export const CHANNEL_OPEN_OPTIONS = 'openOptions';
 export const CHANNEL_OPEN_POPUP = 'openPopup';
 export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';
+export const CHANNEL_AUTOLOGIN_MYDOMAIN = 'autoLoginMyDomain';

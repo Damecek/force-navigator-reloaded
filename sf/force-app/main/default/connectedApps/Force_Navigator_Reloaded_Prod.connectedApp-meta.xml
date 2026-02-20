@@ -3,6 +3,7 @@
     <contactEmail>info@example.com</contactEmail>
     <description>Oauth for Force Navigator, used to get urls for faster navigation in Salesforce.</description>
     <iconUrl>https://raw.githubusercontent.com/Damecek/force-navigator-reloaded/refs/heads/main/src/icons/icon16.png</iconUrl>
+    <infoUrl>https://github.com/Damecek/force-navigator-reloaded</infoUrl>
     <label>Force Navigator Reloaded Prod</label>
     <logoUrl>https://raw.githubusercontent.com/Damecek/force-navigator-reloaded/refs/heads/main/src/icons/icon128.png</logoUrl>
     <oauthConfig>
@@ -21,6 +22,7 @@
         <isSecretRequiredForTokenExchange>false</isSecretRequiredForTokenExchange>
         <isTokenExchangeEnabled>false</isTokenExchangeEnabled>
         <scopes>Api</scopes>
+        <scopes>Web</scopes>
         <scopes>RefreshToken</scopes>
     </oauthConfig>
     <oauthPolicy>

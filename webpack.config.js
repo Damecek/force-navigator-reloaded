@@ -19,6 +19,10 @@ module.exports = (env, argv) => {
     entry: {
       background: path.resolve(__dirname, 'src/background/index.js'),
       content: path.resolve(__dirname, 'src/content_scripts/content.js'),
+      mySalesforceContent: path.resolve(
+        __dirname,
+        'src/content_scripts/mySalesforceContent.js'
+      ),
       popup: path.resolve(__dirname, 'src/popup/popup.js'),
       options: path.resolve(__dirname, 'src/options/options.js'),
       welcome: path.resolve(__dirname, 'src/welcome/welcome.js'),
