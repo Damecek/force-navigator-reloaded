@@ -97,8 +97,7 @@ export async function ensureWebScopedToken(hostname) {
   if (!token) {
     return null;
   }
-  const cache = new CacheManager(toLightningHostname(hostname));
-  const refreshedToken = await refreshToken(token, cache);
+  const refreshedToken = await refreshToken(hostname);
   if (refreshedToken) {
     token = refreshedToken;
   }
