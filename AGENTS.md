@@ -8,6 +8,7 @@
 - The user will provide a task.
 - Wait for all terminal commands to be completed (or terminate them) before finishing.
 - When adding new command sources, update the related constants, default settings, README.md, and backlog.md.
+- When changing Settings JSON keys, structure, or defaults (`src/shared/settings.js` / `src/shared/constants.js`), also update `docs/options-settings-reference.md`.
 - When running a development build during agent work, use `npm run dev-build` unless the task explicitly requires watch
   mode.
 
