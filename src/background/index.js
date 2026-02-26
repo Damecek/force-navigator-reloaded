@@ -82,7 +82,11 @@ new Channel(CHANNEL_AUTOLOGIN_MYDOMAIN).subscribe(async ({ sender }) => {
     }
     const token = await ensureWebScopedToken(orgHostname);
     if (!token?.access_token) {
-      throw new Error(`No authorized token for ${orgHostname}`);
+      console.log(
+        'MyDomain auto-login cancelled. Missing web-scoped token, refreshing commands.'
+      );
+      await refreshCommandsForTab(tabId, orgHostname);
+      return;
     }
     const url = buildFrontdoorUrl(orgHostname, token.access_token, retURL);
     console.log('MyDomain auto-login redirect', { orgHostname, url });
@@ -145,6 +149,23 @@ function getSenderRetURL(sender) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Refresh and publish command map for the current tab.
+ * @param {number} tabId
+ * @param {string} hostname
+ * @returns {Promise<void>}
+ */
+async function refreshCommandsForTab(tabId, hostname) {
+  if (typeof tabId !== 'number' || typeof hostname !== 'string' || !hostname) {
+    return;
+  }
+  const commands = await getCommands(hostname);
+  await new Channel(CHANNEL_SEND_COMMANDS).publish({
+    data: commands,
+    tabId,
+  });
 }
 
 chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {

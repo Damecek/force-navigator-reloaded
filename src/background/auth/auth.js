@@ -80,8 +80,8 @@ export async function interactiveLogin(hostname) {
 
 /**
  * Ensures token is ready for My Domain auto-login flow.
- * Returns existing token when it already has `web` scope, otherwise
- * performs interactive login to request required scopes.
+ * Returns existing token when it already has `web` scope.
+ * Never launches interactive OAuth from passive auto-login flow.
  *
  * @param {string} hostname
  * @returns {Promise<Token|null>}
@@ -104,9 +104,9 @@ export async function ensureWebScopedToken(hostname) {
   const autologinEnabled = await isAutologinEnabled();
   if (autologinEnabled && !tokenHasScope(token, 'web')) {
     console.log(
-      'Auto-login requires web scope. Starting interactive OAuth to re-authorize scopes.'
+      'Auto-login requires web scope. Skipping passive auto-login without interactive OAuth.'
     );
-    token = await interactiveLogin(hostname);
+    return null;
   }
   return token;
 }
@@ -192,7 +192,7 @@ async function buildOauthScopes() {
  * @param {string} scope
  * @returns {boolean}
  */
-function tokenHasScope(token, scope) {
+export function tokenHasScope(token, scope) {
   const scopes = (token?.scope || '')
     .split(/\s+/)
     .map((item) => item.trim())
