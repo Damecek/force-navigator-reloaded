@@ -113,7 +113,8 @@ export function buildFrontdoorUrl(
   sid,
   retURL = '/lightning/page/home'
 ) {
-  return `${toCoreUrl(orgHostname)}/secur/frontdoor.jsp?sid=${sid}&retURL=${retURL}`;
+  const query = new URLSearchParams({ sid, retURL });
+  return `${toCoreUrl(orgHostname)}/secur/frontdoor.jsp?${query.toString()}`;
 }
 
 export function buildLightningUrl(fullName, nodeType) {
