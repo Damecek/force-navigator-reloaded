@@ -20,9 +20,9 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Aura Navigation**: Uses Salesforce Aura navigation events when available, with URL fallback for reliability
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
 - **Modern Architecture**: Built with [LWC OSS](https://lwc.dev/) (Lightning Web Components) for composable UI
-- **Dynamic & Configurable Commands**: Fetches and caches Salesforce setup menu items, SObjects, Flows, and Lightning
-  apps directly from your org. Edit the JSON settings to include or exclude specific sources and custom commands from
-  the palette.
+- **Dynamic & Configurable Commands**: Fetches and caches Salesforce setup menu items, SObjects, Flows, Lightning apps,
+  Permission Sets, and Permission Set Groups directly from your org. Edit the JSON settings to include or exclude
+  specific sources and custom commands from the palette.
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 - **Loading Feedback**: A spinner is displayed while refresh-oriented commands are rebuilding the command list
 - **Virtual Scrolling**: Only visible commands are rendered, keeping performance high even with thousands of commands
@@ -61,7 +61,8 @@ version might occasionally lag behind the latest release.
 4. Press Enter to execute the selected command
 5. Press `Esc` or the same shortcut again to close the command palette when it has focus
 6. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts and Settings
-7. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows, custom commands) appear in the palette
+7. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows,
+   lightning apps, permission sets, permission set groups, custom commands) appear in the palette
 
 ### Supported Domains
 

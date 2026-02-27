@@ -19,6 +19,10 @@ import {
   LIGHTNING_APP_SETTINGS_KEY,
   MENU_CACHE_KEY,
   MENU_CACHE_TTL,
+  PERMISSION_SET_CACHE_KEY,
+  PERMISSION_SET_CACHE_TTL,
+  PERMISSION_SET_GROUP_SETTINGS_KEY,
+  PERMISSION_SET_SETTINGS_KEY,
   SOBJECT_APEX_TRIGGERS_ENTITY_TYPE,
   SOBJECT_BUTTONS_LINKS_ACTIONS_ENTITY_TYPE,
   SOBJECT_COMPACT_LAYOUTS_ENTITY_TYPE,
@@ -43,6 +47,8 @@ import {
   fetchFlowDefinitionsFromSalesforce,
   fetchLightningAppDefinitionsFromSalesforce,
   fetchMenuNodesFromSalesforce,
+  fetchPermissionSetGroupsFromSalesforce,
+  fetchPermissionSetsFromSalesforce,
 } from './salesforceUtils';
 import {
   isAuthRefreshFailedError,
@@ -165,6 +171,7 @@ export async function getCommands(hostname) {
       ...(await getEntityCommands(instanceHostname, connection)),
       ...(await getFlowCommands(instanceHostname, connection)),
       ...(await getLightningAppCommands(instanceHostname, connection)),
+      ...(await getPermissionSetCommands(instanceHostname, connection)),
     ];
   } catch (error) {
     if (isAuthRefreshFailedError(error)) {
@@ -491,6 +498,66 @@ async function getLightningAppCommands(hostname, connection) {
             path: `/lightning/app/${appTarget}`,
           };
         });
+    },
+  });
+}
+
+/**
+ * Retrieves Permission Set and Permission Set Group commands.
+ * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, path: string}>>}
+ */
+async function getPermissionSetCommands(hostname, connection) {
+  const includePermissionSets = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    PERMISSION_SET_SETTINGS_KEY,
+  ]);
+  const includePermissionSetGroups = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    PERMISSION_SET_GROUP_SETTINGS_KEY,
+  ]);
+  if (!includePermissionSets && !includePermissionSetGroups) {
+    return [];
+  }
+
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: PERMISSION_SET_CACHE_KEY,
+    ttl: PERMISSION_SET_CACHE_TTL,
+    sourceName: 'getPermissionSetCommands',
+    buildCommands: async () => {
+      const commands = [];
+      const [permissionSets, permissionSetGroups] = await Promise.all([
+        includePermissionSets
+          ? fetchPermissionSetsFromSalesforce(connection)
+          : Promise.resolve([]),
+        includePermissionSetGroups
+          ? fetchPermissionSetGroupsFromSalesforce(connection)
+          : Promise.resolve([]),
+      ]);
+
+      for (const permissionSet of permissionSets) {
+        if (permissionSet?.Id && permissionSet?.Label) {
+          commands.push({
+            id: `permission-set-${permissionSet.Id}`,
+            label: `Permission Set > ${permissionSet.Label}`,
+            path: `/lightning/setup/PermissionSetListView/page?address=%2F${permissionSet.Id}`,
+          });
+        }
+      }
+
+      for (const permissionSetGroup of permissionSetGroups) {
+        if (permissionSetGroup?.Id && permissionSetGroup?.MasterLabel) {
+          commands.push({
+            id: `permission-set-group-${permissionSetGroup.Id}`,
+            label: `Permission Set Group > ${permissionSetGroup.MasterLabel}`,
+            path: `/lightning/setup/PermSetGroups/page?address=%2F${permissionSetGroup.Id}`,
+          });
+        }
+      }
+
+      return commands;
     },
   });
 }

@@ -59,6 +59,7 @@ another example of such is `New Report`
 - [x] stop loading state when auth flow fails
 - [x] improve error handling when connection have expired token. implement client class which will create connection and
       expose command creator methods, on 401, it will call ensure token
+- [x] add command sources for Permission Sets and Permission Set Groups with dedicated Settings toggles
 
 > CommandRegister: failed to fetch flow commands for carvago--devas.sandbox.lightning.force.com Error: Salesforce GET
 >

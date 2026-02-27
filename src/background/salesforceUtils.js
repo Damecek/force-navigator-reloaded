@@ -124,3 +124,49 @@ export async function fetchLightningAppDefinitionsFromSalesforce(connection) {
   console.log('AppDefinition query:', soql, result);
   return result;
 }
+
+/**
+ * @typedef {Object} PermissionSetDefinition
+ * @property {string} Id
+ * @property {string} Label
+ */
+
+/**
+ * Fetch Permission Set records.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<PermissionSetDefinition[]>}
+ */
+export async function fetchPermissionSetsFromSalesforce(connection) {
+  const soql = `SELECT
+    Label,
+    Id
+  FROM PermissionSet
+  WHERE Type = 'Regular' AND NamespacePrefix = NULL`;
+  const result = await connection.query(soql);
+  console.log('PermissionSet query:', soql, result);
+  return result;
+}
+
+/**
+ * @typedef {Object} PermissionSetGroupDefinition
+ * @property {string} DeveloperName
+ * @property {string} MasterLabel
+ * @property {string} Id
+ */
+
+/**
+ * Fetch Permission Set Group records.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<PermissionSetGroupDefinition[]>}
+ */
+export async function fetchPermissionSetGroupsFromSalesforce(connection) {
+  const soql = `SELECT
+    DeveloperName,
+    MasterLabel,
+    Id
+  FROM PermissionSetGroup
+  WHERE NamespacePrefix = NULL AND IsDeleted = FALSE`;
+  const result = await connection.query(soql);
+  console.log('PermissionSetGroup query:', soql, result);
+  return result;
+}
