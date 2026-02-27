@@ -101,6 +101,22 @@ export const toCoreHostname = (urlOrHost) =>
 
 export const toCoreUrl = (urlOrHost) => `https://${toCoreHostname(urlOrHost)}`;
 
+/**
+ * Build Salesforce frontdoor URL with destination to Lightning home.
+ * @param {string} orgHostname
+ * @param {string} sid
+ * @param {string} [retURL='/lightning/page/home']
+ * @returns {string}
+ */
+export function buildFrontdoorUrl(
+  orgHostname,
+  sid,
+  retURL = '/lightning/page/home'
+) {
+  const query = new URLSearchParams({ sid, retURL });
+  return `${toCoreUrl(orgHostname)}/secur/frontdoor.jsp?${query.toString()}`;
+}
+
 export function buildLightningUrl(fullName, nodeType) {
   const lightningPrefix = '/lightning';
   const slug = fullName.substring(fullName.lastIndexOf('.') + 1);

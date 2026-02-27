@@ -1,3 +1,4 @@
+/* eslint-disable @lwc/lwc-platform/no-aura */
 /**
  * Page-context Aura navigation handler.
  *

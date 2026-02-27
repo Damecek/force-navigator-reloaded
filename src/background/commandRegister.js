@@ -13,6 +13,7 @@ import {
   FLOW_DEFINITION_TYPE,
   FLOW_LATEST_VERSION_TYPE,
   getSetting,
+  isAutologinEnabled,
   LIGHTNING_APP_CACHE_KEY,
   LIGHTNING_APP_CACHE_TTL,
   LIGHTNING_APP_SETTINGS_KEY,
@@ -36,7 +37,7 @@ import {
   toLightningHostname,
 } from '../shared';
 import { staticCommands } from './staticCommands.js';
-import { ensureToken } from './auth/auth.js';
+import { ensureToken, tokenHasScope } from './auth/auth.js';
 import {
   fetchEntityDefinitionsFromSalesforce,
   fetchFlowDefinitionsFromSalesforce,
@@ -142,8 +143,9 @@ const OBJECT_MANAGER_SECTIONS = [
  */
 export async function getCommands(hostname) {
   const ExtensionOptionsCommand = [{}];
+  const AuthorizeExtensionCommand = [{}];
   const unauthorizedCommands = {
-    AuthorizeExtensionCommand: [{}],
+    AuthorizeExtensionCommand,
     ExtensionOptionsCommand,
   };
   const token = await ensureToken(hostname);
@@ -173,14 +175,21 @@ export async function getCommands(hostname) {
     }
     throw error;
   }
+  const autologinEnabled = await isAutologinEnabled();
+  const requiresWebScopeReauthorize =
+    autologinEnabled && !tokenHasScope(token, 'web');
   const RefreshCommandListCommand = [{}];
   const ResetCommandListUsageTracking = [{}];
-  return {
+  const commandMap = {
     NavigationCommand,
     RefreshCommandListCommand,
     ResetCommandListUsageTracking,
     ExtensionOptionsCommand,
   };
+  if (requiresWebScopeReauthorize) {
+    commandMap.AuthorizeExtensionCommand = AuthorizeExtensionCommand;
+  }
+  return commandMap;
 }
 
 /**
