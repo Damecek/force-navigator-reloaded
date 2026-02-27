@@ -6,6 +6,7 @@ import {
   CHANNEL_AUTOLOGIN_MYDOMAIN,
   CHANNEL_FAILED_AUTH_FLOW,
   CHANNEL_INVOKE_AUTH_FLOW,
+  CHANNEL_LOGIN_AS_PRIVATE,
   CHANNEL_OPEN_OPTIONS,
   CHANNEL_OPEN_POPUP,
   CHANNEL_REFRESH_COMMANDS,
@@ -13,9 +14,14 @@ import {
   CHANNEL_TOGGLE_COMMAND_PALETTE,
   isContentScriptAllowedDomain,
   loadSettings,
+  toCoreUrl,
 } from '../shared';
 import { getCommands } from './commandRegister';
-import { ensureWebScopedToken, interactiveLogin } from './auth/auth';
+import {
+  ensureToken,
+  ensureWebScopedToken,
+  interactiveLogin,
+} from './auth/auth';
 
 chrome.commands.onCommand.addListener((command, tab) => {
   const url = tab?.url;
@@ -112,6 +118,36 @@ new Channel(CHANNEL_OPEN_POPUP).subscribe(() => {
   }
 });
 
+new Channel(CHANNEL_LOGIN_AS_PRIVATE).subscribe(async ({ data, sender }) => {
+  const userId = data?.userId;
+  if (typeof userId !== 'string' || !userId) {
+    return;
+  }
+  const contextPath = normalizeContextPath(data?.contextPath);
+  const orgHostname = getSenderHostname(sender);
+  if (typeof orgHostname !== 'string' || !orgHostname) {
+    return;
+  }
+  const token = await ensureToken(orgHostname);
+  const sessionId = token?.access_token;
+  const orgId = parseOrgIdFromSessionId(sessionId);
+  if (typeof sessionId !== 'string' || !sessionId || !orgId) {
+    return;
+  }
+  const query = new URLSearchParams({
+    oid: orgId,
+    suorgadminid: userId,
+    retURL: contextPath,
+    targetURL: contextPath,
+  });
+  const loginAsUrl = `${toCoreUrl(orgHostname)}/servlet/servlet.su?${query.toString()}`;
+  const url = buildFrontdoorUrl(orgHostname, sessionId, loginAsUrl);
+  await chrome.windows.create({
+    url,
+    incognito: true,
+  });
+});
+
 /**
  * Safely extract the hostname from a runtime message sender.
  * @param {chrome.runtime.MessageSender} sender
@@ -149,6 +185,31 @@ function getSenderRetURL(sender) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Parses org id from Salesforce session/access token prefix (before `!`).
+ * @param {string | undefined} sessionId
+ * @returns {string | null}
+ */
+function parseOrgIdFromSessionId(sessionId) {
+  if (typeof sessionId !== 'string' || !sessionId.includes('!')) {
+    return null;
+  }
+  const [orgId] = sessionId.split('!');
+  return orgId || null;
+}
+
+/**
+ * Ensure context path is a relative path and never empty.
+ * @param {string | undefined} contextPath
+ * @returns {string}
+ */
+function normalizeContextPath(contextPath) {
+  if (typeof contextPath !== 'string' || !contextPath) {
+    return '/';
+  }
+  return contextPath.startsWith('/') ? contextPath : `/${contextPath}`;
 }
 
 /**

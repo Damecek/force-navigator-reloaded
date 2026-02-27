@@ -57,3 +57,11 @@ This document explains each key in the Settings JSON shown on the extension opti
 `Commands.FlowDefinition.Active`: Includes commands for active flow version. Default: `false`.
 
 `Commands.LightningApplication`: Includes Lightning app navigation commands. Default: `true`.
+
+`Commands.PermissionSet`: Includes Permission Set commands. Default: `true`.
+
+`Commands.PermissionSetGroup`: Includes Permission Set Group commands. Default: `true`.
+
+`Commands.Users`: Includes active user navigation commands. Default: `true`.
+
+`Commands.LoginAs`: Includes Login As commands for active standard users. Default: `true`.

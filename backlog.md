@@ -10,7 +10,7 @@ Mark each line with [x] when the task is completed.
 - [x] Auto-login on My Domain login pages when org is already authorized
 - [x] Add options toggle to enable/disable My Domain auto-login
 - [x] Stop passive auto-login when token is missing `web` scope and surface `Extension > Authorize` in command list
-- [ ] Command `Login as <username>` (User Switcher)
+- [x] Command `Login as <username>` (User Switcher)
 - [ ] Implement record search using `?` prefix
 
 > could be implemented encoding following json in base64 and prefixing with `one/one.app#<base64>`
@@ -59,6 +59,8 @@ another example of such is `New Report`
 - [x] stop loading state when auth flow fails
 - [x] improve error handling when connection have expired token. implement client class which will create connection and
       expose command creator methods, on 401, it will call ensure token
+- [x] add command sources for Permission Sets and Permission Set Groups with dedicated Settings toggles
+- [x] add command sources for Users and Login As with dedicated Settings toggles
 
 > CommandRegister: failed to fetch flow commands for carvago--devas.sandbox.lightning.force.com Error: Salesforce GET
 >

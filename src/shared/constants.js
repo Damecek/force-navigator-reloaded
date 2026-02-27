@@ -24,11 +24,23 @@ export const FLOW_CACHE_TTL = 3600 * 1000 * 3; // 3 hour
 export const LIGHTNING_APP_CACHE_KEY = 'lightningAppDefinitions';
 export const LIGHTNING_APP_CACHE_TTL = 3600 * 1000 * 6; // 6 hour
 
+export const PERMISSION_SET_CACHE_KEY = 'permissionSets';
+export const PERMISSION_SET_CACHE_TTL = 3600 * 1000 * 6; // 6 hour
+
+export const USER_CACHE_KEY = 'users';
+export const USER_CACHE_TTL = 3600 * 1000 * 6; // 6 hour
+
+export const LOGIN_AS_CACHE_KEY = 'loginAs';
+export const LOGIN_AS_CACHE_TTL = 3600 * 1000 * 6; // 6 hour
+
 export const COMMAND_CACHE_KEYS = [
   MENU_CACHE_KEY,
   ENTITY_CACHE_KEY,
   FLOW_CACHE_KEY,
   LIGHTNING_APP_CACHE_KEY,
+  PERMISSION_SET_CACHE_KEY,
+  USER_CACHE_KEY,
+  LOGIN_AS_CACHE_KEY,
 ];
 
 export const COMMAND_USAGE_KEY = 'commandUsage';
@@ -77,6 +89,10 @@ export const FLOW_LATEST_VERSION_TYPE = 'Latest';
 export const FLOW_ACTIVE_VERSION_TYPE = 'Active';
 
 export const LIGHTNING_APP_SETTINGS_KEY = 'LightningApplication';
+export const PERMISSION_SET_SETTINGS_KEY = 'PermissionSet';
+export const PERMISSION_SET_GROUP_SETTINGS_KEY = 'PermissionSetGroup';
+export const USERS_SETTINGS_KEY = 'Users';
+export const LOGIN_AS_SETTINGS_KEY = 'LoginAs';
 
 export const CHANNEL_REFRESH_COMMANDS = 'refreshCommands';
 export const CHANNEL_SEND_COMMANDS = 'sendCommands';
@@ -85,5 +101,6 @@ export const CHANNEL_COMPLETED_AUTH_FLOW = 'completedAuthFlow';
 export const CHANNEL_FAILED_AUTH_FLOW = 'failedAuthFlow';
 export const CHANNEL_OPEN_OPTIONS = 'openOptions';
 export const CHANNEL_OPEN_POPUP = 'openPopup';
+export const CHANNEL_LOGIN_AS_PRIVATE = 'loginAsPrivate';
 export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';
 export const CHANNEL_AUTOLOGIN_MYDOMAIN = 'autoLoginMyDomain';

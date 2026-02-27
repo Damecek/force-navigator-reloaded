@@ -13,12 +13,19 @@ import {
   FLOW_DEFINITION_TYPE,
   FLOW_LATEST_VERSION_TYPE,
   getSetting,
+  LOGIN_AS_CACHE_KEY,
+  LOGIN_AS_CACHE_TTL,
   isAutologinEnabled,
   LIGHTNING_APP_CACHE_KEY,
   LIGHTNING_APP_CACHE_TTL,
   LIGHTNING_APP_SETTINGS_KEY,
   MENU_CACHE_KEY,
   MENU_CACHE_TTL,
+  LOGIN_AS_SETTINGS_KEY,
+  PERMISSION_SET_CACHE_KEY,
+  PERMISSION_SET_CACHE_TTL,
+  PERMISSION_SET_GROUP_SETTINGS_KEY,
+  PERMISSION_SET_SETTINGS_KEY,
   SOBJECT_APEX_TRIGGERS_ENTITY_TYPE,
   SOBJECT_BUTTONS_LINKS_ACTIONS_ENTITY_TYPE,
   SOBJECT_COMPACT_LAYOUTS_ENTITY_TYPE,
@@ -34,6 +41,9 @@ import {
   SOBJECT_RELATED_LOOKUP_FILTERS_ENTITY_TYPE,
   SOBJECT_SEARCH_LAYOUTS_ENTITY_TYPE,
   SOBJECT_VALIDATION_RULES_ENTITY_TYPE,
+  USER_CACHE_KEY,
+  USER_CACHE_TTL,
+  USERS_SETTINGS_KEY,
   toLightningHostname,
 } from '../shared';
 import { staticCommands } from './staticCommands.js';
@@ -43,6 +53,9 @@ import {
   fetchFlowDefinitionsFromSalesforce,
   fetchLightningAppDefinitionsFromSalesforce,
   fetchMenuNodesFromSalesforce,
+  fetchPermissionSetGroupsFromSalesforce,
+  fetchPermissionSetsFromSalesforce,
+  fetchUsersFromSalesforce,
 } from './salesforceUtils';
 import {
   isAuthRefreshFailedError,
@@ -139,7 +152,7 @@ const OBJECT_MANAGER_SECTIONS = [
 /**
  * Retrieves both static and dynamic commands for a given domain hostname.
  * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
- * @returns {Promise<{NavigationCommand: import('./staticCommands').Command[], RefreshCommandListCommand: import('./staticCommands').Command[]}>} Object containing navigation commands and refresh command list.
+ * @returns {Promise<{NavigationCommand: import('./staticCommands').Command[], LoginAsCommand: object[], RefreshCommandListCommand: import('./staticCommands').Command[]}>} Object containing navigation commands and refresh command list.
  */
 export async function getCommands(hostname) {
   const ExtensionOptionsCommand = [{}];
@@ -158,13 +171,17 @@ export async function getCommands(hostname) {
     accessToken: token.access_token,
   });
   let NavigationCommand = [];
+  let LoginAsCommand = [];
   try {
+    LoginAsCommand = await getLoginAsCommands(instanceHostname, connection);
     NavigationCommand = [
       ...staticCommands,
       ...(await getSetupCommands(instanceHostname, connection)),
       ...(await getEntityCommands(instanceHostname, connection)),
       ...(await getFlowCommands(instanceHostname, connection)),
       ...(await getLightningAppCommands(instanceHostname, connection)),
+      ...(await getPermissionSetCommands(instanceHostname, connection)),
+      ...(await getUserNavigationCommands(instanceHostname, connection)),
     ];
   } catch (error) {
     if (isAuthRefreshFailedError(error)) {
@@ -182,6 +199,7 @@ export async function getCommands(hostname) {
   const ResetCommandListUsageTracking = [{}];
   const commandMap = {
     NavigationCommand,
+    LoginAsCommand,
     RefreshCommandListCommand,
     ResetCommandListUsageTracking,
     ExtensionOptionsCommand,
@@ -491,6 +509,140 @@ async function getLightningAppCommands(hostname, connection) {
             path: `/lightning/app/${appTarget}`,
           };
         });
+    },
+  });
+}
+
+/**
+ * Retrieves Permission Set and Permission Set Group commands.
+ * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, path: string}>>}
+ */
+async function getPermissionSetCommands(hostname, connection) {
+  const includePermissionSets = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    PERMISSION_SET_SETTINGS_KEY,
+  ]);
+  const includePermissionSetGroups = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    PERMISSION_SET_GROUP_SETTINGS_KEY,
+  ]);
+  if (!includePermissionSets && !includePermissionSetGroups) {
+    return [];
+  }
+
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: PERMISSION_SET_CACHE_KEY,
+    ttl: PERMISSION_SET_CACHE_TTL,
+    sourceName: 'getPermissionSetCommands',
+    buildCommands: async () => {
+      const commands = [];
+      const [permissionSets, permissionSetGroups] = await Promise.all([
+        includePermissionSets
+          ? fetchPermissionSetsFromSalesforce(connection)
+          : Promise.resolve([]),
+        includePermissionSetGroups
+          ? fetchPermissionSetGroupsFromSalesforce(connection)
+          : Promise.resolve([]),
+      ]);
+
+      for (const permissionSet of permissionSets) {
+        if (permissionSet?.Id && permissionSet?.Label) {
+          commands.push({
+            id: `permission-set-${permissionSet.Id}`,
+            label: `Permission Set > ${permissionSet.Label}`,
+            path: `/lightning/setup/PermissionSetListView/page?address=%2F${permissionSet.Id}`,
+          });
+        }
+      }
+
+      for (const permissionSetGroup of permissionSetGroups) {
+        if (permissionSetGroup?.Id && permissionSetGroup?.MasterLabel) {
+          commands.push({
+            id: `permission-set-group-${permissionSetGroup.Id}`,
+            label: `Permission Set Group > ${permissionSetGroup.MasterLabel}`,
+            path: `/lightning/setup/PermSetGroups/page?address=%2F${permissionSetGroup.Id}`,
+          });
+        }
+      }
+
+      return commands;
+    },
+  });
+}
+
+/**
+ * Retrieves Users navigation commands.
+ * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, path: string}>>}
+ */
+async function getUserNavigationCommands(hostname, connection) {
+  const includeUsers = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    USERS_SETTINGS_KEY,
+  ]);
+  if (!includeUsers) {
+    return [];
+  }
+
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: USER_CACHE_KEY,
+    ttl: USER_CACHE_TTL,
+    sourceName: 'getUserNavigationCommands',
+    buildCommands: async () => {
+      const users = await fetchUsersFromSalesforce(connection);
+      const navigationCommands = [];
+
+      for (const user of users) {
+        navigationCommands.push({
+          id: `user-${user.Id}`,
+          label: `Administration > Users > ${user.Name}`,
+          path: `/lightning/setup/ManageUsersLightning/page?address=%2F${user.Id}%3Fnoredirect%3D1%26isUserEntityOverride%3D1`,
+        });
+      }
+
+      return navigationCommands;
+    },
+  });
+}
+
+/**
+ * Retrieves Login As commands for active users.
+ * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, userId: string}>>}
+ */
+async function getLoginAsCommands(hostname, connection) {
+  const includeLoginAs = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    LOGIN_AS_SETTINGS_KEY,
+  ]);
+  if (!includeLoginAs) {
+    return [];
+  }
+
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: LOGIN_AS_CACHE_KEY,
+    ttl: LOGIN_AS_CACHE_TTL,
+    sourceName: 'getLoginAsCommands',
+    buildCommands: async () => {
+      const users = await fetchUsersFromSalesforce(connection);
+      const loginAsCommands = [];
+
+      for (const user of users) {
+        loginAsCommands.push({
+          id: `login-as-${user.Id}`,
+          label: `Administration > Users > ${user.Name} > Login As`,
+          userId: user.Id,
+        });
+      }
+
+      return loginAsCommands;
     },
   });
 }
