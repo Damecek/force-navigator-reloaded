@@ -4,13 +4,6 @@ Below are the main steps to achieve the MVP of the Command Palette for the Sales
 Mark each line with [x] when the task is completed.
 
 - [ ] Error Handling: centralized input validation and error reporting in the UI
-- [x] Consolidate LWC module roots under `src/lwc/modules/{shared,content,options,welcome}`
-- [x] Post-install welcome page with quick start, shortcut setup, and review link
-- [x] Refactor welcome page to LWC architecture (same pattern as options page)
-- [x] Auto-login on My Domain login pages when org is already authorized
-- [x] Add options toggle to enable/disable My Domain auto-login
-- [x] Stop passive auto-login when token is missing `web` scope and surface `Extension > Authorize` in command list
-- [x] Command `Login as <username>` (User Switcher)
 - [ ] Implement record search using `?` prefix
 
 > could be implemented encoding following json in base64 and prefixing with `one/one.app#<base64>`
@@ -53,14 +46,6 @@ another example of such is `New Report`
 
 - [ ] [internationalize](https://developer.chrome.com/docs/extensions/reference/api/i18n#concepts_and_usage) the
       extension
-- [x] visualize the user running process, e.g. on command refresh, either spinner or toast or some other indication that
-      task started and finished
-- [x] show spinner while running refresh commands directly from the command palette
-- [x] stop loading state when auth flow fails
-- [x] improve error handling when connection have expired token. implement client class which will create connection and
-      expose command creator methods, on 401, it will call ensure token
-- [x] add command sources for Permission Sets and Permission Set Groups with dedicated Settings toggles
-- [x] add command sources for Users and Login As with dedicated Settings toggles
 
 > CommandRegister: failed to fetch flow commands for carvago--devas.sandbox.lightning.force.com Error: Salesforce GET
 >
