@@ -197,7 +197,7 @@ export default class CommandPalette extends LightningElement {
       return;
     }
     let idx = this.selectedIndex + delta;
-    idx = Math.max(0, Math.min(idx, len - 1));
+    idx = ((idx % len) + len) % len;
     this.selectedIndex = idx;
     this._scrollIntoView(idx);
   }
