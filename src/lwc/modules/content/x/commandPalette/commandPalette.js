@@ -10,7 +10,7 @@ export default class CommandPalette extends LightningElement {
    * Fuzzy search engine instance
    */
   /* eslint-disable new-cap */
-  uf = new uFuzzy();
+  uf = new uFuzzy({ intraMode: 1 });
   @track filteredCommands = [];
   /**
    * Index of the currently highlighted command in filteredCommands
@@ -120,7 +120,8 @@ export default class CommandPalette extends LightningElement {
 
       const [idxs, info, order] = this.uf.search(
         currentSearchHaystack,
-        searchTerm
+        searchTerm,
+        2
       );
 
       let newFilteredCommands = [];
