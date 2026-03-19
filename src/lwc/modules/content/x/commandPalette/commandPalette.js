@@ -2,6 +2,7 @@ import { api, LightningElement, track } from 'lwc';
 import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
 import { Channel, CHANNEL_OPEN_POPUP } from '../../../../../shared';
+import SearchRecordsCommand from '../commandClassRegister/SearchRecordsCommand';
 
 export default class CommandPalette extends LightningElement {
   static renderMode = 'light';
@@ -104,6 +105,15 @@ export default class CommandPalette extends LightningElement {
    */
   handleInput(event) {
     const searchTerm = event.target.value;
+    const searchModeTerm = this.getSearchModeTerm(searchTerm);
+
+    if (searchModeTerm !== null) {
+      this.filteredCommands = [this.createSearchDescriptor(searchModeTerm)];
+      this.selectedIndex = 0;
+      this._lastSearchTerm = searchTerm;
+      return;
+    }
+
     let currentHaystackSource;
 
     if (searchTerm) {
@@ -140,6 +150,35 @@ export default class CommandPalette extends LightningElement {
     this.filteredCommands.sort(this.usageSort);
     this.selectedIndex = 0;
     this._lastSearchTerm = searchTerm;
+  }
+
+  /**
+   * Detect whether the current input should be treated as a search command.
+   * @param {string} value
+   * @returns {string|null}
+   */
+  getSearchModeTerm(value) {
+    const normalizedValue = typeof value === 'string' ? value.trimStart() : '';
+    if (!normalizedValue.startsWith('?')) {
+      return null;
+    }
+    return normalizedValue.slice(1).trim();
+  }
+
+  /**
+   * Build a transient descriptor for the search command.
+   * @param {string} term
+   * @returns {{ id: string, label: string, usage: number, className: string, createInstance: () => SearchRecordsCommand }}
+   */
+  createSearchDescriptor(term) {
+    const labelSuffix = term ? ` > ${term}` : '';
+    return {
+      id: 'search-records',
+      label: `Search${labelSuffix}`,
+      usage: 0,
+      className: 'SearchRecordsCommand',
+      createInstance: () => new SearchRecordsCommand({ term }),
+    };
   }
 
   /**

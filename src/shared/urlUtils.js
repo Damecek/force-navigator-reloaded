@@ -133,6 +133,31 @@ export function buildLightningUrl(fullName, nodeType) {
 }
 
 /**
+ * Build a Lightning one.app URL with a base64-encoded JSON payload.
+ * @param {string} orgHostname
+ * @param {object} payload
+ * @returns {string}
+ */
+export function buildLightningComponentUrl(orgHostname, payload) {
+  const encodedPayload = encodeBase64Utf8(JSON.stringify(payload));
+  return `${toLightningUrl(orgHostname)}/one/one.app#${encodedPayload}`;
+}
+
+/**
+ * Encode a UTF-8 string as base64.
+ * @param {string} value
+ * @returns {string}
+ */
+function encodeBase64Utf8(value) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
+/**
  * Checks if the given URL's hostname ends with one of the allowed base domains.
  * @param {string} urlString The URL to check.
  * @returns {boolean} True if the hostname matches an allowed base domain.

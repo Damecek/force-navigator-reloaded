@@ -23,6 +23,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Dynamic & Configurable Commands**: Fetches and caches Salesforce setup menu items, SObjects, Flows, Lightning apps,
   Permission Sets, Permission Set Groups, active Users, and Login As actions directly from your org. Edit the JSON
   settings to include or exclude specific sources and custom commands from the palette.
+- **Search Prefix**: Type `?` followed by a term to open Salesforce global search results directly from the palette
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 - **Loading Feedback**: A spinner is displayed while refresh-oriented commands are rebuilding the command list
 - **Virtual Scrolling**: Only visible commands are rendered, keeping performance high even with thousands of commands
@@ -58,10 +59,11 @@ version might occasionally lag behind the latest release.
 1. Navigate to any Salesforce Lightning page
 2. Press `Ctrl+Shift+L` (or `Cmd+Shift+P` on Mac) to toggle the command palette. If the palette is open but not focused, the shortcut refocuses its input.
 3. Type commands or search terms to find what you need
-4. Press Enter to execute the selected command
-5. Press `Esc` or the same shortcut again to close the command palette when it has focus
-6. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts and Settings
-7. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows,
+4. Type `?` followed by a search term such as `?boyz 123` to open Salesforce global search results
+5. Press Enter to execute the selected command
+6. Press `Esc` or the same shortcut again to close the command palette when it has focus
+7. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts and Settings
+8. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows,
    lightning apps, permission sets, permission set groups, users, login as, custom commands) appear in the palette
 
 ### Supported Domains

@@ -4,7 +4,7 @@ Below are the main steps to achieve the MVP of the Command Palette for the Sales
 Mark each line with [x] when the task is completed.
 
 - [ ] Error Handling: centralized input validation and error reporting in the UI
-- [ ] Implement record search using `?` prefix
+- [x] Implement record search using `?` prefix
 
 > could be implemented encoding following json in base64 and prefixing with `one/one.app#<base64>`
 
