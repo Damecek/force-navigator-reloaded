@@ -3,6 +3,7 @@ import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
 import { Channel, CHANNEL_OPEN_POPUP } from '../../../../../shared';
 import SearchRecordsCommand from '../commandClassRegister/SearchRecordsCommand';
+import { filterCommandsBySearchTerm } from './searchMatching';
 
 export default class CommandPalette extends LightningElement {
   static renderMode = 'light';
@@ -117,33 +118,14 @@ export default class CommandPalette extends LightningElement {
     let currentHaystackSource;
 
     if (searchTerm) {
-      if (
-        searchTerm.startsWith(this._lastSearchTerm) &&
-        this._lastSearchTerm !== ''
-      ) {
-        currentHaystackSource = this.filteredCommands;
-      } else {
-        currentHaystackSource = this.commands;
-      }
-
-      const currentSearchHaystack = currentHaystackSource.map((c) => c.label);
-
-      const [idxs, info, order] = this.uf.search(
-        currentSearchHaystack,
+      currentHaystackSource = this.filteredCommands;
+      this.filteredCommands = filterCommandsBySearchTerm({
+        uf: this.uf,
+        commands: this.commands,
+        previousResults: currentHaystackSource,
         searchTerm,
-        2
-      );
-
-      let newFilteredCommands = [];
-      if (order && info && Array.isArray(info.idx)) {
-        newFilteredCommands = order.map(
-          (pos) => currentHaystackSource[info.idx[pos]]
-        );
-      } else if (Array.isArray(idxs)) {
-        newFilteredCommands = idxs.map((i) => currentHaystackSource[i]);
-      }
-
-      this.filteredCommands = newFilteredCommands;
+        previousSearchTerm: this._lastSearchTerm,
+      });
     } else {
       this.filteredCommands = [...this.commands];
     }
