@@ -1,5 +1,9 @@
-import { SalesforceConnection } from './salesforceConnection';
-import { COMMANDS_SETTINGS_KEY, getSetting, SETUP_NODE_TYPES } from '../shared';
+import { SalesforceConnection } from './salesforceConnection.js';
+import {
+  COMMANDS_SETTINGS_KEY,
+  getSetting,
+  SETUP_NODE_TYPES,
+} from '../shared/index.js';
 
 /**
  * @typedef {Object} SetupNode

@@ -34,7 +34,7 @@ import {
   SOBJECT_VALIDATION_RULES_ENTITY_TYPE,
   USERS_SETTINGS_KEY,
 } from './constants.js';
-import { CacheManager } from './index';
+import CacheManager from './cacheManager.js';
 
 /**
  * Key used for persisting settings in chrome.storage.

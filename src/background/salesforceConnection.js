@@ -1,5 +1,5 @@
-import { refreshToken } from './auth/auth';
-import { toLightningHostname } from '../shared';
+import { refreshToken } from './auth/auth.js';
+import { toLightningHostname } from '../shared/index.js';
 
 const AUTH_REFRESH_FAILED_CODE = 'AUTH_REFRESH_FAILED';
 
