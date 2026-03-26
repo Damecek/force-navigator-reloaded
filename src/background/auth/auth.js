@@ -7,8 +7,8 @@ import {
   toCoreUrl,
   toLightningHostname,
   toLightningUrl,
-} from '../../shared';
-import { makePkcePair } from './authUtil';
+} from '../../shared/index.js';
+import { makePkcePair } from './authUtil.js';
 
 /**
  * @typedef {Object} Token
@@ -134,7 +134,7 @@ export async function ensureToken(hostname) {
 
 /**
  * Force refreshes cached token for the provided Salesforce hostname.
- * Returns null and clears cache when refresh is not possible or fails.
+ * Returns null and clears cache only when refresh is not possible.
  * @param {string} hostname
  * @returns {Promise<Token|null>}
  */
@@ -143,6 +143,10 @@ export async function refreshToken(hostname) {
   const cache = new CacheManager(loginBase);
   const cachedToken = await cache.get(SF_TOKEN_CACHE_KEY);
   if (!cachedToken?.refresh_token) {
+    console.log(
+      'Token refresh unavailable. Missing refresh token, deleting cached token for',
+      loginBase
+    );
     await cache.clear(SF_TOKEN_CACHE_KEY);
     return null;
   }
@@ -160,8 +164,10 @@ export async function refreshToken(hostname) {
     body: params.toString(),
   });
   if (!resp.ok) {
-    console.log('Token refresh failed.', await resp.text());
-    await cache.clear(SF_TOKEN_CACHE_KEY);
+    console.log(
+      'Token refresh failed. Preserving cached token for troubleshooting.',
+      await resp.text()
+    );
     return null;
   }
 

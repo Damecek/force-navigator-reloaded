@@ -15,13 +15,13 @@ import {
   isContentScriptAllowedDomain,
   loadSettings,
   toCoreUrl,
-} from '../shared';
-import { getCommands } from './commandRegister';
+} from '../shared/index.js';
+import { getCommands } from './commandRegister.js';
 import {
   ensureToken,
   ensureWebScopedToken,
   interactiveLogin,
-} from './auth/auth';
+} from './auth/auth.js';
 
 chrome.commands.onCommand.addListener((command, tab) => {
   const url = tab?.url;

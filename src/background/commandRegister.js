@@ -45,7 +45,7 @@ import {
   USER_CACHE_TTL,
   USERS_SETTINGS_KEY,
   toLightningHostname,
-} from '../shared';
+} from '../shared/index.js';
 import { staticCommands } from './staticCommands.js';
 import { ensureToken, tokenHasScope } from './auth/auth.js';
 import {
@@ -56,11 +56,11 @@ import {
   fetchPermissionSetGroupsFromSalesforce,
   fetchPermissionSetsFromSalesforce,
   fetchUsersFromSalesforce,
-} from './salesforceUtils';
+} from './salesforceUtils.js';
 import {
   isAuthRefreshFailedError,
   SalesforceConnection,
-} from './salesforceConnection';
+} from './salesforceConnection.js';
 
 const OBJECT_MANAGER_SECTIONS = [
   {

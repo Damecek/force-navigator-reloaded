@@ -3,7 +3,7 @@ import {
   Channel,
   CHANNEL_AUTOLOGIN_MYDOMAIN,
   getSetting,
-} from '../shared';
+} from '../shared/index.js';
 
 function isLoginContextPage() {
   const { hostname, pathname, search } = window.location;
