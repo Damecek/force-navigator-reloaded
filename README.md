@@ -35,7 +35,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 
 ### Fuzzy Search
 
-The command palette uses the [uFuzzy](https://github.com/leeoniya/uFuzzy) library for efficient searching.
+The command palette uses the [uFuzzy](https://github.com/leeoniya/uFuzzy) library for efficient searching, with Latin diacritics ignored during matching so `farkas` can find `farkaš`.
 
 ## Installation
 
