@@ -12,7 +12,20 @@ export default class JsonSettings extends LightningElement {
   @track error = '';
 
   connectedCallback() {
+    this._handleKeyDown = this._onKeyDown.bind(this);
+    document.addEventListener('keydown', this._handleKeyDown);
     this.loadData();
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('keydown', this._handleKeyDown);
+  }
+
+  _onKeyDown(event) {
+    if ((event.metaKey || event.ctrlKey) && event.key === 's') {
+      event.preventDefault();
+      this.handleSave();
+    }
   }
 
   async loadData() {
