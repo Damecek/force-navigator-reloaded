@@ -33,10 +33,12 @@ function isLoginContextPage() {
   }
 
   const key = `forceNavigatorAutoLoginAttempted:${hostname}${pathname}${search}`;
-  if (sessionStorage.getItem(key) === '1') {
+  const TEN_MINUTES = 10 * 60 * 1000;
+  const lastAttempt = sessionStorage.getItem(key);
+  if (lastAttempt && Date.now() - Number(lastAttempt) < TEN_MINUTES) {
     return false;
   }
-  sessionStorage.setItem(key, '1');
+  sessionStorage.setItem(key, String(Date.now()));
   return true;
 }
 
