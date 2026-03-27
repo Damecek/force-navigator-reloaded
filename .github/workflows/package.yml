@@ -68,7 +68,7 @@ jobs:
           echo "zip_path=${zip_name}" >> "$GITHUB_OUTPUT"
 
       - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: force-navigator-reloaded-${{ env.NEW_VERSION }}
           path: ${{ steps.zip.outputs.zip_path }}
