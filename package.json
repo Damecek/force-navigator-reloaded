@@ -17,7 +17,7 @@
     "@babel/preset-env": "^7.29.0",
     "@lwc/eslint-plugin-lwc": "^3.0.0",
     "@lwc/eslint-plugin-lwc-platform": "^6.3.0",
-    "@lwc/module-resolver": "^8.28.2",
+    "@lwc/module-resolver": "^9.1.1",
     "@salesforce/eslint-config-lwc": "^4.1.2",
     "babel-loader": "^9.1.3",
     "copy-webpack-plugin": "^13.0.1",
