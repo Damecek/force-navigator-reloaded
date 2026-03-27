@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.2",
-    "@codemirror/state": "^6.5.4",
+    "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.39.12",
     "@leeoniya/ufuzzy": "^1.0.19",
     "@webcomponents/custom-elements": "^1.6.0",
