@@ -120,7 +120,13 @@ function mergeSettings(partial) {
 export async function loadSettings() {
   const stored = await new CacheManager(GLOBAL_CACHE_SCOPE).get(SETTINGS_KEY);
   console.log('Loading settings', stored);
-  return await saveSettings(stored);
+  const merged = mergeSettings(stored);
+  if (JSON.stringify(stored) !== JSON.stringify(merged)) {
+    await new CacheManager(GLOBAL_CACHE_SCOPE).set(SETTINGS_KEY, merged, {
+      preserve: true,
+    });
+  }
+  return merged;
 }
 
 /**
