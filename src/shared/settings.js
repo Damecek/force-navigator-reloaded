@@ -36,6 +36,9 @@ import {
 } from './constants.js';
 import CacheManager from './cacheManager.js';
 
+/** In-memory settings cache. Null means cold (needs load from storage). */
+let _settingsCache = null;
+
 /**
  * Key used for persisting settings in chrome.storage.
  */
@@ -118,6 +121,9 @@ function mergeSettings(partial) {
  * @returns {Promise<typeof DEFAULT_SETTINGS>}
  */
 export async function loadSettings() {
+  if (_settingsCache !== null) {
+    return _settingsCache;
+  }
   const stored = await new CacheManager(GLOBAL_CACHE_SCOPE).get(SETTINGS_KEY);
   console.log('Loading settings', stored);
   const merged = mergeSettings(stored);
@@ -126,6 +132,7 @@ export async function loadSettings() {
       preserve: true,
     });
   }
+  _settingsCache = merged;
   return merged;
 }
 
@@ -140,6 +147,7 @@ export async function saveSettings(settings) {
   await new CacheManager(GLOBAL_CACHE_SCOPE).set(SETTINGS_KEY, merged, {
     preserve: true,
   });
+  _settingsCache = merged;
   return merged;
 }
 
@@ -149,6 +157,7 @@ export async function saveSettings(settings) {
  */
 export async function resetSettings() {
   console.log('Resetting settings to defaults');
+  _settingsCache = null;
   await new CacheManager(GLOBAL_CACHE_SCOPE).clear(SETTINGS_KEY);
   return loadSettings();
 }
@@ -169,6 +178,13 @@ export async function getSetting(keyPath) {
   }, settings);
   console.log('Setting value for key', keyPath, value);
   return value;
+}
+
+/**
+ * Invalidate the in-memory settings cache so the next read reloads from storage.
+ */
+export function invalidateSettingsCache() {
+  _settingsCache = null;
 }
 
 /**
