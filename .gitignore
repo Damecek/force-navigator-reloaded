@@ -7,3 +7,4 @@ dist/
 .DS_Store
 
 **/.sf/*
+.claude/settings.local.json

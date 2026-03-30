@@ -173,15 +173,25 @@ export async function getCommands(hostname) {
   let NavigationCommand = [];
   let LoginAsCommand = [];
   try {
-    LoginAsCommand = await getLoginAsCommands(instanceHostname, connection);
+    const [loginAs, setup, entity, flow, lightningApp, permSet, userNav] =
+      await Promise.all([
+        getLoginAsCommands(instanceHostname, connection),
+        getSetupCommands(instanceHostname, connection),
+        getEntityCommands(instanceHostname, connection),
+        getFlowCommands(instanceHostname, connection),
+        getLightningAppCommands(instanceHostname, connection),
+        getPermissionSetCommands(instanceHostname, connection),
+        getUserNavigationCommands(instanceHostname, connection),
+      ]);
+    LoginAsCommand = loginAs;
     NavigationCommand = [
       ...staticCommands,
-      ...(await getSetupCommands(instanceHostname, connection)),
-      ...(await getEntityCommands(instanceHostname, connection)),
-      ...(await getFlowCommands(instanceHostname, connection)),
-      ...(await getLightningAppCommands(instanceHostname, connection)),
-      ...(await getPermissionSetCommands(instanceHostname, connection)),
-      ...(await getUserNavigationCommands(instanceHostname, connection)),
+      ...setup,
+      ...entity,
+      ...flow,
+      ...lightningApp,
+      ...permSet,
+      ...userNav,
     ];
   } catch (error) {
     if (isAuthRefreshFailedError(error)) {
