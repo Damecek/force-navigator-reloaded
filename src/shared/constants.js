@@ -13,10 +13,10 @@ export const CONTENT_SCRIPT_DISABLED_BASE_DOMAINS = [
 export const GLOBAL_CACHE_SCOPE = 'global';
 
 export const MENU_CACHE_KEY = 'menuNodes';
-export const MENU_CACHE_TTL = 3600 * 1000 * 24; // 12 hour
+export const MENU_CACHE_TTL = 3600 * 1000 * 24; // 24 hours
 
 export const ENTITY_CACHE_KEY = 'entityDefinitions';
-export const ENTITY_CACHE_TTL = 3600 * 1000 * 6; // 12 hour
+export const ENTITY_CACHE_TTL = 3600 * 1000 * 6; // 6 hours
 
 export const FLOW_CACHE_KEY = 'flowDefinitions';
 export const FLOW_CACHE_TTL = 3600 * 1000 * 3; // 3 hour
