@@ -91,7 +91,7 @@ test.beforeEach(() => {
   };
 });
 
-test('refreshToken preserves cached token when refresh request fails', async () => {
+test('refreshToken clears cached token when invalid_grant is returned', async () => {
   const { CacheManager, SF_TOKEN_CACHE_KEY } = await loadSharedModule();
   const { refreshToken } = await loadAuthModule();
   const cache = new CacheManager(ORG_HOSTNAME);
@@ -100,7 +100,28 @@ test('refreshToken preserves cached token when refresh request fails', async () 
   await cache.set(SF_TOKEN_CACHE_KEY, cachedToken, { preserve: true });
   global.fetch = async () => ({
     ok: false,
-    text: async () => 'invalid_grant',
+    text: async () =>
+      '{"error":"invalid_grant","error_description":"expired access/refresh token"}',
+  });
+
+  const result = await refreshToken(ORG_HOSTNAME);
+  const stored = await chrome.storage.local.get([TOKEN_STORAGE_KEY]);
+
+  assert.equal(result, null);
+  assert.equal(stored[TOKEN_STORAGE_KEY], undefined);
+});
+
+test('refreshToken preserves cached token when non-invalid_grant error occurs', async () => {
+  const { CacheManager, SF_TOKEN_CACHE_KEY } = await loadSharedModule();
+  const { refreshToken } = await loadAuthModule();
+  const cache = new CacheManager(ORG_HOSTNAME);
+  const cachedToken = buildCachedToken();
+
+  await cache.set(SF_TOKEN_CACHE_KEY, cachedToken, { preserve: true });
+  global.fetch = async () => ({
+    ok: false,
+    text: async () =>
+      '{"error":"server_error","error_description":"temporary failure"}',
   });
 
   const result = await refreshToken(ORG_HOSTNAME);
@@ -191,7 +212,7 @@ test('refreshToken keeps prior refresh token and scope when Salesforce omits the
   assert.equal(stored[TOKEN_STORAGE_KEY]?.value.scope, 'api refresh_token');
 });
 
-test('getCommands falls back to authorize commands and preserves token after refresh failure', async () => {
+test('getCommands falls back to authorize commands and clears token after invalid_grant', async () => {
   const { CacheManager, SF_TOKEN_CACHE_KEY } = await loadSharedModule();
   const { getCommands } = await import(
     `../src/background/commandRegister.js?test=${Date.now()}-${Math.random()}`
@@ -202,7 +223,33 @@ test('getCommands falls back to authorize commands and preserves token after ref
   await cache.set(SF_TOKEN_CACHE_KEY, cachedToken, { preserve: true });
   global.fetch = async () => ({
     ok: false,
-    text: async () => 'invalid_grant',
+    text: async () =>
+      '{"error":"invalid_grant","error_description":"expired access/refresh token"}',
+  });
+
+  const commands = await getCommands(ORG_HOSTNAME);
+  const stored = await chrome.storage.local.get([TOKEN_STORAGE_KEY]);
+
+  assert.deepEqual(commands, {
+    AuthorizeExtensionCommand: [{}],
+    ExtensionOptionsCommand: [{}],
+  });
+  assert.equal(stored[TOKEN_STORAGE_KEY], undefined);
+});
+
+test('getCommands falls back to authorize commands and preserves token after temporary failure', async () => {
+  const { CacheManager, SF_TOKEN_CACHE_KEY } = await loadSharedModule();
+  const { getCommands } = await import(
+    `../src/background/commandRegister.js?test=${Date.now()}-${Math.random()}`
+  );
+  const cache = new CacheManager(ORG_HOSTNAME);
+  const cachedToken = buildCachedToken();
+
+  await cache.set(SF_TOKEN_CACHE_KEY, cachedToken, { preserve: true });
+  global.fetch = async () => ({
+    ok: false,
+    text: async () =>
+      '{"error":"server_error","error_description":"temporary failure"}',
   });
 
   const commands = await getCommands(ORG_HOSTNAME);

@@ -98,9 +98,13 @@ export async function ensureWebScopedToken(hostname) {
     return null;
   }
   const refreshedToken = await refreshToken(hostname);
-  if (refreshedToken) {
-    token = refreshedToken;
+  if (!refreshedToken) {
+    console.log(
+      'ensureWebScopedToken: token refresh failed, cannot use stale token for auto-login'
+    );
+    return null;
   }
+  token = refreshedToken;
   const autologinEnabled = await isAutologinEnabled();
   if (autologinEnabled && !tokenHasScope(token, 'web')) {
     console.log(
@@ -164,10 +168,20 @@ export async function refreshToken(hostname) {
     body: params.toString(),
   });
   if (!resp.ok) {
-    console.log(
-      'Token refresh failed. Preserving cached token for troubleshooting.',
-      await resp.text()
-    );
+    const errorBody = await resp.text();
+    const isInvalidGrant = errorBody.includes('invalid_grant');
+    if (isInvalidGrant) {
+      console.log(
+        'Token refresh failed with invalid_grant. Refresh token is permanently revoked, clearing cached token.',
+        errorBody
+      );
+      await cache.clear(SF_TOKEN_CACHE_KEY);
+    } else {
+      console.log(
+        'Token refresh failed. Preserving cached token for retry.',
+        errorBody
+      );
+    }
     return null;
   }
 
