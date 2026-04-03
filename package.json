@@ -20,7 +20,7 @@
     "@lwc/module-resolver": "^9.1.1",
     "@salesforce/eslint-config-lwc": "^4.1.2",
     "@salesforce/eslint-plugin-lightning": "^2.0.0",
-    "babel-loader": "^9.1.3",
+    "babel-loader": "^10.1.1",
     "copy-webpack-plugin": "^14.0.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
