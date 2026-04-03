@@ -14,7 +14,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/eslint-parser": "^7.28.6",
-    "@babel/preset-env": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
     "@lwc/eslint-plugin-lwc": "^3.4.0",
     "@lwc/eslint-plugin-lwc-platform": "^6.3.0",
     "@lwc/module-resolver": "^9.1.1",
