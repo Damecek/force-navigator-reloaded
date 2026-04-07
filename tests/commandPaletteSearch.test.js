@@ -7,7 +7,7 @@ import {
 } from '../src/lwc/modules/content/x/commandPalette/searchMatching.js';
 
 function createUfuzzy() {
-  return new uFuzzy({ intraMode: 1 });
+  return new uFuzzy({ intraMode: 1, intraSub: 0, intraDel: 0 });
 }
 
 test('normalizeSearchValue strips Latin diacritics for matching', () => {

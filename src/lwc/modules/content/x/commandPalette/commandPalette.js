@@ -12,7 +12,7 @@ export default class CommandPalette extends LightningElement {
    * Fuzzy search engine instance
    */
   /* eslint-disable new-cap */
-  uf = new uFuzzy({ intraMode: 1 });
+  uf = new uFuzzy({ intraMode: 1, intraSub: 0, intraDel: 0 });
   @track filteredCommands = [];
   /**
    * Index of the currently highlighted command in filteredCommands
