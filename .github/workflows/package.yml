@@ -89,7 +89,7 @@ jobs:
             6. Find and select the unzipped folder
 
       - name: Publish to Chrome Web Store
-        uses: mnao305/chrome-extension-upload@v5.0.0
+        uses: mnao305/chrome-extension-upload@v6.0.0
         with:
           file-path: ${{ steps.zip.outputs.zip_path }}
           extension-id: ${{ secrets.CHROME_PROD_EXTENSION_ID }}
