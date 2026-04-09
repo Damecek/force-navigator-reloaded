@@ -55,3 +55,15 @@
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.
 - For long-running command executions, emit explicit loading events from command classes so `app` can toggle loading indicators without command-id filtering.
+
+# Versioning
+
+- Versions follow semver and are managed **locally** — CI never commits back to the repo.
+- **Patch** bumps happen automatically on every `git commit` via the `.husky/pre-commit` hook.
+  - The hook runs `npm version patch`, syncs `src/manifest.json`, and stages the version files.
+  - To skip the automatic bump (e.g. during amend or rebase), set `SKIP_PATCH_BUMP=1`.
+- **Minor** bumps happen via `npm run release`, which also tags and pushes.
+  - Use `npm run release` instead of `git push` when you want to publish a new version.
+  - Regular `git push` pushes code but does not trigger a release.
+- Never modify version fields in `package.json` or `src/manifest.json` manually — the hooks and scripts handle it.
+- `scripts/syncManifestVersion.js` keeps `src/manifest.json` version in sync with `package.json`.

@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname "$0")/_/husky.sh"
 
+if [ "$SKIP_PATCH_BUMP" != "1" ]; then
+  npm version patch --no-git-tag-version
+  node ./scripts/syncManifestVersion.js
+  git add package.json package-lock.json src/manifest.json
+fi
+
 npx lint-staged

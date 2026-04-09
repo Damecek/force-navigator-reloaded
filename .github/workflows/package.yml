@@ -1,81 +1,42 @@
 name: Build & Publish Extension
 on:
   push:
-    branches: [ main ]
-    paths:
-      - "src/**"
-      - "web/**"
-      - "webpack.config.js"
-      - "lwc.config.json"
-      - "package.json"
-      - "package-lock.json"
+    tags: ['v*']
 
-concurrency:
-  group: build-extension-${{ github.ref }}
-  cancel-in-progress: true
 permissions:
   contents: write
   id-token: write
 
 jobs:
   build:
-    if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: 'npm'
+      - run: npm ci
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Read version
+        run: echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
 
-      - name: Bump patch version
-        id: version
-        run: |
-          newver=$(npm version patch --no-git-tag-version)
-          echo "NEW_VERSION=${newver#v}" >> "$GITHUB_ENV"
-
-      - name: Update manifest version
-        run: npx dot-json src/manifest.json version "$NEW_VERSION"
-
-      - name: Commit & tag version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json src/manifest.json
-          git commit -m "chore: bump version to $NEW_VERSION"
-          git tag "v$NEW_VERSION"
-          git push origin HEAD --follow-tags
-
-      - name: Build extension
-        run: npm run build
+      - run: npm run build
 
       - name: Zip dist
         id: zip
         run: |
           zip_name="force-navigator-reloaded-${NEW_VERSION}.zip"
-          cd dist
-          zip -r "../${zip_name}" .
+          cd dist && zip -r "../${zip_name}" .
           echo "zip_path=${zip_name}" >> "$GITHUB_OUTPUT"
 
-      - name: Upload dist artifact
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7
         with:
           name: force-navigator-reloaded-${{ env.NEW_VERSION }}
           path: ${{ steps.zip.outputs.zip_path }}
           if-no-files-found: error
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.NEW_VERSION }}
           files: ${{ steps.zip.outputs.zip_path }}
@@ -88,8 +49,7 @@ jobs:
             5. Click Load unpacked
             6. Find and select the unzipped folder
 
-      - name: Publish to Chrome Web Store
-        uses: mnao305/chrome-extension-upload@v6.0.0
+      - uses: mnao305/chrome-extension-upload@v6.0.0
         with:
           file-path: ${{ steps.zip.outputs.zip_path }}
           extension-id: ${{ secrets.CHROME_PROD_EXTENSION_ID }}
