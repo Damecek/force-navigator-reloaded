@@ -57,7 +57,9 @@ export default class CommandPalette extends LightningElement {
 
   usageSort(a, b) {
     const diff = (b.usage || 0) - (a.usage || 0);
-    if (diff !== 0) return diff;
+    if (diff !== 0) {
+      return diff;
+    }
     return a.label < b.label ? -1 : a.label > b.label ? 1 : 0;
   }
 
