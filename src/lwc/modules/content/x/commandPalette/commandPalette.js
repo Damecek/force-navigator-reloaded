@@ -56,7 +56,9 @@ export default class CommandPalette extends LightningElement {
   }
 
   usageSort(a, b) {
-    return (b.usage || 0) - (a.usage || 0);
+    const diff = (b.usage || 0) - (a.usage || 0);
+    if (diff !== 0) return diff;
+    return a.label < b.label ? -1 : a.label > b.label ? 1 : 0;
   }
 
   get loadingIndicatorClass() {

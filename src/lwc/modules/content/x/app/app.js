@@ -65,10 +65,7 @@ export default class App extends LightningElement {
     console.log('handle commands', data);
     try {
       if (data) {
-        const descriptors = await createCommandDescriptors(data);
-        this.commands = descriptors.sort((a, b) =>
-          a.label.localeCompare(b.label)
-        );
+        this.commands = await createCommandDescriptors(data);
       } else {
         this.commands = [];
       }
