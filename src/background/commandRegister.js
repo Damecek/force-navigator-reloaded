@@ -170,18 +170,19 @@ export async function getCommands(hostname) {
     instanceUrl: token.instance_url,
     accessToken: token.access_token,
   });
+  const loadUsers = createUsersLoader(connection);
   let NavigationCommand = [];
   let LoginAsCommand = [];
   try {
     const [loginAs, setup, entity, flow, lightningApp, permSet, userNav] =
       await Promise.all([
-        getLoginAsCommands(instanceHostname, connection),
+        getLoginAsCommands(instanceHostname, loadUsers),
         getSetupCommands(instanceHostname, connection),
         getEntityCommands(instanceHostname, connection),
         getFlowCommands(instanceHostname, connection),
         getLightningAppCommands(instanceHostname, connection),
         getPermissionSetCommands(instanceHostname, connection),
-        getUserNavigationCommands(instanceHostname, connection),
+        getUserNavigationCommands(instanceHostname, loadUsers),
       ]);
     LoginAsCommand = loginAs;
     NavigationCommand = [
@@ -218,6 +219,22 @@ export async function getCommands(hostname) {
     commandMap.AuthorizeExtensionCommand = AuthorizeExtensionCommand;
   }
   return commandMap;
+}
+
+/**
+ * Memoize the User fetch for a single command refresh cycle.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {() => Promise<Array<{Id: string, Name: string}>>}
+ */
+function createUsersLoader(connection) {
+  let usersPromise;
+
+  return async () => {
+    if (!usersPromise) {
+      usersPromise = fetchUsersFromSalesforce(connection);
+    }
+    return usersPromise;
+  };
 }
 
 /**
@@ -586,10 +603,11 @@ async function getPermissionSetCommands(hostname, connection) {
 /**
  * Retrieves Users navigation commands.
  * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
- * @param {SalesforceConnection} connection Salesforce connection instance
+ * @param {() => Promise<Array<{Id: string, Name: string}>>} loadUsers
+ *   Request-scoped User loader
  * @returns {Promise<Array<{id: string, label: string, path: string}>>}
  */
-async function getUserNavigationCommands(hostname, connection) {
+async function getUserNavigationCommands(hostname, loadUsers) {
   const includeUsers = await getSetting([
     COMMANDS_SETTINGS_KEY,
     USERS_SETTINGS_KEY,
@@ -604,7 +622,7 @@ async function getUserNavigationCommands(hostname, connection) {
     ttl: USER_CACHE_TTL,
     sourceName: 'getUserNavigationCommands',
     buildCommands: async () => {
-      const users = await fetchUsersFromSalesforce(connection);
+      const users = await loadUsers();
       const navigationCommands = [];
 
       for (const user of users) {
@@ -623,10 +641,11 @@ async function getUserNavigationCommands(hostname, connection) {
 /**
  * Retrieves Login As commands for active users.
  * @param {string} hostname Domain hostname (e.g., "myorg.lightning.force.com").
- * @param {SalesforceConnection} connection Salesforce connection instance
+ * @param {() => Promise<Array<{Id: string, Name: string}>>} loadUsers
+ *   Request-scoped User loader
  * @returns {Promise<Array<{id: string, label: string, userId: string}>>}
  */
-async function getLoginAsCommands(hostname, connection) {
+async function getLoginAsCommands(hostname, loadUsers) {
   const includeLoginAs = await getSetting([
     COMMANDS_SETTINGS_KEY,
     LOGIN_AS_SETTINGS_KEY,
@@ -641,7 +660,7 @@ async function getLoginAsCommands(hostname, connection) {
     ttl: LOGIN_AS_CACHE_TTL,
     sourceName: 'getLoginAsCommands',
     buildCommands: async () => {
-      const users = await fetchUsersFromSalesforce(connection);
+      const users = await loadUsers();
       const loginAsCommands = [];
 
       for (const user of users) {
