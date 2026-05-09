@@ -1,4 +1,16 @@
 /**
+ * Check whether a tab messaging rejection only means the receiver is not ready.
+ * @param {unknown} error
+ * @returns {boolean}
+ */
+function isMissingTabReceiverError(error) {
+  return (
+    error instanceof Error &&
+    error.message.includes('Receiving end does not exist')
+  );
+}
+
+/**
  * Simple wrapper around chrome runtime messaging APIs scoped by channel name.
  */
 export default class Channel {
@@ -49,8 +61,18 @@ export default class Channel {
   publish({ data, tabId } = {}) {
     console.log('Publishing to channel', this.name);
     const payload = { action: this.name, data };
-    return typeof tabId === 'number'
-      ? chrome.tabs.sendMessage(tabId, payload)
-      : chrome.runtime.sendMessage(payload);
+    if (typeof tabId !== 'number') {
+      return chrome.runtime.sendMessage(payload);
+    }
+
+    return chrome.tabs.sendMessage(tabId, payload).catch((error) => {
+      if (isMissingTabReceiverError(error)) {
+        console.log(
+          `Channel "${this.name}": target tab receiver is not available yet`
+        );
+        return undefined;
+      }
+      throw error;
+    });
   }
 }
