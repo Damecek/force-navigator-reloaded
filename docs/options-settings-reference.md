@@ -2,7 +2,7 @@
 
 This document explains each key in the Settings JSON shown on the extension options page.
 
-`AutoLogin`: Enables optional My Domain auto-login on supported Salesforce login pages for already authorized orgs. Default: `false`.
+`AutoLogin`: Enables optional My Domain auto-login on supported Salesforce login pages, including username-first prompts, for already authorized orgs. Default: `false`.
 
 `Commands`: Root object for command-source visibility toggles.
 
