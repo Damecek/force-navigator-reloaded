@@ -22,7 +22,7 @@ the selected app home.
 Use Salesforce's documented app URL shape:
 
 ```text
-/lightning/app/{appTarget}{currentPagePath}
+/lightning/app/{appTarget}{currentPagePathWithoutLightningPrefix}
 ```
 
 The command registry already builds app targets from `AppDefinition`. It should
@@ -32,7 +32,8 @@ metadata so execution can build the final URL from the current browser location.
 `NavigationCommand` remains responsible for command execution. If a command has
 an app target, it composes a path at execution time:
 
-- supported current path: `/lightning/app/<target><pathname><search><hash>`
+- supported current path:
+  `/lightning/app/<target><current path without /lightning><search><hash>`
 - unsupported current path: `/lightning/app/<target>`
 
 General navigation commands keep their existing static `path` behavior.

@@ -1,6 +1,7 @@
 import Command from './Command';
 import { toLightningUrl } from '../../../../../shared';
 import { dispatchLightningNavigation } from '../../../../../content_scripts/lightningNavigationBridge';
+import { buildLightningAppNavigationPath } from './lightningAppNavigationPath';
 
 /**
  * Command that navigates the page to a specified path.
@@ -10,10 +11,12 @@ export default class NavigationCommand extends Command {
    * @param {string} id - Unique identifier for the command.
    * @param {string} label - Display text for the command.
    * @param {string} path - URL path segment (appended to origin).
+   * @param {string} [appTarget] - Lightning app target used to preserve current page.
    */
-  constructor({ id, label, path, usage } = {}) {
+  constructor({ id, label, path, usage, appTarget } = {}) {
     super(id, label, usage);
     this.path = path;
+    this.appTarget = appTarget;
   }
 
   /**
@@ -24,13 +27,15 @@ export default class NavigationCommand extends Command {
    */
   async execute({ openInNewTab = false } = {}) {
     await this.incrementUsage();
-    const url = `${toLightningUrl(this.hostname)}${this.path}`;
+    const path = this.appTarget
+      ? buildLightningAppNavigationPath(this.appTarget, window.location)
+      : this.path;
+    const url = `${toLightningUrl(this.hostname)}${path}`;
     if (openInNewTab) {
       window.open(url, '_blank');
     } else {
       const isLightningPath =
-        this.path.startsWith('/lightning/o/') ||
-        this.path.startsWith('/lightning/page/');
+        path.startsWith('/lightning/o/') || path.startsWith('/lightning/page/');
       const isLightningLocation =
         window.location.pathname.startsWith('/lightning/o/') ||
         window.location.pathname.startsWith('/lightning/page/');

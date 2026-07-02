@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+globalThis.__CLIENT_ID__ = 'test-client-id';
+
 const ORG_HOSTNAME = 'acme.sandbox.lightning.force.com';
 const TOKEN_STORAGE_KEY = `${ORG_HOSTNAME}_sfToken`;
 
