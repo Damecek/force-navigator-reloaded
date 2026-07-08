@@ -5,6 +5,7 @@ import AuthorizeExtensionCommand from './AuthorizeExtensionCommand';
 import ResetCommandListUsageTracking from './ResetCommandListUsageTracking';
 import ExtensionOptionsCommand from './ExtensionOptionsCommand';
 import LoginAsCommand from './LoginAsCommand';
+import ReviewCommand from './ReviewCommand';
 import SearchRecordsCommand from './SearchRecordsCommand';
 
 export const register = {
@@ -15,5 +16,6 @@ export const register = {
   ResetCommandListUsageTracking,
   ExtensionOptionsCommand,
   LoginAsCommand,
+  ReviewCommand,
   SearchRecordsCommand,
 };

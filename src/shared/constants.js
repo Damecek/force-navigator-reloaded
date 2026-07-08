@@ -44,6 +44,11 @@ export const COMMAND_CACHE_KEYS = [
 ];
 
 export const COMMAND_USAGE_KEY = 'commandUsage';
+export const COMMAND_ACTIVITY_KEY = 'commandActivity';
+export const REVIEW_COMMAND_SETTINGS_KEY = 'ReviewCommand';
+export const REVIEW_COMMAND_ENABLED_SETTINGS_KEY = 'Enabled';
+export const REVIEW_COMMAND_URL =
+  'https://chromewebstore.google.com/detail/force-navigator-reloaded/iniflnopffblekndhplennjijdcfkeak/reviews?utm_source=extension_review_command';
 
 /**
  * OAuth2 consumer key injected at build time.
@@ -101,6 +106,7 @@ export const CHANNEL_COMPLETED_AUTH_FLOW = 'completedAuthFlow';
 export const CHANNEL_FAILED_AUTH_FLOW = 'failedAuthFlow';
 export const CHANNEL_OPEN_OPTIONS = 'openOptions';
 export const CHANNEL_OPEN_POPUP = 'openPopup';
+export const CHANNEL_OPEN_REVIEW_PAGE = 'openReviewPage';
 export const CHANNEL_LOGIN_AS_PRIVATE = 'loginAsPrivate';
 export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';
 export const CHANNEL_AUTOLOGIN_MYDOMAIN = 'autoLoginMyDomain';

@@ -16,6 +16,7 @@ export default class ExtensionOptionsCommand extends Command {
    * @returns {Promise<boolean>} whether the palette should close
    */
   async execute({ openInNewTab = false } = {}) {
+    await this.incrementUsage();
     new Channel(CHANNEL_OPEN_OPTIONS).publish();
     return true;
   }

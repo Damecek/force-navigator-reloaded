@@ -9,11 +9,13 @@ import {
   CHANNEL_LOGIN_AS_PRIVATE,
   CHANNEL_OPEN_OPTIONS,
   CHANNEL_OPEN_POPUP,
+  CHANNEL_OPEN_REVIEW_PAGE,
   CHANNEL_REFRESH_COMMANDS,
   CHANNEL_SEND_COMMANDS,
   CHANNEL_TOGGLE_COMMAND_PALETTE,
   isContentScriptAllowedDomain,
   loadSettings,
+  REVIEW_COMMAND_URL,
   toCoreUrl,
 } from '../shared/index.js';
 import { getCommands } from './commandRegister.js';
@@ -116,6 +118,10 @@ new Channel(CHANNEL_OPEN_POPUP).subscribe(() => {
   } else {
     return console.warn('openPopup is not supported');
   }
+});
+
+new Channel(CHANNEL_OPEN_REVIEW_PAGE).subscribe(() => {
+  return chrome.tabs.create({ url: REVIEW_COMMAND_URL });
 });
 
 new Channel(CHANNEL_LOGIN_AS_PRIVATE).subscribe(async ({ data, sender }) => {

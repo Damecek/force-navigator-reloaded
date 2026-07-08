@@ -26,6 +26,8 @@ import {
   PERMISSION_SET_CACHE_TTL,
   PERMISSION_SET_GROUP_SETTINGS_KEY,
   PERMISSION_SET_SETTINGS_KEY,
+  REVIEW_COMMAND_ENABLED_SETTINGS_KEY,
+  REVIEW_COMMAND_SETTINGS_KEY,
   SOBJECT_APEX_TRIGGERS_ENTITY_TYPE,
   SOBJECT_BUTTONS_LINKS_ACTIONS_ENTITY_TYPE,
   SOBJECT_COMPACT_LAYOUTS_ENTITY_TYPE,
@@ -45,6 +47,7 @@ import {
   USER_CACHE_TTL,
   USERS_SETTINGS_KEY,
   toLightningHostname,
+  UsageTracker,
 } from '../shared/index.js';
 import { staticCommands } from './staticCommands.js';
 import { ensureToken, tokenHasScope } from './auth/auth.js';
@@ -208,6 +211,7 @@ export async function getCommands(hostname) {
     autologinEnabled && !tokenHasScope(token, 'web');
   const RefreshCommandListCommand = [{}];
   const ResetCommandListUsageTracking = [{}];
+  const ReviewCommand = [{}];
   const commandMap = {
     NavigationCommand,
     LoginAsCommand,
@@ -218,7 +222,41 @@ export async function getCommands(hostname) {
   if (requiresWebScopeReauthorize) {
     commandMap.AuthorizeExtensionCommand = AuthorizeExtensionCommand;
   }
+  if (await shouldIncludeReviewCommand(commandMap)) {
+    commandMap.ReviewCommand = ReviewCommand;
+  }
   return commandMap;
+}
+
+export async function shouldIncludeReviewCommand(commandMap) {
+  const reviewEnabled = await getSetting([
+    REVIEW_COMMAND_SETTINGS_KEY,
+    REVIEW_COMMAND_ENABLED_SETTINGS_KEY,
+  ]);
+  const tracker = await UsageTracker.instance();
+  return isReviewCommandEligible({
+    commandMap,
+    reviewEnabled,
+    totalUsage: await tracker.totalUsage(),
+    activeDateCount: await tracker.activeDateCount(),
+  });
+}
+
+export function isReviewCommandEligible({
+  commandMap,
+  reviewEnabled,
+  totalUsage,
+  activeDateCount,
+}) {
+  return (
+    reviewEnabled === true &&
+    !Object.prototype.hasOwnProperty.call(
+      commandMap || {},
+      'AuthorizeExtensionCommand'
+    ) &&
+    totalUsage >= 15 &&
+    activeDateCount >= 3
+  );
 }
 
 /**

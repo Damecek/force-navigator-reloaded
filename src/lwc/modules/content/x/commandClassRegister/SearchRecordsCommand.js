@@ -26,6 +26,7 @@ export default class SearchRecordsCommand extends Command {
     if (!this.term) {
       return false;
     }
+    await this.incrementUsage();
 
     const url = buildLightningComponentUrl(this.hostname, {
       componentDef: 'forceSearch:searchPageDesktop',

@@ -30,6 +30,9 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
   workflows the most
+- **Review Request Command**: After real extension activity, the palette can show
+  `Extension > Review Force Navigator Reloaded`, which opens the Chrome Web Store reviews page once and then disables
+  itself
 - **Optional My Domain Auto-login**: Toggle auto-login from the Settings page. When enabled, the extension can auto-login on supported `*.my.salesforce.com` login pages, including username-first prompts, for already authorized orgs and requests OAuth scope `web`; if the token is missing `web` scope, auto-login stops and the palette offers `Extension > Authorize` for explicit re-authorization
 - **Welcome Page**: Automatically opens after first install with a quick start guide, shortcut tips, and review link
 
@@ -65,6 +68,8 @@ version might occasionally lag behind the latest release.
 7. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts and Settings
 8. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows,
    lightning apps, permission sets, permission set groups, users, login as, custom commands) appear in the palette
+9. After enough command activity, use `Extension > Review Force Navigator Reloaded` to open the Chrome Web Store reviews
+   page. The command disables itself after opening the page.
 
 ### Supported Domains
 

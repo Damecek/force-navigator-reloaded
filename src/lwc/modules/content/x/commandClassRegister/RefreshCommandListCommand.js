@@ -31,6 +31,7 @@ export default class RefreshCommandListCommand extends Command {
    */
   async execute(options) {
     console.log('RefreshCommandListCommand.execute');
+    await this.incrementUsage();
     publishCommandLoading(true);
     const cache = new CacheManager(toLightningHostname(this.hostname));
     await Promise.all(COMMAND_CACHE_KEYS.map((key) => cache.clear(key)));
