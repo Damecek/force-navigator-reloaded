@@ -162,6 +162,7 @@ body {
 
     .welcome-shot__image {
         border-color: #555;
+        color-scheme: only light;
     }
 
     .welcome-footnote,
