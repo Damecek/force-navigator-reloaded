@@ -2,6 +2,12 @@ name: Build & Publish Extension
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish from
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -12,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
@@ -37,6 +45,7 @@ jobs:
           if-no-files-found: error
 
       - uses: softprops/action-gh-release@v3
+        if: github.event_name == 'push'
         with:
           tag_name: v${{ env.NEW_VERSION }}
           files: ${{ steps.zip.outputs.zip_path }}
@@ -56,4 +65,4 @@ jobs:
           client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          publish: false
+          publish: ${{ github.event_name == 'workflow_dispatch' }}
