@@ -12,7 +12,7 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@babel/core": "7.29.7",
+    "@babel/core": "8.0.1",
     "@babel/eslint-parser": "7.28.6",
     "@babel/preset-env": "7.29.7",
     "@lwc/eslint-plugin-lwc": "3.5.0",
