@@ -32,7 +32,7 @@
     "prettier": "3.9.5",
     "terser-webpack-plugin": "5.6.1",
     "webpack": "5.108.4",
-    "webpack-cli": "7.0.2"
+    "webpack-cli": "7.2.1"
   },
   "lint-staged": {
     "*.{js,json,md,html}": "prettier --write"
