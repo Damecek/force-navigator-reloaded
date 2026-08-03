@@ -1,10 +1,11 @@
 {
   "name": "force-navigator-reloaded",
-  "version": "5.13.1",
+  "version": "5.13.2",
   "scripts": {
     "build": "rm -rf dist && webpack --mode production",
     "dev-build": "webpack --mode development",
     "dev": "webpack --mode development --watch",
+    "test": "node --test tests/*.test.js",
     "lint": "eslint \"src/**/*.js\"",
     "lint-fix": "eslint \"src/**/*.js\" --fix",
     "format": "prettier --write \"src/**/*.{js,json,md,html}\"",
@@ -44,7 +45,7 @@
   },
   "dependencies": {
     "@codemirror/lang-json": "6.0.2",
-    "@codemirror/state": "6.6.0",
+    "@codemirror/state": "6.7.1",
     "@codemirror/view": "6.43.6",
     "@leeoniya/ufuzzy": "1.0.19",
     "@webcomponents/custom-elements": "1.6.0",

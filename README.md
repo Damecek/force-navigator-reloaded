@@ -143,6 +143,7 @@ action.
 - `npm run build`: Build the extension for production
 - `npm run dev-build`: Build the extension for development
 - `npm run dev`: Build with watch mode for development
+- `npm test`: Run the automated tests, including dependency singleton checks
 - `npm run lint`: Run ESLint on source files
 - `npm run lint-fix`: Fix ESLint issues automatically
 - `npm run format`: Format code with Prettier

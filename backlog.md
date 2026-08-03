@@ -8,6 +8,7 @@ Mark each line with [x] when the task is completed.
 - [x] Implement record search using `?` prefix
 - [x] Add usage-gated `Extension > Review Force Navigator Reloaded` command that opens the Chrome Web Store reviews page
       once and then disables itself
+- [x] Keep the CodeMirror state dependency aligned with the editor view and guard its singleton installation in CI and release builds
 
 > could be implemented encoding following json in base64 and prefixing with `one/one.app#<base64>`
 

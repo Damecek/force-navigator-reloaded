@@ -9,6 +9,17 @@ on:
       - "lwc.config.json"
       - "package.json"
       - "package-lock.json"
+      - "tests/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "web/**"
+      - "webpack.config.js"
+      - "lwc.config.json"
+      - "package.json"
+      - "package-lock.json"
+      - "tests/**"
 
 jobs:
   build:
@@ -20,5 +31,6 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - run: npm ci
+      - run: npm test
       - run: npm run lint
       - run: npm run build
