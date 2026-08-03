@@ -7,7 +7,7 @@
 
 - The user will provide a task.
 - Wait for all terminal commands to be completed (or terminate them) before finishing.
-- When adding new command sources, update the related constants, default settings, README.md, and backlog.md.
+- When adding new command sources, update the related constants, default settings, and README.md.
 - When changing Settings JSON keys, structure, or defaults (`src/shared/settings.js` / `src/shared/constants.js`), also update `docs/options-settings-reference.md`.
 - When running a development build during agent work, use `npm run dev-build` unless the task explicitly requires watch
   mode.
@@ -50,7 +50,6 @@
   - AGENTS.md contains instructions for AI agents working in this repository. Add or update instructions as repeated
     patterns are discovered.
   - README.md describes the project and its features.
-  - backlog.md lists planned features and development tasks. Mark completed tasks with an x once done.
 - Use JSDoc comments to document public APIs and to introduce types for parameters and return values.
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.

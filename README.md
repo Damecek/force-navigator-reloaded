@@ -154,7 +154,8 @@ deployment, even if the org where the app lived is deleted.
 
 ## Roadmap
 
-See [backlog.md](backlog.md) for planned features and development tasks.
+See [GitHub Issues](https://github.com/Damecek/force-navigator-reloaded/issues) for planned features and development
+tasks.
 
 ## Contributing
 
