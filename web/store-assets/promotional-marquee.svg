@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560">
+  <defs>
+    <linearGradient id="readability" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#090C20" stop-opacity="0.88"/>
+      <stop offset="0.44" stop-color="#11152B" stop-opacity="0.6"/>
+      <stop offset="0.68" stop-color="#11152B" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="logo-shadow" x="-35%" y="-35%" width="170%" height="170%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#050817" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="560" fill="url(#readability)"/>
+
+  <g transform="translate(82 62) scale(1.08)" filter="url(#logo-shadow)">
+    <circle cx="45" cy="45" r="44" fill="white"/>
+    <circle cx="45" cy="45" r="31" fill="none" stroke="#1D2F3A" stroke-width="2"/>
+    <g fill="none" stroke="#1D2F3A" stroke-linecap="round">
+      <path d="M45 9V19M45 71V81M81 45H71M19 45H9" stroke-width="2"/>
+      <path d="M60 19L58 22.48M32 67.51L30 71M71 30L67.52 32M22.48 58L19 60M71 60L67.52 58M22.48 32L19 30M60 71L58 67.51M32 22.48L30 19"/>
+    </g>
+    <path d="M59.61 25.5H34.78L26.5 55.6H37.79L31.5 84.2L62.62 45.82H50.58L59.61 25.5Z" fill="#8A8ED1" stroke="#1F0D38" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M41.55 32.27L37.04 47.32" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <rect x="84" y="203" width="68" height="7" rx="3.5" fill="#8A8ED1"/>
+</svg>

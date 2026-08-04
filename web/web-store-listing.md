@@ -1,29 +1,31 @@
-Force Navigator Reloaded is a lightning-fast command palette for Salesforce Lightning.  
-Open any SObject list view, flow, or Setup page without ever touching the mouse.
+Navigate Salesforce Lightning without breaking your flow.
 
-• One-Keystroke Command Palette  
-Press Ctrl + Shift + L (or ⌘ + Shift + P on macOS) to summon the palette from anywhere in Lightning.\*
-Press Esc or the same shortcut again to close the palette when you're done.
+Force Navigator Reloaded gives Salesforce admins and developers a keyboard-first command palette. Open it, type a few characters, and press Enter to reach the right Salesforce page—without digging through nested menus or reaching for the mouse.
 
-• Blazing-Fast Search & Navigation  
-Type the name of an SObject, flow, or Setup item and hit Enter—no more menu-digging.
+• Keyboard-first workflow
+Press Ctrl + Shift + L on Windows and Linux, or Command + Shift + P on macOS, to open the palette from anywhere in Lightning. Use the arrow keys and Enter to navigate, and Esc to close it.
 
-• Configurable Command Sources  
-Control which types of commands (e.g., Setup menu items, SObjects, Flow versions) are fetched and displayed in your
-command palette via the extension settings—simply edit the JSON configuration to fine‑tune the list.
+• Smarter search that adapts to you
+Find commands with fast, accent-insensitive fuzzy matching. Frequently used commands automatically move higher in the results, so everyday destinations become even quicker to reach.
 
-• Live, Dynamic Commands  
-The extension pulls object metadata and Setup menu items directly from your org and caches them for instant reuse.
+• Deep Salesforce navigation
+Jump directly to Setup pages, Object Manager sections, Custom Metadata Types, SObject list and new-record pages, Flow definitions and versions, Lightning apps, Permission Sets, Permission Set Groups, active users, and Login As actions.
 
-• Native Salesforce Look & Feel  
-Built with Lightning Web Components and the Salesforce Lightning Design System, so it feels like it’s part of the
-platform.
+• Salesforce global search from the palette
+Start with ? followed by a search term to open Salesforce global search results directly—without navigating to the search page first.
 
-• 100 % Open Source
-Browse the code, file issues, or submit pull requests on GitHub: <https://github.com/Damecek/force-navigator-reloaded>.
+• Configurable command sources
+Choose which command groups appear in the palette from the extension settings. Keep the defaults or fine-tune Setup, SObject, Flow, app, permission, user, and Login As commands for your workflow.
 
-• Enjoying Force Navigator Reloaded?
-Show your support by leaving a review on the Chrome Web Store:
-<https://chromewebstore.google.com/detail/force-navigator-reloaded/iniflnopffblekndhplennjijdcfkeak/reviews?utm_source=store>.
+• Built for large orgs
+Org metadata is cached for faster repeat access, and virtual scrolling keeps long command lists responsive. Refresh the command list whenever you need the latest metadata.
 
-\*You can customise the shortcut in Chrome at `chrome://extensions/shortcuts`.
+• Optional My Domain auto-login
+Enable auto-login in Settings to continue through supported Salesforce My Domain login pages for orgs you have already authorised. The feature is off by default and can be disabled at any time.
+
+Force Navigator Reloaded uses Lightning Web Components and the Salesforce Lightning Design System for a familiar, native-feeling experience. Command usage stays in local extension storage and is used only to personalise result order.
+
+100% open source. Browse the code, report an issue, or contribute on GitHub:
+https://github.com/Damecek/force-navigator-reloaded
+
+You can customise the keyboard shortcut at chrome://extensions/shortcuts.

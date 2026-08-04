@@ -8,6 +8,7 @@
 - The user will provide a task.
 - Wait for all terminal commands to be completed (or terminate them) before finishing.
 - When adding new command sources, update the related constants, default settings, and README.md.
+- When implementing a new user-visible key feature or materially changing an advertised feature, update both README.md and `web/web-store-listing.md`. Keep the store copy concise, benefit-led, in English, and limited to verified behavior. Do not hard-wrap `web/web-store-listing.md` inside sentences or paragraphs; use line breaks only between listing sections.
 - When changing Settings JSON keys, structure, or defaults (`src/shared/settings.js` / `src/shared/constants.js`), also update `docs/options-settings-reference.md`.
 - When running a development build during agent work, use `npm run dev-build` unless the task explicitly requires watch
   mode.

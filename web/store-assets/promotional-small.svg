@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="280" viewBox="0 0 440 280">
+  <defs>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#050817" flood-opacity="0.55"/>
+    </filter>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#8A8ED1" stop-opacity="0.42"/>
+      <stop offset="0.62" stop-color="#5BB9FF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#5BB9FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="440" height="280" fill="url(#halo)"/>
+  <g transform="translate(139 59) scale(1.8)" filter="url(#shadow)">
+    <circle cx="45" cy="45" r="44" fill="white"/>
+    <circle cx="45" cy="45" r="31" fill="none" stroke="#1D2F3A" stroke-width="2"/>
+    <g fill="none" stroke="#1D2F3A" stroke-linecap="round">
+      <path d="M45 9V19M45 71V81M81 45H71M19 45H9" stroke-width="2"/>
+      <path d="M60 19L58 22.48M32 67.51L30 71M71 30L67.52 32M22.48 58L19 60M71 60L67.52 58M22.48 32L19 30M60 71L58 67.51M32 22.48L30 19"/>
+    </g>
+    <path d="M59.61 25.5H34.78L26.5 55.6H37.79L31.5 84.2L62.62 45.82H50.58L59.61 25.5Z" fill="#8A8ED1" stroke="#1F0D38" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M41.55 32.27L37.04 47.32" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
