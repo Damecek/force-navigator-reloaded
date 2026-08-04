@@ -1,4 +1,4 @@
-# Force Navigator Reloaded
+# Force Navigator Reloaded for Salesforce
 
 <p align="center">
   <img src="web/icon-light.svg" alt="Logo"/>
@@ -6,9 +6,9 @@
 
 ## Overview
 
-Force Navigator Reloaded is a Chrome Extension for Salesforce Lightning that provides fast and efficient navigation
-within Salesforce environments. This extension implements a command palette interface that allows users to quickly
-search, navigate, and perform actions without leaving their keyboard. It is available directly from the
+Force Navigator Reloaded for Salesforce is a Chrome extension that provides keyboard-first navigation in Salesforce
+Lightning. Its command palette lets admins and developers search Setup, objects, flows, permissions, users, and other
+org destinations without leaving the keyboard. It is available directly from the
 [Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak?utm_source=github).
 
 ## Features
@@ -16,6 +16,7 @@ search, navigate, and perform actions without leaving their keyboard. It is avai
 - **Command Palette**: Access a powerful command interface with keyboard shortcut (`Ctrl+Shift+L` on Windows or
   `Cmd+Shift+P` on Mac),
   this can be configured in the chrome shortcut settings (`chrome://extensions/shortcuts`)
+- **Open in a New Tab**: Hold `Shift`, `Ctrl`, or `Cmd` while selecting a command to keep the current page open
 - **Fast Navigation**: Quickly search and navigate to Salesforce records, flows, list views, and setup pages
 - **Aura Navigation**: Uses Salesforce Aura navigation events when available, with URL fallback for reliability
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel

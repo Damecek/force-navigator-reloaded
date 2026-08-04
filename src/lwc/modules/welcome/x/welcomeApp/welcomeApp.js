@@ -6,6 +6,7 @@ const LIGHTNING_URLS = CONTENT_SCRIPT_ENABLED_BASE_DOMAINS.map(
 );
 const APPLE_PLATFORM_REGEX = /(mac|iphone|ipad|ipod)/i;
 const IPAD_OS_REGEX = /MacIntel/i;
+const SALESFORCE_LOGIN_URL = 'https://login.salesforce.com/';
 
 /**
  * Return true when running on Apple platform (Mac/iOS/iPadOS).
@@ -51,6 +52,28 @@ export default class WelcomeApp extends LightningElement {
   }
 
   /**
+   * Label the primary onboarding action according to the available browser context.
+   * @returns {string}
+   */
+  get primaryActionLabel() {
+    return this.hasLightningTab ? 'Try it in Salesforce' : 'Open Salesforce';
+  }
+
+  /**
+   * Focus an existing Lightning tab or open Salesforce login.
+   * @param {MouseEvent} [event]
+   * @returns {void}
+   */
+  handleTryInSalesforceClick(event) {
+    event?.preventDefault();
+    if (typeof this.firstLightningTabId !== 'number') {
+      chrome.tabs.create({ url: SALESFORCE_LOGIN_URL });
+      return;
+    }
+    this.focusLightningTab();
+  }
+
+  /**
    * Open extension settings page.
    * @returns {void}
    */
@@ -73,6 +96,14 @@ export default class WelcomeApp extends LightningElement {
    */
   handleOpenLightningLinkClick(event) {
     event.preventDefault();
+    this.focusLightningTab();
+  }
+
+  /**
+   * Focus the first Salesforce Lightning tab detected during onboarding.
+   * @returns {void}
+   */
+  focusLightningTab() {
     if (typeof this.firstLightningTabId !== 'number') {
       return;
     }

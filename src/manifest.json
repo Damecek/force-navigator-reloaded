@@ -1,8 +1,8 @@
 {
-  "name": "Force Navigator Reloaded",
+  "name": "Force Navigator Reloaded for Salesforce",
   "manifest_version": 3,
-  "version": "5.14.1",
-  "description": "Fast, efficient Salesforce Lightning navigation with a command palette—search and act without leaving your keyboard.",
+  "version": "5.14.2",
+  "description": "Keyboard-first Salesforce command palette and shortcuts for Setup, objects, flows, permissions, users, and Login As.",
   "background": {
     "service_worker": "background.js"
   },

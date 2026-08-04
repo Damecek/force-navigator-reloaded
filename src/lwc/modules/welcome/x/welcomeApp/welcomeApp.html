@@ -24,6 +24,12 @@
             <div class="welcome-actions">
               <button
                 class="slds-button slds-button_brand"
+                onclick={handleTryInSalesforceClick}
+              >
+                {primaryActionLabel}
+              </button>
+              <button
+                class="slds-button slds-button_neutral"
                 onclick={handleOpenOptionsClick}
               >
                 Open Settings
@@ -98,7 +104,7 @@
           </div>
           <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
             <x-welcome-feature-card
-              description="Edit JSON settings to add custom commands or hide sources."
+              description="Choose command sources, add custom commands, or review usage in Settings."
               title="Customizable sources"
             ></x-welcome-feature-card>
           </div>

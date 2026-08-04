@@ -1,9 +1,9 @@
-Navigate Salesforce Lightning without breaking your flow.
+Navigate Salesforce Setup, Object Manager, flows, permissions, users, and records from one keyboard-first command palette.
 
-Force Navigator Reloaded gives Salesforce admins and developers a keyboard-first command palette. Open it, type a few characters, and press Enter to reach the right Salesforce page—without digging through nested menus or reaching for the mouse.
+Force Navigator Reloaded for Salesforce helps admins and developers reach the right Lightning page without digging through nested menus. Open the command palette, type a few characters, and press Enter.
 
-• Keyboard-first workflow
-Press Ctrl + Shift + L on Windows and Linux, or Command + Shift + P on macOS, to open the palette from anywhere in Lightning. Use the arrow keys and Enter to navigate, and Esc to close it.
+• Keyboard shortcuts that keep you moving
+Press Ctrl + Shift + L on Windows and Linux, or Command + Shift + P on macOS, to open the palette from anywhere in Lightning. Use the arrow keys and Enter to navigate, Esc to close it, or hold Shift, Ctrl, or Command while selecting to open a result in a new tab.
 
 • Smarter search that adapts to you
 Find commands with fast, accent-insensitive fuzzy matching. Frequently used commands automatically move higher in the results, so everyday destinations become even quicker to reach.

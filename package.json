@@ -1,6 +1,6 @@
 {
   "name": "force-navigator-reloaded",
-  "version": "5.14.1",
+  "version": "5.14.2",
   "scripts": {
     "build": "rm -rf dist && webpack --mode production",
     "dev-build": "webpack --mode development",
@@ -9,6 +9,7 @@
     "lint": "eslint \"src/**/*.js\"",
     "lint-fix": "eslint \"src/**/*.js\" --fix",
     "format": "prettier --write \"src/**/*.{js,json,md,html}\"",
+    "store-screenshots": "node ./scripts/renderStoreScreenshots.mjs",
     "release": "sh ./scripts/release.sh",
     "prepare": "husky install"
   },
