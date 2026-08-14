@@ -1,5 +1,10 @@
 <template lwc:render-mode="light">
   <div class={computedClassNames} onclick={handleClick} role="option">
-    <span class="slds-truncate" title={command.label}> {command.label} </span>
+    <span class="slds-truncate" title={command.label}>
+      <template for:each={labelSegments} for:item="segment">
+        <mark key={segment.key} lwc:if={segment.isMatch}>{segment.text}</mark>
+        <span key={segment.key} lwc:else>{segment.text}</span>
+      </template>
+    </span>
   </div>
 </template>

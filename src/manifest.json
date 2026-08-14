@@ -1,7 +1,7 @@
 {
   "name": "Force Navigator Reloaded for Salesforce",
   "manifest_version": 3,
-  "version": "5.14.3",
+  "version": "5.14.4",
   "description": "Keyboard-first Salesforce command palette and shortcuts for Setup, objects, flows, permissions, users, and Login As.",
   "background": {
     "service_worker": "background.js"

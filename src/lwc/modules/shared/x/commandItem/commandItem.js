@@ -22,6 +22,43 @@ export default class CommandItem extends LightningElement {
   @api highlighted = false;
 
   /**
+   * Split the command label into plain and matched text for safe template rendering.
+   * @returns {Array<{key: string, text: string, isMatch: boolean}>}
+   */
+  get labelSegments() {
+    const label =
+      typeof this.command?.label === 'string' ? this.command.label : '';
+    const matchRanges = Array.isArray(this.command?.matchRanges)
+      ? this.command.matchRanges
+      : [];
+    const segments = [];
+    let cursor = 0;
+
+    for (const range of matchRanges) {
+      if (range && typeof range === 'object') {
+        const start = Math.max(cursor, Number(range.start));
+        const end = Math.min(label.length, Number(range.end));
+        if (Number.isInteger(start) && Number.isInteger(end) && start < end) {
+          if (cursor < start) {
+            segments.push({ text: label.slice(cursor, start), isMatch: false });
+          }
+          segments.push({ text: label.slice(start, end), isMatch: true });
+          cursor = end;
+        }
+      }
+    }
+
+    if (cursor < label.length || segments.length === 0) {
+      segments.push({ text: label.slice(cursor), isMatch: false });
+    }
+
+    return segments.map((segment, index) => ({
+      ...segment,
+      key: `${segment.isMatch ? 'match' : 'text'}-${index}`,
+    }));
+  }
+
+  /**
    * Computed class names for the item,
    * adding 'slds-has-focus' when command.isHighlighted is true.
    * @returns {Array<string|Object>} list of classes

@@ -39,7 +39,7 @@ org destinations without leaving the keyboard. It is available directly from the
 
 ### Fuzzy Search
 
-The command palette uses the [uFuzzy](https://github.com/leeoniya/uFuzzy) library for efficient searching, with Latin diacritics ignored during matching so `farkas` can find `farkaš`.
+The command palette uses the [uFuzzy](https://github.com/leeoniya/uFuzzy) library for efficient searching, with Latin diacritics ignored during matching so `farkas` can find `farkaš`. Matching parts of each result are highlighted to make the best result easier to scan.
 
 ## Installation
 

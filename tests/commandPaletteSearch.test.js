@@ -4,6 +4,7 @@ import uFuzzy from '@leeoniya/ufuzzy';
 import {
   filterCommandsBySearchTerm,
   normalizeSearchValue,
+  normalizeSearchValueWithMap,
 } from '../src/lwc/modules/content/x/commandPalette/searchMatching.js';
 
 function createUfuzzy() {
@@ -14,6 +15,34 @@ test('normalizeSearchValue strips Latin diacritics for matching', () => {
   assert.equal(normalizeSearchValue('Farkaš'), 'farkas');
   assert.equal(normalizeSearchValue('Lukáš Zářecký'), 'lukas zarecky');
   assert.equal(normalizeSearchValue('Žluťoučký kůň'), 'zlutoucky kun');
+});
+
+test('normalizeSearchValueWithMap keeps source ranges for precomposed Czech diacritics', () => {
+  assert.deepEqual(normalizeSearchValueWithMap('Farkaš'), {
+    normalized: 'farkas',
+    sourceRanges: [
+      { start: 0, end: 1 },
+      { start: 1, end: 2 },
+      { start: 2, end: 3 },
+      { start: 3, end: 4 },
+      { start: 4, end: 5 },
+      { start: 5, end: 6 },
+    ],
+  });
+});
+
+test('normalizeSearchValueWithMap keeps combining marks in the matched source range', () => {
+  assert.deepEqual(normalizeSearchValueWithMap('Farkas\u030c'), {
+    normalized: 'farkas',
+    sourceRanges: [
+      { start: 0, end: 1 },
+      { start: 1, end: 2 },
+      { start: 2, end: 3 },
+      { start: 3, end: 4 },
+      { start: 4, end: 5 },
+      { start: 5, end: 7 },
+    ],
+  });
 });
 
 test('ASCII query matches accented label', () => {
@@ -27,7 +56,9 @@ test('ASCII query matches accented label', () => {
     previousSearchTerm: '',
   });
 
-  assert.deepEqual(result, commands);
+  assert.deepEqual(result, [
+    { ...commands[0], matchRanges: [{ start: 0, end: 6 }] },
+  ]);
 });
 
 test('Accented query matches ASCII label', () => {
@@ -41,7 +72,9 @@ test('Accented query matches ASCII label', () => {
     previousSearchTerm: '',
   });
 
-  assert.deepEqual(result, commands);
+  assert.deepEqual(result, [
+    { ...commands[0], matchRanges: [{ start: 0, end: 6 }] },
+  ]);
 });
 
 test('ASCII query matches accented surname within a full name label', () => {
@@ -55,7 +88,9 @@ test('ASCII query matches accented surname within a full name label', () => {
     previousSearchTerm: '',
   });
 
-  assert.deepEqual(result, commands);
+  assert.deepEqual(result, [
+    { ...commands[0], matchRanges: [{ start: 6, end: 10 }] },
+  ]);
 });
 
 test('plain ASCII matching still works and preserves ordering from fuzzy search', () => {
@@ -72,7 +107,100 @@ test('plain ASCII matching still works and preserves ordering from fuzzy search'
     previousSearchTerm: '',
   });
 
-  assert.deepEqual(result, [commands[0]]);
+  assert.deepEqual(result, [
+    { ...commands[0], matchRanges: [{ start: 0, end: 4 }] },
+  ]);
+});
+
+test('associates ranges with the matching descriptor after uFuzzy reorders results', () => {
+  const commands = [
+    { id: 'first', label: 'First command', usage: 0 },
+    { id: 'second', label: 'Second command', usage: 0 },
+  ];
+  const uf = {
+    search() {
+      return [
+        [0, 1],
+        {
+          idx: [0, 1],
+          ranges: [
+            [0, 5],
+            [7, 14],
+          ],
+        },
+        [1, 0],
+      ];
+    },
+  };
+
+  const result = filterCommandsBySearchTerm({
+    uf,
+    commands,
+    previousResults: commands,
+    searchTerm: 'command',
+    previousSearchTerm: '',
+  });
+
+  assert.deepEqual(result, [
+    { ...commands[1], matchRanges: [{ start: 7, end: 14 }] },
+    { ...commands[0], matchRanges: [{ start: 0, end: 5 }] },
+  ]);
+  assert.equal('matchRanges' in commands[0], false);
+  assert.equal('matchRanges' in commands[1], false);
+});
+
+test('translates multiple uFuzzy ranges back to source label ranges', () => {
+  const commands = [{ id: 'object', label: 'Object Manager', usage: 0 }];
+
+  const result = filterCommandsBySearchTerm({
+    uf: createUfuzzy(),
+    commands,
+    previousResults: commands,
+    searchTerm: 'obj man',
+    previousSearchTerm: '',
+  });
+
+  assert.deepEqual(result, [
+    {
+      ...commands[0],
+      matchRanges: [
+        { start: 0, end: 3 },
+        { start: 7, end: 10 },
+      ],
+    },
+  ]);
+});
+
+test('translates fuzzy ranges to cover decomposed combining marks in the source label', () => {
+  const commands = [{ id: 'farkas', label: 'Farkas\u030c', usage: 0 }];
+
+  const result = filterCommandsBySearchTerm({
+    uf: createUfuzzy(),
+    commands,
+    previousResults: commands,
+    searchTerm: 'farkas',
+    previousSearchTerm: '',
+  });
+
+  assert.deepEqual(result, [
+    { ...commands[0], matchRanges: [{ start: 0, end: 7 }] },
+  ]);
+});
+
+test('translates ranges after an astral character using UTF-16 offsets', () => {
+  const commands = [{ id: 'farkas', label: '😀Farkaš', usage: 0 }];
+
+  const result = filterCommandsBySearchTerm({
+    uf: createUfuzzy(),
+    commands,
+    previousResults: commands,
+    searchTerm: 'farkas',
+    previousSearchTerm: '',
+  });
+
+  assert.deepEqual(result, [
+    { ...commands[0], matchRanges: [{ start: 2, end: 8 }] },
+  ]);
 });
 
 test('incremental narrowing uses normalized previous search term', () => {
@@ -90,7 +218,9 @@ test('incremental narrowing uses normalized previous search term', () => {
     previousSearchTerm: 'fár',
   });
 
-  assert.deepEqual(result, previousResults);
+  assert.deepEqual(result, [
+    { ...commands[0], matchRanges: [{ start: 0, end: 6 }] },
+  ]);
 });
 
 test('empty search restores the full command list for non-search mode', () => {
@@ -107,5 +237,43 @@ test('empty search restores the full command list for non-search mode', () => {
     previousSearchTerm: 'farkas',
   });
 
-  assert.deepEqual(result, commands);
+  assert.deepEqual(
+    result,
+    commands.map((command) => ({ ...command, matchRanges: [] }))
+  );
+});
+
+test('empty search returns transient descriptors without stale match ranges', () => {
+  const commands = [{ id: '1', label: 'Farkaš', usage: 0 }];
+
+  const result = filterCommandsBySearchTerm({
+    uf: createUfuzzy(),
+    commands,
+    previousResults: [{ ...commands[0], matchRanges: [{ start: 0, end: 6 }] }],
+    searchTerm: '',
+    previousSearchTerm: 'farkas',
+  });
+
+  assert.deepEqual(result, [{ ...commands[0], matchRanges: [] }]);
+  assert.equal('matchRanges' in commands[0], false);
+});
+
+test('no-info uFuzzy fallback returns descriptors with cleared match ranges', () => {
+  const commands = [{ id: '1', label: 'Farkaš', usage: 0 }];
+  const uf = {
+    search() {
+      return [[0], null, null];
+    },
+  };
+
+  const result = filterCommandsBySearchTerm({
+    uf,
+    commands,
+    previousResults: [{ ...commands[0], matchRanges: [{ start: 0, end: 6 }] }],
+    searchTerm: 'far',
+    previousSearchTerm: '',
+  });
+
+  assert.deepEqual(result, [{ ...commands[0], matchRanges: [] }]);
+  assert.equal('matchRanges' in commands[0], false);
 });
