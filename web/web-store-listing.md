@@ -6,7 +6,7 @@ Force Navigator Reloaded for Salesforce helps admins and developers reach the ri
 Press Ctrl + Shift + L on Windows and Linux, or Command + Shift + P on macOS, to open the palette from anywhere in Lightning. Use the arrow keys and Enter to navigate, Esc to close it, or hold Shift, Ctrl, or Command while selecting to open a result in a new tab.
 
 • Smarter search that adapts to you
-Find commands with fast, accent-insensitive fuzzy matching, with matching text highlighted for easier scanning. Frequently used commands automatically move higher in the results, so everyday destinations become even quicker to reach.
+Find commands with fast, accent-insensitive fuzzy matching, with matching text highlighted for easier scanning. Frequently used commands automatically move higher in the results, and positive execution counts make familiar destinations easier to spot.
 
 • Deep Salesforce navigation
 Jump directly to Setup pages, Object Manager sections, Custom Metadata Types, SObject list and new-record pages, Flow definitions and versions, Apex classes and triggers, Experience Cloud Workspaces and Builders, Lightning apps, Permission Sets, Permission Set Groups, active users, and Login As actions.

@@ -69,6 +69,8 @@ export const REVIEW_COMMAND_URL =
 export const CLIENT_ID = __CLIENT_ID__;
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
 export const AUTOLOGIN_SETTINGS_KEY = 'AutoLogin';
+export const COMMAND_PALETTE_SETTINGS_KEY = 'CommandPalette';
+export const COMMAND_PALETTE_SHOW_USAGE_SETTINGS_KEY = 'ShowUsage';
 
 export const COMMANDS_SETTINGS_KEY = 'Commands';
 

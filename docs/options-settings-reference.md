@@ -4,6 +4,10 @@ This document explains each key in the Settings JSON shown on the extension opti
 
 `AutoLogin`: Enables optional My Domain auto-login on supported Salesforce login pages, including username-first prompts, for already authorized orgs. Default: `false`.
 
+`CommandPalette`: Controls command palette presentation.
+
+`CommandPalette.ShowUsage`: Shows positive command execution counts in the command palette. Default: `true`.
+
 `ReviewCommand`: Controls whether the in-palette Chrome Web Store review request command can appear after the user has enough extension activity.
 
 `ReviewCommand.Enabled`: Allows `Extension > Review Force Navigator Reloaded` to appear when usage eligibility is met. The command sets this to `false` after opening the review page. Default: `true`.

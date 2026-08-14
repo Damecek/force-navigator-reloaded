@@ -30,6 +30,7 @@ and other org destinations without leaving the keyboard. It is available directl
 - **Loading Feedback**: A spinner is displayed while refresh-oriented commands are rebuilding the command list
 - **Virtual Scrolling**: Only visible commands are rendered, keeping performance high even with thousands of commands
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
+- **Usage Counts**: Positive execution counts appear next to commands in the palette and can be hidden in Settings
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
   workflows the most
 - **Review Request Command**: After real extension activity, the palette can show

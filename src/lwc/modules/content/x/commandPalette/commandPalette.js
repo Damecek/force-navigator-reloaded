@@ -1,9 +1,14 @@
 import { api, LightningElement, track } from 'lwc';
 import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
-import { Channel, CHANNEL_OPEN_POPUP } from '../../../../../shared';
+import {
+  Channel,
+  CHANNEL_OPEN_POPUP,
+  loadSettings,
+} from '../../../../../shared';
 import SearchRecordsCommand from '../commandClassRegister/SearchRecordsCommand';
 import { filterCommandsBySearchTerm } from './searchMatching';
+import { createUsageSettingsLoader } from './usageSettings';
 
 export default class CommandPalette extends LightningElement {
   static renderMode = 'light';
@@ -28,6 +33,22 @@ export default class CommandPalette extends LightningElement {
 
   _commands = [];
   _isLoading = false;
+  _usageSettingsLoader;
+  @track showUsage = false;
+
+  connectedCallback() {
+    this._usageSettingsLoader = createUsageSettingsLoader({
+      loadSettings,
+      onResolved: (showUsage) => {
+        this.showUsage = showUsage;
+      },
+    });
+    this._usageSettingsLoader.load();
+  }
+
+  disconnectedCallback() {
+    this._usageSettingsLoader?.disconnect();
+  }
 
   @api
   get commands() {

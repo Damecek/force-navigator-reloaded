@@ -1,4 +1,5 @@
 import { api, LightningElement } from 'lwc';
+import { getUsagePresentation } from './usagePresentation';
 /**
  * @typedef {import('../commandClassRegister/commandFactory').CommandDescriptor} CommandDescriptor
  */
@@ -20,6 +21,20 @@ export default class CommandItem extends LightningElement {
    * @type {boolean}
    */
   @api highlighted = false;
+
+  /**
+   * Whether positive command usage is displayed.
+   * @type {boolean}
+   */
+  @api showUsage = false;
+
+  /**
+   * Usage content for visual and screen-reader presentation.
+   * @returns {{ accessibleLabel: string, isVisible: boolean, text: string }}
+   */
+  get usagePresentation() {
+    return getUsagePresentation(this.command, this.showUsage);
+  }
 
   /**
    * Split the command label into plain and matched text for safe template rendering.
