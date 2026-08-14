@@ -50,6 +50,7 @@ import {
   UsageTracker,
 } from '../shared/index.js';
 import { staticCommands } from './staticCommands.js';
+import { supportsNewRecordNavigation } from './entityCommandSupport.js';
 import { ensureToken, tokenHasScope } from './auth/auth.js';
 import {
   fetchEntityDefinitionsFromSalesforce,
@@ -450,7 +451,13 @@ async function getEntityCommands(hostname, connection) {
             }
           }
 
-          if (IsEverCreatable && IsCompactLayoutable) {
+          if (
+            supportsNewRecordNavigation({
+              QualifiedApiName,
+              IsEverCreatable,
+              IsCompactLayoutable,
+            })
+          ) {
             commands.push({
               id: `sobject-new-${QualifiedApiName}`,
               label: `Application > ${Label} > New`,
