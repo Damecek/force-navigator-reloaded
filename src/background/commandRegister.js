@@ -12,6 +12,9 @@ import {
   ENTITY_CACHE_KEY,
   ENTITY_CACHE_TTL,
   ENTITY_DEFINITION_SETTINGS_KEY,
+  EXPERIENCE_SITE_CACHE_KEY,
+  EXPERIENCE_SITE_CACHE_TTL,
+  EXPERIENCE_SITE_SETTINGS_KEY,
   FLOW_ACTIVE_VERSION_TYPE,
   FLOW_CACHE_KEY,
   FLOW_CACHE_TTL,
@@ -62,9 +65,11 @@ import {
   fetchApexClassesFromSalesforce,
   fetchApexTriggersFromSalesforce,
   fetchEntityDefinitionsFromSalesforce,
+  fetchExperienceSitesFromSalesforce,
   fetchFlowDefinitionsFromSalesforce,
   fetchLightningAppDefinitionsFromSalesforce,
   fetchMenuNodesFromSalesforce,
+  fetchNetworksFromSalesforce,
   fetchPermissionSetGroupsFromSalesforce,
   fetchPermissionSetsFromSalesforce,
   fetchUsersFromSalesforce,
@@ -77,6 +82,7 @@ import {
   buildApexClassCommands,
   buildApexTriggerCommands,
 } from './commandSources/apexCommands.js';
+import { buildExperienceSiteCommands } from './commandSources/experienceSiteCommands.js';
 
 const OBJECT_MANAGER_SECTIONS = [
   {
@@ -197,6 +203,7 @@ export async function getCommands(hostname) {
       flow,
       apexClass,
       apexTrigger,
+      experienceSite,
       lightningApp,
       permSet,
       userNav,
@@ -207,6 +214,7 @@ export async function getCommands(hostname) {
       getFlowCommands(instanceHostname, connection),
       getApexClassCommands(instanceHostname, connection),
       getApexTriggerCommands(instanceHostname, connection),
+      getExperienceSiteCommands(instanceHostname, connection),
       getLightningAppCommands(instanceHostname, connection),
       getPermissionSetCommands(instanceHostname, connection),
       getUserNavigationCommands(instanceHostname, loadUsers),
@@ -219,6 +227,7 @@ export async function getCommands(hostname) {
       ...flow,
       ...apexClass,
       ...apexTrigger,
+      ...experienceSite,
       ...lightningApp,
       ...permSet,
       ...userNav,
@@ -620,6 +629,36 @@ async function getApexTriggerCommands(hostname, connection) {
       buildApexTriggerCommands(
         await fetchApexTriggersFromSalesforce(connection)
       ),
+  });
+}
+
+/**
+ * Retrieves Experience Cloud Workspace and Builder navigation commands.
+ * @param {string} hostname Domain hostname
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, path: string, host: 'core'}>>}
+ */
+async function getExperienceSiteCommands(hostname, connection) {
+  const includeExperienceSites = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    EXPERIENCE_SITE_SETTINGS_KEY,
+  ]);
+  if (!includeExperienceSites) {
+    return [];
+  }
+
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: EXPERIENCE_SITE_CACHE_KEY,
+    ttl: EXPERIENCE_SITE_CACHE_TTL,
+    sourceName: 'getExperienceSiteCommands',
+    buildCommands: async () => {
+      const [networks, sites] = await Promise.all([
+        fetchNetworksFromSalesforce(connection),
+        fetchExperienceSitesFromSalesforce(connection),
+      ]);
+      return buildExperienceSiteCommands(networks, sites);
+    },
   });
 }
 

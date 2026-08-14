@@ -27,6 +27,9 @@ export const APEX_CLASS_CACHE_TTL = 3600 * 1000 * 6; // 6 hours
 export const APEX_TRIGGER_CACHE_KEY = 'apexTriggers';
 export const APEX_TRIGGER_CACHE_TTL = 3600 * 1000 * 6; // 6 hours
 
+export const EXPERIENCE_SITE_CACHE_KEY = 'experienceSites';
+export const EXPERIENCE_SITE_CACHE_TTL = 3600 * 1000 * 6; // 6 hours
+
 export const LIGHTNING_APP_CACHE_KEY = 'lightningAppDefinitions';
 export const LIGHTNING_APP_CACHE_TTL = 3600 * 1000 * 6; // 6 hour
 
@@ -45,6 +48,7 @@ export const COMMAND_CACHE_KEYS = [
   FLOW_CACHE_KEY,
   APEX_CLASS_CACHE_KEY,
   APEX_TRIGGER_CACHE_KEY,
+  EXPERIENCE_SITE_CACHE_KEY,
   LIGHTNING_APP_CACHE_KEY,
   PERMISSION_SET_CACHE_KEY,
   USER_CACHE_KEY,
@@ -103,6 +107,7 @@ export const FLOW_ACTIVE_VERSION_TYPE = 'Active';
 
 export const APEX_CLASS_SETTINGS_KEY = 'ApexClass';
 export const APEX_TRIGGER_SETTINGS_KEY = 'ApexTrigger';
+export const EXPERIENCE_SITE_SETTINGS_KEY = 'ExperienceSite';
 export const LIGHTNING_APP_SETTINGS_KEY = 'LightningApplication';
 export const PERMISSION_SET_SETTINGS_KEY = 'PermissionSet';
 export const PERMISSION_SET_GROUP_SETTINGS_KEY = 'PermissionSetGroup';

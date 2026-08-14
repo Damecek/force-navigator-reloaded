@@ -22,8 +22,9 @@ and other org destinations without leaving the keyboard. It is available directl
 - **SLDS Integration**: Uses Salesforce Lightning Design System for a native look and feel
 - **Modern Architecture**: Built with [LWC OSS](https://lwc.dev/) (Lightning Web Components) for composable UI
 - **Dynamic & Configurable Commands**: Fetches and caches Salesforce setup menu items, SObjects, Flows, Apex classes,
-  Apex triggers, Lightning apps, Permission Sets, Permission Set Groups, active Users, and Login As actions directly from your org. Edit the JSON
-  settings to include or exclude specific sources and custom commands from the palette.
+  Apex triggers, Experience Cloud Workspaces and Builders, Lightning apps, Permission Sets, Permission Set Groups,
+  active Users, and Login As actions directly from your org. Edit the JSON settings to include or exclude specific
+  sources and custom commands from the palette.
 - **Search Prefix**: Type `?` followed by a term to open Salesforce global search results directly from the palette
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 - **Loading Feedback**: A spinner is displayed while refresh-oriented commands are rebuilding the command list
@@ -68,7 +69,8 @@ version might occasionally lag behind the latest release.
 6. Press `Esc` or the same shortcut again to close the command palette when it has focus
 7. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts and Settings
 8. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows,
-   Apex classes, Apex triggers, lightning apps, permission sets, permission set groups, users, login as, custom commands) appear in the palette
+   Apex classes, Apex triggers, Experience Cloud sites, lightning apps, permission sets, permission set groups, users,
+   login as, custom commands) appear in the palette
 9. After enough command activity, use `Extension > Review Force Navigator Reloaded` to open the Chrome Web Store reviews
    page. The command disables itself after opening the page.
 

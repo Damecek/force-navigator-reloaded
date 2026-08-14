@@ -8,6 +8,7 @@
  * @property {string} id - Unique identifier of the command
  * @property {string} label - Display text shown in the command palette
  * @property {string} path - Path segment to navigate to (appended to origin)
+ * @property {'core' | 'lightning'} [host] - Salesforce host type; defaults to Lightning
  */
 
 /**

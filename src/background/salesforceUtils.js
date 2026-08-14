@@ -132,6 +132,30 @@ export async function fetchApexTriggersFromSalesforce(connection) {
 }
 
 /**
+ * Fetch Experience Cloud networks.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{Id: string, Name: string, Status: string}>>}
+ */
+export async function fetchNetworksFromSalesforce(connection) {
+  const soql = `SELECT Id, Name, Status FROM Network`;
+  const result = await connection.query(soql);
+  console.log('Network query:', soql, result);
+  return result;
+}
+
+/**
+ * Fetch Experience Builder sites.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{Id: string, MasterLabel: string}>>}
+ */
+export async function fetchExperienceSitesFromSalesforce(connection) {
+  const soql = `SELECT Id, MasterLabel FROM Site WHERE SiteType = 'ChatterNetworkPicasso'`;
+  const result = await connection.query(soql);
+  console.log('Experience Site query:', soql, result);
+  return result;
+}
+
+/**
  * @typedef {Object} LightningAppDefinition
  * @property {string} DeveloperName
  * @property {string} Label

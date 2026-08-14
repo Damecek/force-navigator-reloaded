@@ -64,6 +64,8 @@ This document explains each key in the Settings JSON shown on the extension opti
 
 `Commands.ApexTrigger`: Includes unmanaged Apex trigger Setup detail commands. Default: `true`.
 
+`Commands.ExperienceSite`: Includes Experience Cloud Workspace commands for every site and Builder commands when matching site metadata is available. Default: `true`.
+
 `Commands.LightningApplication`: Includes Lightning app navigation commands. Default: `true`.
 
 `Commands.PermissionSet`: Includes Permission Set commands. Default: `true`.

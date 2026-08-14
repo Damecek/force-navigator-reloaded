@@ -192,6 +192,7 @@ test('getCommands includes independently fetched Apex class and trigger commands
   const {
     CacheManager,
     ENTITY_CACHE_KEY,
+    EXPERIENCE_SITE_CACHE_KEY,
     FLOW_CACHE_KEY,
     LIGHTNING_APP_CACHE_KEY,
     LOGIN_AS_CACHE_KEY,
@@ -215,6 +216,7 @@ test('getCommands includes independently fetched Apex class and trigger commands
   await Promise.all(
     [
       ENTITY_CACHE_KEY,
+      EXPERIENCE_SITE_CACHE_KEY,
       FLOW_CACHE_KEY,
       LIGHTNING_APP_CACHE_KEY,
       LOGIN_AS_CACHE_KEY,
