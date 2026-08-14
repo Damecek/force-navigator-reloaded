@@ -60,6 +60,10 @@ This document explains each key in the Settings JSON shown on the extension opti
 
 `Commands.FlowDefinition.Active`: Includes commands for active flow version. Default: `false`.
 
+`Commands.ApexClass`: Includes unmanaged Apex class Setup detail commands. Default: `true`.
+
+`Commands.ApexTrigger`: Includes unmanaged Apex trigger Setup detail commands. Default: `true`.
+
 `Commands.LightningApplication`: Includes Lightning app navigation commands. Default: `true`.
 
 `Commands.PermissionSet`: Includes Permission Set commands. Default: `true`.

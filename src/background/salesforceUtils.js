@@ -108,6 +108,30 @@ export async function fetchFlowDefinitionsFromSalesforce(connection) {
 }
 
 /**
+ * Fetch unmanaged Apex classes via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{Id: string, Name: string, NamespacePrefix: string | null}>>}
+ */
+export async function fetchApexClassesFromSalesforce(connection) {
+  const soql = `SELECT Id, Name, NamespacePrefix FROM ApexClass WHERE ManageableState = 'unmanaged'`;
+  const result = await connection.toolingQuery(soql);
+  console.log('ApexClass query:', soql, result);
+  return result;
+}
+
+/**
+ * Fetch unmanaged Apex triggers via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{Id: string, Name: string, NamespacePrefix: string | null}>>}
+ */
+export async function fetchApexTriggersFromSalesforce(connection) {
+  const soql = `SELECT Id, Name, NamespacePrefix FROM ApexTrigger WHERE ManageableState = 'unmanaged'`;
+  const result = await connection.toolingQuery(soql);
+  console.log('ApexTrigger query:', soql, result);
+  return result;
+}
+
+/**
  * @typedef {Object} LightningAppDefinition
  * @property {string} DeveloperName
  * @property {string} Label

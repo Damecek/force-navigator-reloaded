@@ -20,7 +20,8 @@ export class SalesforceConnection {
    * @param {string} [opts.version='60.0']
    */
   constructor({ instanceUrl, accessToken, version = '62.0' }) {
-    this.base = `${instanceUrl.replace(/\/$/, '')}/services/data/v${version}`;
+    this.origin = instanceUrl.replace(/\/$/, '');
+    this.base = `${this.origin}/services/data/v${version}`;
     this.hostname = toLightningHostname(instanceUrl);
     this.headers = this.getHeaders(accessToken);
   }
@@ -46,7 +47,10 @@ export class SalesforceConnection {
 
   /* ───────── basic helpers ───────── */
   async _get(path, tokenExpiredCode = 401) {
-    const res = await fetch(`${this.base}${path}`, { headers: this.headers });
+    const url = path.startsWith('/services/data/')
+      ? `${this.origin}${path}`
+      : `${this.base}${path}`;
+    const res = await fetch(url, { headers: this.headers });
     if (!res.ok) {
       if (res.status === tokenExpiredCode) {
         console.warn(

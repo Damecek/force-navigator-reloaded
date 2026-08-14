@@ -1,4 +1,10 @@
 import {
+  APEX_CLASS_CACHE_KEY,
+  APEX_CLASS_CACHE_TTL,
+  APEX_CLASS_SETTINGS_KEY,
+  APEX_TRIGGER_CACHE_KEY,
+  APEX_TRIGGER_CACHE_TTL,
+  APEX_TRIGGER_SETTINGS_KEY,
   buildLightningUrl,
   CacheManager,
   COMMANDS_SETTINGS_KEY,
@@ -53,6 +59,8 @@ import { staticCommands } from './staticCommands.js';
 import { supportsNewRecordNavigation } from './entityCommandSupport.js';
 import { ensureToken, tokenHasScope } from './auth/auth.js';
 import {
+  fetchApexClassesFromSalesforce,
+  fetchApexTriggersFromSalesforce,
   fetchEntityDefinitionsFromSalesforce,
   fetchFlowDefinitionsFromSalesforce,
   fetchLightningAppDefinitionsFromSalesforce,
@@ -65,6 +73,10 @@ import {
   isAuthRefreshFailedError,
   SalesforceConnection,
 } from './salesforceConnection.js';
+import {
+  buildApexClassCommands,
+  buildApexTriggerCommands,
+} from './commandSources/apexCommands.js';
 
 const OBJECT_MANAGER_SECTIONS = [
   {
@@ -178,22 +190,35 @@ export async function getCommands(hostname) {
   let NavigationCommand = [];
   let LoginAsCommand = [];
   try {
-    const [loginAs, setup, entity, flow, lightningApp, permSet, userNav] =
-      await Promise.all([
-        getLoginAsCommands(instanceHostname, loadUsers),
-        getSetupCommands(instanceHostname, connection),
-        getEntityCommands(instanceHostname, connection),
-        getFlowCommands(instanceHostname, connection),
-        getLightningAppCommands(instanceHostname, connection),
-        getPermissionSetCommands(instanceHostname, connection),
-        getUserNavigationCommands(instanceHostname, loadUsers),
-      ]);
+    const [
+      loginAs,
+      setup,
+      entity,
+      flow,
+      apexClass,
+      apexTrigger,
+      lightningApp,
+      permSet,
+      userNav,
+    ] = await Promise.all([
+      getLoginAsCommands(instanceHostname, loadUsers),
+      getSetupCommands(instanceHostname, connection),
+      getEntityCommands(instanceHostname, connection),
+      getFlowCommands(instanceHostname, connection),
+      getApexClassCommands(instanceHostname, connection),
+      getApexTriggerCommands(instanceHostname, connection),
+      getLightningAppCommands(instanceHostname, connection),
+      getPermissionSetCommands(instanceHostname, connection),
+      getUserNavigationCommands(instanceHostname, loadUsers),
+    ]);
     LoginAsCommand = loginAs;
     NavigationCommand = [
       ...staticCommands,
       ...setup,
       ...entity,
       ...flow,
+      ...apexClass,
+      ...apexTrigger,
       ...lightningApp,
       ...permSet,
       ...userNav,
@@ -543,6 +568,58 @@ async function getFlowCommands(hostname, connection) {
 
       return commands;
     },
+  });
+}
+
+/**
+ * Retrieves Apex class navigation commands via Salesforce Tooling API.
+ * @param {string} hostname Domain hostname
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, path: string}>>}
+ */
+async function getApexClassCommands(hostname, connection) {
+  const includeApexClasses = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    APEX_CLASS_SETTINGS_KEY,
+  ]);
+  if (!includeApexClasses) {
+    return [];
+  }
+
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: APEX_CLASS_CACHE_KEY,
+    ttl: APEX_CLASS_CACHE_TTL,
+    sourceName: 'getApexClassCommands',
+    buildCommands: async () =>
+      buildApexClassCommands(await fetchApexClassesFromSalesforce(connection)),
+  });
+}
+
+/**
+ * Retrieves Apex trigger navigation commands via Salesforce Tooling API.
+ * @param {string} hostname Domain hostname
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{id: string, label: string, path: string}>>}
+ */
+async function getApexTriggerCommands(hostname, connection) {
+  const includeApexTriggers = await getSetting([
+    COMMANDS_SETTINGS_KEY,
+    APEX_TRIGGER_SETTINGS_KEY,
+  ]);
+  if (!includeApexTriggers) {
+    return [];
+  }
+
+  return getCommandsWithCache({
+    hostname,
+    cacheKey: APEX_TRIGGER_CACHE_KEY,
+    ttl: APEX_TRIGGER_CACHE_TTL,
+    sourceName: 'getApexTriggerCommands',
+    buildCommands: async () =>
+      buildApexTriggerCommands(
+        await fetchApexTriggersFromSalesforce(connection)
+      ),
   });
 }
 

@@ -21,6 +21,12 @@ export const ENTITY_CACHE_TTL = 3600 * 1000 * 6; // 6 hours
 export const FLOW_CACHE_KEY = 'flowDefinitions';
 export const FLOW_CACHE_TTL = 3600 * 1000 * 3; // 3 hour
 
+export const APEX_CLASS_CACHE_KEY = 'apexClasses';
+export const APEX_CLASS_CACHE_TTL = 3600 * 1000 * 6; // 6 hours
+
+export const APEX_TRIGGER_CACHE_KEY = 'apexTriggers';
+export const APEX_TRIGGER_CACHE_TTL = 3600 * 1000 * 6; // 6 hours
+
 export const LIGHTNING_APP_CACHE_KEY = 'lightningAppDefinitions';
 export const LIGHTNING_APP_CACHE_TTL = 3600 * 1000 * 6; // 6 hour
 
@@ -37,6 +43,8 @@ export const COMMAND_CACHE_KEYS = [
   MENU_CACHE_KEY,
   ENTITY_CACHE_KEY,
   FLOW_CACHE_KEY,
+  APEX_CLASS_CACHE_KEY,
+  APEX_TRIGGER_CACHE_KEY,
   LIGHTNING_APP_CACHE_KEY,
   PERMISSION_SET_CACHE_KEY,
   USER_CACHE_KEY,
@@ -93,6 +101,8 @@ export const FLOW_DEFINITION_TYPE = 'Definition';
 export const FLOW_LATEST_VERSION_TYPE = 'Latest';
 export const FLOW_ACTIVE_VERSION_TYPE = 'Active';
 
+export const APEX_CLASS_SETTINGS_KEY = 'ApexClass';
+export const APEX_TRIGGER_SETTINGS_KEY = 'ApexTrigger';
 export const LIGHTNING_APP_SETTINGS_KEY = 'LightningApplication';
 export const PERMISSION_SET_SETTINGS_KEY = 'PermissionSet';
 export const PERMISSION_SET_GROUP_SETTINGS_KEY = 'PermissionSetGroup';

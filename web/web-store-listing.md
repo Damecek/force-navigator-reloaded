@@ -9,13 +9,13 @@ Press Ctrl + Shift + L on Windows and Linux, or Command + Shift + P on macOS, to
 Find commands with fast, accent-insensitive fuzzy matching, with matching text highlighted for easier scanning. Frequently used commands automatically move higher in the results, so everyday destinations become even quicker to reach.
 
 • Deep Salesforce navigation
-Jump directly to Setup pages, Object Manager sections, Custom Metadata Types, SObject list and new-record pages, Flow definitions and versions, Lightning apps, Permission Sets, Permission Set Groups, active users, and Login As actions.
+Jump directly to Setup pages, Object Manager sections, Custom Metadata Types, SObject list and new-record pages, Flow definitions and versions, Apex classes and triggers, Lightning apps, Permission Sets, Permission Set Groups, active users, and Login As actions.
 
 • Salesforce global search from the palette
 Start with ? followed by a search term to open Salesforce global search results directly—without navigating to the search page first.
 
 • Configurable command sources
-Choose which command groups appear in the palette from the extension settings. Keep the defaults or fine-tune Setup, SObject, Flow, app, permission, user, and Login As commands for your workflow.
+Choose which command groups appear in the palette from the extension settings. Keep the defaults or fine-tune Setup, SObject, Flow, Apex, app, permission, user, and Login As commands for your workflow.
 
 • Built for large orgs
 Org metadata is cached for faster repeat access, and virtual scrolling keeps long command lists responsive. Refresh the command list whenever you need the latest metadata.
