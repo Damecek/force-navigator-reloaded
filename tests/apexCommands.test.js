@@ -88,12 +88,13 @@ test('buildApexTriggerCommands returns Setup navigation descriptors', async () =
         Id: '01qxx0000000001AAA',
         Name: 'AccountTrigger',
         NamespacePrefix: null,
+        TableEnumOrId: 'Account',
       },
     ]),
     [
       {
         id: 'apex-trigger-01qxx0000000001AAA',
-        label: 'Apex Trigger > AccountTrigger',
+        label: 'Apex Trigger > Account > AccountTrigger',
         path: '/lightning/setup/ApexTriggers/page?address=%2F01qxx0000000001AAA',
       },
     ]
@@ -138,7 +139,11 @@ test('fetchApexTriggersFromSalesforce uses minimal unmanaged-only Tooling SOQL',
   assert.equal(typeof fetchApexTriggersFromSalesforce, 'function');
   let receivedSoql;
   const expectedRecords = [
-    { Id: '01qxx0000000001AAA', Name: 'AccountTrigger' },
+    {
+      Id: '01qxx0000000001AAA',
+      Name: 'AccountTrigger',
+      TableEnumOrId: 'Account',
+    },
   ];
   const connection = {
     async toolingQuery(soql) {
@@ -151,7 +156,7 @@ test('fetchApexTriggersFromSalesforce uses minimal unmanaged-only Tooling SOQL',
 
   assert.equal(
     receivedSoql,
-    "SELECT Id, Name, NamespacePrefix FROM ApexTrigger WHERE ManageableState = 'unmanaged'"
+    "SELECT Id, Name, NamespacePrefix, TableEnumOrId FROM ApexTrigger WHERE ManageableState = 'unmanaged'"
   );
   assert.deepEqual(records, expectedRecords);
 });
@@ -173,11 +178,11 @@ test('Apex classes and triggers have independent enabled settings and caches', a
   assert.equal(APEX_TRIGGER_SETTINGS_KEY, 'ApexTrigger');
   assert.equal(
     DEFAULT_SETTINGS[COMMANDS_SETTINGS_KEY][APEX_CLASS_SETTINGS_KEY],
-    true
+    false
   );
   assert.equal(
     DEFAULT_SETTINGS[COMMANDS_SETTINGS_KEY][APEX_TRIGGER_SETTINGS_KEY],
-    true
+    false
   );
   assert.equal(APEX_CLASS_CACHE_KEY, 'apexClasses');
   assert.equal(APEX_TRIGGER_CACHE_KEY, 'apexTriggers');
@@ -198,9 +203,11 @@ test('getCommands includes independently fetched Apex class and trigger commands
     LOGIN_AS_CACHE_KEY,
     MENU_CACHE_KEY,
     PERMISSION_SET_CACHE_KEY,
+    saveSettings,
     SF_TOKEN_CACHE_KEY,
     USER_CACHE_KEY,
   } = await loadSharedModule();
+  await saveSettings({ Commands: { ApexClass: true, ApexTrigger: true } });
   const hostname = 'acme.sandbox.lightning.force.com';
   const cache = new CacheManager(hostname);
   await cache.set(
@@ -242,7 +249,13 @@ test('getCommands includes independently fetched Apex class and trigger commands
         ok: true,
         async json() {
           return {
-            records: [{ Id: '01qxx0000000001AAA', Name: 'AccountTrigger' }],
+            records: [
+              {
+                Id: '01qxx0000000001AAA',
+                Name: 'AccountTrigger',
+                TableEnumOrId: 'Account',
+              },
+            ],
           };
         },
       };
@@ -267,7 +280,7 @@ test('getCommands includes independently fetched Apex class and trigger commands
     NavigationCommand.some(
       ({ id, label }) =>
         id === 'apex-trigger-01qxx0000000001AAA' &&
-        label === 'Apex Trigger > AccountTrigger'
+        label === 'Apex Trigger > Account > AccountTrigger'
     ),
     true
   );

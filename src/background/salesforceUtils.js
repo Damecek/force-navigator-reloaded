@@ -122,10 +122,10 @@ export async function fetchApexClassesFromSalesforce(connection) {
 /**
  * Fetch unmanaged Apex triggers via Tooling API.
  * @param {SalesforceConnection} connection Salesforce connection instance
- * @returns {Promise<Array<{Id: string, Name: string, NamespacePrefix: string | null}>>}
+ * @returns {Promise<Array<{Id: string, Name: string, NamespacePrefix: string | null, TableEnumOrId: string}>>}
  */
 export async function fetchApexTriggersFromSalesforce(connection) {
-  const soql = `SELECT Id, Name, NamespacePrefix FROM ApexTrigger WHERE ManageableState = 'unmanaged'`;
+  const soql = `SELECT Id, Name, NamespacePrefix, TableEnumOrId FROM ApexTrigger WHERE ManageableState = 'unmanaged'`;
   const result = await connection.toolingQuery(soql);
   console.log('ApexTrigger query:', soql, result);
   return result;

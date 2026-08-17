@@ -13,13 +13,13 @@ export function buildApexClassCommands(records) {
 
 /**
  * Build Apex trigger navigation commands.
- * @param {Array<{Id: string, Name: string}>} records Apex trigger records
+ * @param {Array<{Id: string, Name: string, TableEnumOrId: string}>} records Apex trigger records
  * @returns {Array<{id: string, label: string, path: string}>}
  */
 export function buildApexTriggerCommands(records) {
-  return records.map(({ Id, Name }) => ({
+  return records.map(({ Id, Name, TableEnumOrId }) => ({
     id: `apex-trigger-${Id}`,
-    label: `Apex Trigger > ${Name}`,
+    label: `Apex Trigger > ${TableEnumOrId} > ${Name}`,
     path: `/lightning/setup/ApexTriggers/page?address=%2F${Id}`,
   }));
 }
