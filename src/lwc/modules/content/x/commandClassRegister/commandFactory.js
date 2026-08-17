@@ -1,5 +1,9 @@
 import { UsageTracker } from '../../../../../shared';
 import { register } from './commandClassRegister';
+import {
+  connectDescriptorUsage,
+  resolveDescriptorUsage,
+} from './descriptorUsage';
 
 /**
  * @typedef {Object} CommandDescriptor
@@ -52,30 +56,36 @@ function buildDescriptor(CommandCtor, className, raw, usageMap) {
     raw && typeof raw === 'object'
       ? { ...raw }
       : /** @type {Record<string, any>} */ ({});
-  let { id, label, usage } = sanitizedRaw;
-
-  if (usage === undefined && id) {
-    usage = usageMap[id] ?? 0;
-  }
+  let { id, label } = sanitizedRaw;
+  let seedUsage = 0;
 
   if (!id || !label) {
-    const instance = new CommandCtor({ ...sanitizedRaw, usage });
+    const instance = new CommandCtor(sanitizedRaw);
     id = instance.id;
     label = instance.label;
-    usage = instance.usage ?? usage ?? 0;
+    seedUsage = instance.usage ?? 0;
     sanitizedRaw.id = id;
     sanitizedRaw.label = label;
   }
 
-  if (usage === undefined) {
-    usage = 0;
-  }
-
-  return {
+  const usage = resolveDescriptorUsage(
+    id,
+    sanitizedRaw.usage,
+    usageMap,
+    seedUsage
+  );
+  const descriptor = {
     id,
     label,
     usage,
     className,
-    createInstance: () => new CommandCtor({ ...sanitizedRaw, usage }),
+    createInstance: undefined,
   };
+  descriptor.createInstance = () =>
+    connectDescriptorUsage(
+      new CommandCtor({ ...sanitizedRaw, usage }),
+      descriptor
+    );
+
+  return descriptor;
 }

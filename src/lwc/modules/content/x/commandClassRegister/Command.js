@@ -25,7 +25,13 @@ export default class Command {
   }
 
   async incrementUsage() {
-    return (await UsageTracker.instance()).incrementUsage(this.id);
+    this.usage = await (
+      await UsageTracker.instance()
+    ).incrementUsage(this.id, undefined, this.usage);
+    if (typeof this.onUsageChange === 'function') {
+      this.onUsageChange(this.usage);
+    }
+    return this.usage;
   }
 
   /**

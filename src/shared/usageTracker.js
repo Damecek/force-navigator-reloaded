@@ -36,10 +36,19 @@ export default class UsageTracker {
     return (await this.usageMap())[id] || 0;
   }
 
-  async incrementUsage(id, date = new Date()) {
+  /**
+   * Increment a command count without dropping an intentional display seed.
+   * @param {string} id
+   * @param {Date} [date]
+   * @param {number} [seedUsage]
+   * @returns {Promise<number>}
+   */
+  async incrementUsage(id, date = new Date(), seedUsage = 0) {
     console.log(`Incrementing usage for command ${id}`);
     const map = await this.usageMap();
-    const count = (map[id] || 0) + 1;
+    const normalizedSeed =
+      Number.isInteger(seedUsage) && seedUsage > 0 ? seedUsage : 0;
+    const count = Math.max(map[id] || 0, normalizedSeed) + 1;
     map[id] = count;
     await this.cache.set(COMMAND_USAGE_KEY, map);
     await this.trackActiveDate(date);

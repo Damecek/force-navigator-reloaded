@@ -8,7 +8,7 @@ export function getUsagePresentation(command, showUsage) {
   const label = typeof command?.label === 'string' ? command.label : '';
   const usage = Number(command?.usage);
   const isVisible = showUsage === true && Number.isInteger(usage) && usage > 0;
-  const text = isVisible ? `${usage} uses` : '';
+  const text = isVisible ? `${usage} ${usage === 1 ? 'use' : 'uses'}` : '';
 
   return {
     accessibleLabel: text ? `${label}, ${text}` : label,

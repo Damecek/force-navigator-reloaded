@@ -131,6 +131,21 @@ test('UsageTracker reset clears usage and active dates', async () => {
   assert.equal(await tracker.activeDateCount(), 0);
 });
 
+test('UsageTracker increments from a command seed when no count is persisted', async () => {
+  const { UsageTracker } = await loadSharedModule();
+  const tracker = await UsageTracker.instance();
+  await tracker.resetUsage();
+
+  const count = await tracker.incrementUsage(
+    'extension-options',
+    new Date(2026, 6, 1),
+    1
+  );
+
+  assert.equal(count, 2);
+  assert.equal(await tracker.getUsage('extension-options'), 2);
+});
+
 test('review command eligibility requires enabled setting, activity, and no authorize command', async () => {
   const { isReviewCommandEligible } = await loadCommandRegisterModule();
   const eligible = {

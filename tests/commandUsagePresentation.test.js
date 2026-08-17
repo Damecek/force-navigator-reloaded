@@ -73,6 +73,16 @@ async function loadUsageSettingsModule() {
   }
 }
 
+async function loadDescriptorUsageModule() {
+  try {
+    return await import(
+      `../src/lwc/modules/content/x/commandClassRegister/descriptorUsage.js?test=${Date.now()}-${Math.random()}`
+    );
+  } catch {
+    return undefined;
+  }
+}
+
 function createDeferred() {
   let resolve;
   const promise = new Promise((promiseResolve) => {
@@ -151,6 +161,57 @@ test('usage presentation exposes enabled positive usage visually and accessibly'
       text: '12 uses',
     }
   );
+});
+
+test('usage presentation uses the singular form for one execution', async () => {
+  const presentationModule = await loadUsagePresentationModule();
+
+  assert.deepEqual(
+    presentationModule.getUsagePresentation(
+      { label: 'Extension > Options', usage: 1 },
+      true
+    ),
+    {
+      accessibleLabel: 'Extension > Options, 1 use',
+      isVisible: true,
+      text: '1 use',
+    }
+  );
+});
+
+test('descriptor usage preserves the command seed until a persisted count exists', async () => {
+  const descriptorUsage = await loadDescriptorUsageModule();
+
+  assert.equal(typeof descriptorUsage?.resolveDescriptorUsage, 'function');
+  assert.equal(
+    descriptorUsage.resolveDescriptorUsage(
+      'extension-options',
+      undefined,
+      {},
+      1
+    ),
+    1
+  );
+  assert.equal(
+    descriptorUsage.resolveDescriptorUsage(
+      'extension-options',
+      undefined,
+      { 'extension-options': 4 },
+      1
+    ),
+    4
+  );
+});
+
+test('descriptor usage is updated when its command records an execution', async () => {
+  const descriptorUsage = await loadDescriptorUsageModule();
+  const descriptor = { usage: 0 };
+  const instance = {};
+
+  descriptorUsage.connectDescriptorUsage(instance, descriptor);
+  instance.onUsageChange(1);
+
+  assert.equal(descriptor.usage, 1);
 });
 
 test('usage settings loading hides usage when storage rejects', async () => {
