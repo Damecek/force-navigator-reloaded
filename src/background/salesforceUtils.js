@@ -146,10 +146,10 @@ export async function fetchNetworksFromSalesforce(connection) {
 /**
  * Fetch Experience Builder sites.
  * @param {SalesforceConnection} connection Salesforce connection instance
- * @returns {Promise<Array<{Id: string, MasterLabel: string, Status: string}>>}
+ * @returns {Promise<Array<{Id: string, MasterLabel: string}>>}
  */
 export async function fetchExperienceSitesFromSalesforce(connection) {
-  const soql = `SELECT Id, MasterLabel, Status FROM Site WHERE SiteType = 'ChatterNetworkPicasso'`;
+  const soql = `SELECT Id, MasterLabel FROM Site WHERE SiteType = 'ChatterNetworkPicasso' AND Status != 'Inactive'`;
   const result = await connection.query(soql);
   console.log('Experience Site query:', soql, result);
   return result;

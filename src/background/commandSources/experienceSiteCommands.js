@@ -5,25 +5,17 @@ const DIGITAL_EXPERIENCES_LABEL =
 /**
  * Build Experience Cloud Workspace and Builder navigation commands.
  * @param {Array<{Id: string, Name: string, Status: string}>} networks Network records
- * @param {Array<{Id: string, MasterLabel: string, Status: string}>} sites Site records
+ * @param {Array<{Id: string, MasterLabel: string}>} sites Active Site records
  * @returns {Array<{id: string, label: string, path: string, host: 'core'}>}
  */
 export function buildExperienceSiteCommands(networks, sites) {
-  const inactiveSiteLabels = new Set(
-    sites
-      .filter(({ Status }) => Status === 'Inactive')
-      .map(({ MasterLabel }) => MasterLabel)
-  );
-  const sitesByLabel = new Map(
-    sites
-      .filter(({ Status }) => Status !== 'Inactive')
-      .map((site) => [site.MasterLabel, site])
-  );
+  const sitesByLabel = new Map(sites.map((site) => [site.MasterLabel, site]));
   const commands = [];
 
   for (const network of networks.filter(
-    ({ Name, Status }) => Status !== 'Inactive' && !inactiveSiteLabels.has(Name)
+    ({ Name, Status }) => Status !== 'Inactive' && sitesByLabel.has(Name)
   )) {
+    const site = sitesByLabel.get(network.Name);
     const networkId = network.Id.slice(0, 15);
     const workspacePath = `/servlet/networks/switch?networkId=${networkId}&startURL=${WORKSPACE_START_URL}&`;
     commands.push({
@@ -33,16 +25,13 @@ export function buildExperienceSiteCommands(networks, sites) {
       host: 'core',
     });
 
-    const site = sitesByLabel.get(network.Name);
-    if (site) {
-      const siteId = site.Id.slice(0, 15);
-      commands.push({
-        id: `experience-site-builder-${siteId}`,
-        label: `${DIGITAL_EXPERIENCES_LABEL} > ${network.Name} > Builder`,
-        path: `/sfsites/picasso/core/config/commeditor.jsp?exitURL=${encodeURIComponent(workspacePath)}&siteId=${siteId}&`,
-        host: 'core',
-      });
-    }
+    const siteId = site.Id.slice(0, 15);
+    commands.push({
+      id: `experience-site-builder-${siteId}`,
+      label: `${DIGITAL_EXPERIENCES_LABEL} > ${network.Name} > Builder`,
+      path: `/sfsites/picasso/core/config/commeditor.jsp?exitURL=${encodeURIComponent(workspacePath)}&siteId=${siteId}&`,
+      host: 'core',
+    });
   }
 
   return commands;
