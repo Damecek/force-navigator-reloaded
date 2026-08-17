@@ -18,7 +18,7 @@
 }
 
 .slds-listbox__option .command-item__label mark {
-  background: #f9e79f;
+  background: transparent;
   color: var(--lwc-colorTextInverseActive);
   padding: 0;
 }
