@@ -17,6 +17,13 @@ test('normalizeSearchValue strips Latin diacritics for matching', () => {
   assert.equal(normalizeSearchValue('Žluťoučký kůň'), 'zlutoucky kun');
 });
 
+test('normalizeSearchValue exposes CamelCase metadata words', () => {
+  assert.equal(
+    normalizeSearchValue('Apex Class > JsonRpcModuleBuilder'),
+    'apex class > json rpc module builder'
+  );
+});
+
 test('normalizeSearchValueWithMap keeps source ranges for precomposed Czech diacritics', () => {
   assert.deepEqual(normalizeSearchValueWithMap('Farkaš'), {
     normalized: 'farkas',
@@ -169,6 +176,57 @@ test('translates multiple uFuzzy ranges back to source label ranges', () => {
       ],
     },
   ]);
+});
+
+test('keeps highlight ranges when the query contains three terms', () => {
+  const commands = [
+    {
+      id: 'custom-metadata',
+      label: 'Custom Metadata Types > Access Token > List',
+      usage: 0,
+    },
+  ];
+
+  const result = filterCommandsBySearchTerm({
+    uf: createUfuzzy(),
+    commands,
+    previousResults: commands,
+    searchTerm: 'cus met t',
+    previousSearchTerm: '',
+  });
+
+  assert.deepEqual(result, [
+    {
+      ...commands[0],
+      matchRanges: [
+        { start: 0, end: 3 },
+        { start: 7, end: 10 },
+        { start: 13, end: 14 },
+      ],
+    },
+  ]);
+});
+
+test('matches separate terms inside CamelCase metadata names', () => {
+  const commands = [
+    {
+      id: 'json-rpc-module-builder',
+      label: 'Apex Class > JsonRpcModuleBuilder',
+      usage: 0,
+    },
+  ];
+
+  const result = filterCommandsBySearchTerm({
+    uf: createUfuzzy(),
+    commands,
+    previousResults: commands,
+    searchTerm: 'apex Jso Modul',
+    previousSearchTerm: '',
+  });
+
+  assert.equal(result.length, 1);
+  assert.equal(result[0].id, commands[0].id);
+  assert.ok(result[0].matchRanges.length > 0);
 });
 
 test('translates fuzzy ranges to cover decomposed combining marks in the source label', () => {

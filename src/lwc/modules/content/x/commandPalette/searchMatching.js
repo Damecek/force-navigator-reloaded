@@ -20,8 +20,7 @@ export function normalizeSearchValueWithMap(value) {
     return { normalized: '', sourceRanges: [] };
   }
 
-  let normalized = '';
-  const sourceRanges = [];
+  const sourceParts = [];
   let sourceIndex = 0;
 
   while (sourceIndex < value.length) {
@@ -39,8 +38,39 @@ export function normalizeSearchValueWithMap(value) {
       sourceIndex += nextCharacter.length;
     }
 
+    sourceParts.push({
+      value: value.slice(sourceStart, sourceIndex),
+      start: sourceStart,
+      end: sourceIndex,
+    });
+  }
+
+  let normalized = '';
+  const sourceRanges = [];
+
+  sourceParts.forEach((sourcePart, index) => {
+    const previousCharacter = sourceParts[index - 1]?.value[0];
+    const currentCharacter = sourcePart.value[0];
+    const nextCharacter = sourceParts[index + 1]?.value[0];
+    const followsLowercaseOrDigit =
+      previousCharacter && /[\p{Ll}\p{N}]/u.test(previousCharacter);
+    const startsAcronymWord =
+      previousCharacter &&
+      nextCharacter &&
+      /\p{Lu}/u.test(previousCharacter) &&
+      /\p{Lu}/u.test(currentCharacter) &&
+      /\p{Ll}/u.test(nextCharacter);
+
+    if (
+      /\p{Lu}/u.test(currentCharacter) &&
+      (followsLowercaseOrDigit || startsAcronymWord)
+    ) {
+      normalized += ' ';
+      sourceRanges.push({ start: sourcePart.start, end: sourcePart.start });
+    }
+
     const normalizedPart = uFuzzy
-      .latinize(value.slice(sourceStart, sourceIndex))
+      .latinize(sourcePart.value)
       .normalize('NFD')
       .replace(/\p{M}+/gu, '')
       .toLowerCase();
@@ -48,10 +78,10 @@ export function normalizeSearchValueWithMap(value) {
     for (const character of normalizedPart) {
       normalized += character;
       for (let offset = 0; offset < character.length; offset += 1) {
-        sourceRanges.push({ start: sourceStart, end: sourceIndex });
+        sourceRanges.push({ start: sourcePart.start, end: sourcePart.end });
       }
     }
-  }
+  });
 
   return { normalized, sourceRanges };
 }
@@ -126,10 +156,11 @@ export function filterCommandsBySearchTerm({
   const currentSearchHaystack = normalizedHaystack.map(
     ({ normalized }) => normalized
   );
+  const searchTermCount = normalizedSearchTerm.trim().split(/\s+/).length;
   const [idxs, info, order] = uf.search(
     currentSearchHaystack,
     normalizedSearchTerm,
-    2
+    searchTermCount <= 2 ? 2 : 0
   );
 
   if (order && info && Array.isArray(info.idx)) {

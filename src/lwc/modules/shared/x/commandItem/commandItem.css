@@ -19,6 +19,6 @@
 
 mark {
   background: #f9e79f;
-  color: inherit;
+  color: var(--lwc-colorTextInverseActive);
   padding: 0;
 }
