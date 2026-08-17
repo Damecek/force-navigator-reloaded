@@ -6,7 +6,7 @@ This document explains each key in the Settings JSON shown on the extension opti
 
 `CommandPalette`: Controls command palette presentation.
 
-`CommandPalette.ShowUsage`: Shows positive command execution counts in the command palette. Default: `true`.
+`CommandPalette.ShowUsage`: Shows positive command usage counts in the command palette. Default: `true`.
 
 `ReviewCommand`: Controls whether the in-palette Chrome Web Store review request command can appear after the user has enough extension activity.
 
@@ -64,11 +64,11 @@ This document explains each key in the Settings JSON shown on the extension opti
 
 `Commands.FlowDefinition.Active`: Includes commands for active flow version. Default: `false`.
 
-`Commands.ApexClass`: Includes unmanaged Apex class Setup detail commands. Default: `true`.
+`Commands.ApexClass`: Includes unmanaged Apex class Setup detail commands. Default: `false`.
 
-`Commands.ApexTrigger`: Includes unmanaged Apex trigger Setup detail commands. Default: `true`.
+`Commands.ApexTrigger`: Includes unmanaged Apex trigger Setup detail commands grouped by their SObject. Default: `false`.
 
-`Commands.ExperienceSite`: Includes Experience Cloud Workspace commands for every site and Builder commands when matching site metadata is available. Default: `true`.
+`Commands.ExperienceSite`: Includes Digital Experience Workspace commands for non-archived sites and Builder commands when matching site metadata is available. Default: `true`.
 
 `Commands.LightningApplication`: Includes Lightning app navigation commands. Default: `true`.
 

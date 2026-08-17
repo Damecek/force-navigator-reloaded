@@ -6,16 +6,16 @@ Force Navigator Reloaded for Salesforce helps admins and developers reach the ri
 Press Ctrl + Shift + L on Windows and Linux, or Command + Shift + P on macOS, to open the palette from anywhere in Lightning. Use the arrow keys and Enter to navigate, Esc to close it, or hold Shift, Ctrl, or Command while selecting to open a result in a new tab.
 
 • Smarter search that adapts to you
-Find commands with fast, accent-insensitive fuzzy matching, with matching text highlighted for easier scanning. Frequently used commands automatically move higher in the results, and positive execution counts make familiar destinations easier to spot.
+Find commands with fast, accent-insensitive fuzzy matching that also recognizes words inside CamelCase metadata names. Every matched term is highlighted for easier scanning. Frequently used commands automatically move higher in the results, and positive usage counts make familiar destinations easier to spot.
 
 • Deep Salesforce navigation
-Jump directly to Setup pages, Object Manager sections, Custom Metadata Types, SObject list and new-record pages, Flow definitions and versions, Apex classes and triggers, Experience Cloud Workspaces and Builders, Lightning apps, Permission Sets, Permission Set Groups, active users, and Login As actions.
+Jump directly to Setup pages, Object Manager sections, Custom Metadata Types, SObject list and new-record pages, Flow definitions and versions, Apex classes, SObject-grouped Apex triggers, active Digital Experience Workspaces and Builders, Lightning apps, Permission Sets, Permission Set Groups, active users, and Login As actions. The palette remains available on supported Experience Cloud pages.
 
 • Salesforce global search from the palette
 Start with ? followed by a search term to open Salesforce global search results directly—without navigating to the search page first.
 
 • Configurable command sources
-Choose which command groups appear in the palette from the extension settings. Keep the defaults or fine-tune Setup, SObject, Flow, Apex, Experience Cloud, app, permission, user, and Login As commands for your workflow.
+Choose which command groups appear in the palette from the extension settings. Keep the defaults or fine-tune Setup, SObject, Flow, Digital Experience, app, permission, user, and Login As commands for your workflow. Apex class and trigger commands are available as opt-in sources for large orgs.
 
 • Built for large orgs
 Org metadata is cached for faster repeat access, and virtual scrolling keeps long command lists responsive. Refresh the command list whenever you need the latest metadata.

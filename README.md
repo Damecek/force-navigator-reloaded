@@ -30,7 +30,8 @@ and other org destinations without leaving the keyboard. It is available directl
 - **Loading Feedback**: A spinner is displayed while refresh-oriented commands are rebuilding the command list
 - **Virtual Scrolling**: Only visible commands are rendered, keeping performance high even with thousands of commands
 - **Usage-based Sorting**: Frequently executed commands appear higher in search results
-- **Usage Counts**: Positive execution counts appear next to commands in the palette and can be hidden in Settings
+- **Usage Counts**: Positive usage counts appear next to commands in the palette, stay synchronized after execution,
+  and can be hidden in Settings
 - **Usage Insights**: Review command execution counts directly on the Settings page to understand which commands power
   workflows the most
 - **Review Request Command**: After real extension activity, the palette can show
@@ -41,7 +42,10 @@ and other org destinations without leaving the keyboard. It is available directl
 
 ### Fuzzy Search
 
-The command palette uses the [uFuzzy](https://github.com/leeoniya/uFuzzy) library for efficient searching, with Latin diacritics ignored during matching so `farkas` can find `farkaš`. Matching parts of each result are highlighted to make the best result easier to scan.
+The command palette uses the [uFuzzy](https://github.com/leeoniya/uFuzzy) library for efficient searching. Latin
+diacritics are ignored during matching, so `farkas` can find `farkaš`, and CamelCase metadata names are split into
+searchable words, so `apex jso modul` can find `Apex Class > JsonRpcModuleBuilder`. Every matched term is highlighted to
+make the best result easier to scan.
 
 ## Installation
 
@@ -78,6 +82,7 @@ version might occasionally lag behind the latest release.
 ### Supported Domains
 
 - _\*.force.com\*_
+- _\*.my.site.com\*_
 - _\*.salesforce-setup.com\*_
 - _\*.builder.salesforce-experience.com\*_
 
