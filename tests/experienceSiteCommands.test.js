@@ -75,13 +75,15 @@ test('buildExperienceSiteCommands adds Workspace and matched Builder commands wi
     [
       {
         id: 'experience-site-workspace-0DB5g000000AbCd',
-        label: 'Experience Cloud > Partner Hub > Workspace',
+        label:
+          'Platform Tools > Feature Settings > Digital Experiences > Partner Hub > Workspace',
         path: '/servlet/networks/switch?networkId=0DB5g000000AbCd&startURL=%2FcommunitySetup%2FcwApp.app%23%2Fc%2Fhome&',
         host: 'core',
       },
       {
         id: 'experience-site-builder-0DM5g000000EfGh',
-        label: 'Experience Cloud > Partner Hub > Builder',
+        label:
+          'Platform Tools > Feature Settings > Digital Experiences > Partner Hub > Builder',
         path: '/sfsites/picasso/core/config/commeditor.jsp?exitURL=%2Fservlet%2Fnetworks%2Fswitch%3FnetworkId%3D0DB5g000000AbCd%26startURL%3D%252FcommunitySetup%252FcwApp.app%2523%252Fc%252Fhome%26&siteId=0DM5g000000EfGh&',
         host: 'core',
       },
@@ -89,7 +91,7 @@ test('buildExperienceSiteCommands adds Workspace and matched Builder commands wi
   );
 });
 
-test('buildExperienceSiteCommands keeps every Network and omits only unmatched Builders', async () => {
+test('buildExperienceSiteCommands omits inactive Networks and unmatched Builders', async () => {
   const { buildExperienceSiteCommands } =
     await loadExperienceSiteCommandsModule();
   assert.equal(typeof buildExperienceSiteCommands, 'function');
@@ -113,9 +115,8 @@ test('buildExperienceSiteCommands keeps every Network and omits only unmatched B
   assert.deepEqual(
     commands.map(({ label }) => label),
     [
-      "Experience Cloud > O'Brien Portal > Workspace",
-      "Experience Cloud > O'Brien Portal > Builder",
-      'Experience Cloud > Workspace Only > Workspace',
+      "Platform Tools > Feature Settings > Digital Experiences > O'Brien Portal > Workspace",
+      "Platform Tools > Feature Settings > Digital Experiences > O'Brien Portal > Builder",
     ]
   );
   assert.equal(
@@ -159,7 +160,7 @@ test('Experience Cloud fetchers use two fixed standard-object SOQL queries', asy
   await fetchExperienceSitesFromSalesforce(connection);
 
   assert.deepEqual(receivedSoql, [
-    'SELECT Id, Name, Status FROM Network',
+    "SELECT Id, Name, Status FROM Network WHERE Status != 'Inactive'",
     "SELECT Id, MasterLabel FROM Site WHERE SiteType = 'ChatterNetworkPicasso'",
   ]);
   assert.equal(
@@ -253,7 +254,7 @@ test('getCommands fetches and includes Experience Cloud commands in the navigati
 
   assert.deepEqual(receivedSoql.sort(), [
     "SELECT Id, MasterLabel FROM Site WHERE SiteType = 'ChatterNetworkPicasso'",
-    'SELECT Id, Name, Status FROM Network',
+    "SELECT Id, Name, Status FROM Network WHERE Status != 'Inactive'",
   ]);
   assert.equal(
     NavigationCommand.some(

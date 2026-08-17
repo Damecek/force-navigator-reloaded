@@ -1,5 +1,6 @@
 export const CONTENT_SCRIPT_ENABLED_BASE_DOMAINS = [
   '.force.com',
+  '.my.site.com',
   '.salesforce-setup.com',
   '.builder.salesforce-experience.com',
 ];

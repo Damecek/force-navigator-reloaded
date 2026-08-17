@@ -1,4 +1,6 @@
 const WORKSPACE_START_URL = '%2FcommunitySetup%2FcwApp.app%23%2Fc%2Fhome';
+const DIGITAL_EXPERIENCES_LABEL =
+  'Platform Tools > Feature Settings > Digital Experiences';
 
 /**
  * Build Experience Cloud Workspace and Builder navigation commands.
@@ -10,12 +12,14 @@ export function buildExperienceSiteCommands(networks, sites) {
   const sitesByLabel = new Map(sites.map((site) => [site.MasterLabel, site]));
   const commands = [];
 
-  for (const network of networks) {
+  for (const network of networks.filter(
+    ({ Status }) => Status !== 'Inactive'
+  )) {
     const networkId = network.Id.slice(0, 15);
     const workspacePath = `/servlet/networks/switch?networkId=${networkId}&startURL=${WORKSPACE_START_URL}&`;
     commands.push({
       id: `experience-site-workspace-${networkId}`,
-      label: `Experience Cloud > ${network.Name} > Workspace`,
+      label: `${DIGITAL_EXPERIENCES_LABEL} > ${network.Name} > Workspace`,
       path: workspacePath,
       host: 'core',
     });
@@ -25,7 +29,7 @@ export function buildExperienceSiteCommands(networks, sites) {
       const siteId = site.Id.slice(0, 15);
       commands.push({
         id: `experience-site-builder-${siteId}`,
-        label: `Experience Cloud > ${network.Name} > Builder`,
+        label: `${DIGITAL_EXPERIENCES_LABEL} > ${network.Name} > Builder`,
         path: `/sfsites/picasso/core/config/commeditor.jsp?exitURL=${encodeURIComponent(workspacePath)}&siteId=${siteId}&`,
         host: 'core',
       });

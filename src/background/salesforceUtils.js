@@ -137,7 +137,7 @@ export async function fetchApexTriggersFromSalesforce(connection) {
  * @returns {Promise<Array<{Id: string, Name: string, Status: string}>>}
  */
 export async function fetchNetworksFromSalesforce(connection) {
-  const soql = `SELECT Id, Name, Status FROM Network`;
+  const soql = `SELECT Id, Name, Status FROM Network WHERE Status != 'Inactive'`;
   const result = await connection.query(soql);
   console.log('Network query:', soql, result);
   return result;
