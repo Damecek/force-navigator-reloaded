@@ -17,7 +17,7 @@
   white-space: nowrap;
 }
 
-mark {
+.slds-listbox__option .command-item__label mark {
   background: #f9e79f;
   color: var(--lwc-colorTextInverseActive);
   padding: 0;
