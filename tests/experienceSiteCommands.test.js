@@ -70,7 +70,13 @@ test('buildExperienceSiteCommands adds Workspace and matched Builder commands wi
           Status: 'Live',
         },
       ],
-      [{ Id: '0DM5g000000EfGhIAK', MasterLabel: 'Partner Hub' }]
+      [
+        {
+          Id: '0DM5g000000EfGhIAK',
+          MasterLabel: 'Partner Hub',
+          Status: 'Active',
+        },
+      ]
     ),
     [
       {
@@ -109,7 +115,13 @@ test('buildExperienceSiteCommands omits inactive Networks and unmatched Builders
         Status: 'Inactive',
       },
     ],
-    [{ Id: '0DM5g000000ObriIAK', MasterLabel: "O'Brien Portal" }]
+    [
+      {
+        Id: '0DM5g000000ObriIAK',
+        MasterLabel: "O'Brien Portal",
+        Status: 'Active',
+      },
+    ]
   );
 
   assert.deepEqual(
@@ -129,6 +141,46 @@ test('buildExperienceSiteCommands omits inactive Networks and unmatched Builders
   );
 });
 
+test('buildExperienceSiteCommands omits Networks backed by inactive Sites', async () => {
+  const { buildExperienceSiteCommands } =
+    await loadExperienceSiteCommandsModule();
+
+  const commands = buildExperienceSiteCommands(
+    [
+      {
+        Id: '0DBMI00000000G94AI',
+        Name: 'Auction',
+        Status: 'Live',
+      },
+      {
+        Id: '0DBMI000000006T4AQ',
+        Name: 'Auction (with bug)',
+        Status: 'DownForMaintenance',
+      },
+    ],
+    [
+      {
+        Id: '0DMMI00000000L04AI',
+        MasterLabel: 'Auction',
+        Status: 'Active',
+      },
+      {
+        Id: '0DMMI00000000BK4AY',
+        MasterLabel: 'Auction (with bug)',
+        Status: 'Inactive',
+      },
+    ]
+  );
+
+  assert.deepEqual(
+    commands.map(({ label }) => label),
+    [
+      'Platform Tools > Feature Settings > Digital Experiences > Auction > Workspace',
+      'Platform Tools > Feature Settings > Digital Experiences > Auction > Builder',
+    ]
+  );
+});
+
 test('buildExperienceSiteCommands returns no commands when the org has no Networks', async () => {
   const { buildExperienceSiteCommands } =
     await loadExperienceSiteCommandsModule();
@@ -137,7 +189,13 @@ test('buildExperienceSiteCommands returns no commands when the org has no Networ
   assert.deepEqual(
     buildExperienceSiteCommands(
       [],
-      [{ Id: '0DM5g000000EfGhIAK', MasterLabel: 'Orphan Site' }]
+      [
+        {
+          Id: '0DM5g000000EfGhIAK',
+          MasterLabel: 'Orphan Site',
+          Status: 'Active',
+        },
+      ]
     ),
     []
   );
@@ -161,7 +219,7 @@ test('Experience Cloud fetchers use two fixed standard-object SOQL queries', asy
 
   assert.deepEqual(receivedSoql, [
     "SELECT Id, Name, Status FROM Network WHERE Status != 'Inactive'",
-    "SELECT Id, MasterLabel FROM Site WHERE SiteType = 'ChatterNetworkPicasso'",
+    "SELECT Id, MasterLabel, Status FROM Site WHERE SiteType = 'ChatterNetworkPicasso'",
   ]);
   assert.equal(
     receivedSoql.some((soql) => soql.includes("O'Brien")),
@@ -238,7 +296,13 @@ test('getCommands fetches and includes Experience Cloud commands in the navigati
     receivedSoql.push(query);
     const records = query.includes('FROM Network')
       ? [{ Id: '0DB5g000000AbCdEAK', Name: 'Partner Hub', Status: 'Live' }]
-      : [{ Id: '0DM5g000000EfGhIAK', MasterLabel: 'Partner Hub' }];
+      : [
+          {
+            Id: '0DM5g000000EfGhIAK',
+            MasterLabel: 'Partner Hub',
+            Status: 'Active',
+          },
+        ];
     return {
       ok: true,
       async json() {
@@ -253,7 +317,7 @@ test('getCommands fetches and includes Experience Cloud commands in the navigati
   const { NavigationCommand } = await getCommands(hostname);
 
   assert.deepEqual(receivedSoql.sort(), [
-    "SELECT Id, MasterLabel FROM Site WHERE SiteType = 'ChatterNetworkPicasso'",
+    "SELECT Id, MasterLabel, Status FROM Site WHERE SiteType = 'ChatterNetworkPicasso'",
     "SELECT Id, Name, Status FROM Network WHERE Status != 'Inactive'",
   ]);
   assert.equal(

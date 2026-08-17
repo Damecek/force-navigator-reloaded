@@ -5,15 +5,24 @@ const DIGITAL_EXPERIENCES_LABEL =
 /**
  * Build Experience Cloud Workspace and Builder navigation commands.
  * @param {Array<{Id: string, Name: string, Status: string}>} networks Network records
- * @param {Array<{Id: string, MasterLabel: string}>} sites Site records
+ * @param {Array<{Id: string, MasterLabel: string, Status: string}>} sites Site records
  * @returns {Array<{id: string, label: string, path: string, host: 'core'}>}
  */
 export function buildExperienceSiteCommands(networks, sites) {
-  const sitesByLabel = new Map(sites.map((site) => [site.MasterLabel, site]));
+  const inactiveSiteLabels = new Set(
+    sites
+      .filter(({ Status }) => Status === 'Inactive')
+      .map(({ MasterLabel }) => MasterLabel)
+  );
+  const sitesByLabel = new Map(
+    sites
+      .filter(({ Status }) => Status !== 'Inactive')
+      .map((site) => [site.MasterLabel, site])
+  );
   const commands = [];
 
   for (const network of networks.filter(
-    ({ Status }) => Status !== 'Inactive'
+    ({ Name, Status }) => Status !== 'Inactive' && !inactiveSiteLabels.has(Name)
   )) {
     const networkId = network.Id.slice(0, 15);
     const workspacePath = `/servlet/networks/switch?networkId=${networkId}&startURL=${WORKSPACE_START_URL}&`;
