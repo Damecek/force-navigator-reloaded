@@ -1,5 +1,8 @@
 import { refreshToken } from './auth/auth.js';
-import { toLightningHostname } from '../shared/index.js';
+import {
+  SALESFORCE_API_VERSION,
+  toLightningHostname,
+} from '../shared/index.js';
 
 const AUTH_REFRESH_FAILED_CODE = 'AUTH_REFRESH_FAILED';
 
@@ -17,9 +20,9 @@ export class SalesforceConnection {
    * @param {object} opts
    * @param {string} opts.instanceUrl   https://<org>.my.salesforce.com
    * @param {string} opts.accessToken   sid / OAuth bearer
-   * @param {string} [opts.version='60.0']
+   * @param {string} [opts.version] Salesforce API version override.
    */
-  constructor({ instanceUrl, accessToken, version = '62.0' }) {
+  constructor({ instanceUrl, accessToken, version = SALESFORCE_API_VERSION }) {
     this.origin = instanceUrl.replace(/\/$/, '');
     this.base = `${this.origin}/services/data/v${version}`;
     this.hostname = toLightningHostname(instanceUrl);

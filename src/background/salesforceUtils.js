@@ -45,7 +45,7 @@ export async function getSetupNodeTypesFrom() {
  * @property {string} DurableId
  * @property {string} KeyPrefix
  * @property {string} Label
- * @property {string} QualifiedApiName
+ * @property {string|null} QualifiedApiName
  * @property {boolean} IsCustomizable
  * @property {boolean} IsEverCreatable
  * @property {boolean} IsCompactLayoutable
@@ -76,7 +76,16 @@ export async function fetchEntityDefinitionsFromSalesforce(connection) {
       soql,
       Array.isArray(batch) ? batch.length : 'n/a'
     );
-    allRecords.push(...batch);
+    /*
+     * Winter '27 EntityDefinition queries ignore `QualifiedApiName != NULL`,
+     * while SOQL rejects `IS NOT NULL`, so invalid API names are filtered here.
+     */
+    allRecords.push(
+      ...batch.filter(
+        ({ QualifiedApiName }) =>
+          typeof QualifiedApiName === 'string' && QualifiedApiName.length > 0
+      )
+    );
     if (!Array.isArray(batch) || batch.length < limit) {
       break;
     }
