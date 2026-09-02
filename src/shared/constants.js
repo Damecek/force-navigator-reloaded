@@ -13,6 +13,8 @@ export const CONTENT_SCRIPT_DISABLED_BASE_DOMAINS = [
 
 export const GLOBAL_CACHE_SCOPE = 'global';
 
+export const SALESFORCE_API_VERSION = '62.0';
+
 export const MENU_CACHE_KEY = 'menuNodes';
 export const MENU_CACHE_TTL = 3600 * 1000 * 24; // 24 hours
 

@@ -147,6 +147,17 @@ action.
 - **CI Build & Web Store Release**: A GitHub Action builds and attaches a zipped archive for every release tag, uploads it to the Chrome Web Store as a draft, and publishes a selected release tag when the workflow is manually dispatched
 - **Manifest Key Injection**: `webpack` injects the extension `key` and OAuth consumer key based on build mode. This keeps the extension ID stable for authentication.
 
+### Salesforce API Compatibility
+
+Salesforce requests use the version pinned by `SALESFORCE_API_VERSION` in `src/shared/constants.js`, currently API 62.0.
+The pin is advanced deliberately and only after every command source has been compared on an upgraded sandbox and an org
+on the preceding Salesforce release. During a staggered release window, the preceding generally available API version is
+the highest safe bump candidate. The version is intentionally fixed per extension build instead of being calculated from
+each org's latest version, so every installation uses the same API contract.
+
+API versioning does not prevent Salesforce from adding metadata records to older API responses after an org upgrade.
+Consumers must therefore continue to tolerate unknown or incomplete metadata records.
+
 ### Available Scripts
 
 - `npm run build`: Build the extension for production

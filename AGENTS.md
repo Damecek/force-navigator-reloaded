@@ -55,6 +55,10 @@
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.
 - For long-running command executions, emit explicit loading events from command classes so `app` can toggle loading indicators without command-id filtering.
+- Keep Salesforce REST and Tooling API requests pinned through `SALESFORCE_API_VERSION`. Advance the pin deliberately,
+  one version at a time, only after every command source has been validated against both the current production release
+  and a preview org. During preview windows, do not select a version newer than the current production release. Do not
+  derive the version dynamically per org.
 
 # Versioning
 
