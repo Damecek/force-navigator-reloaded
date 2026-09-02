@@ -1,18 +1,45 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 10
+    groups:
+      development-dependencies:
+        dependency-type: 'development'
+        update-types:
+          - 'minor'
+          - 'patch'
+    ignore:
+      # The Salesforce/LWC lint stack currently peers on ESLint 9 and Babel 7.
+      - dependency-name: 'eslint'
+        update-types:
+          - 'version-update:semver-major'
+      - dependency-name: '@babel/core'
+        update-types:
+          - 'version-update:semver-major'
+      - dependency-name: '@babel/eslint-parser'
+        update-types:
+          - 'version-update:semver-major'
+      - dependency-name: '@babel/preset-env'
+        update-types:
+          - 'version-update:semver-major'
 
-  - package-ecosystem: "npm"
-    directory: "/sf"
+  - package-ecosystem: 'npm'
+    directory: '/sf'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 5
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'

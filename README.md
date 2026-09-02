@@ -144,7 +144,7 @@ action.
 - **LWC**: Uses Lightning Web Components via lwc-webpack-plugin
 - **Code Quality**: Prettier and ESLint configured with Salesforce LWC standards
 - **Git Hooks**: Husky pre-commit hook runs formatting
-- **CI Build & Web Store Release**: A GitHub Action builds and attaches a zipped archive for every release tag, uploads it to the Chrome Web Store as a draft, and publishes a selected release tag when the workflow is manually dispatched
+- **CI Build & Web Store Release**: A GitHub Action builds and attaches a zipped archive for every release tag and automatically publishes that release to the Chrome Web Store. A manual dispatch can rebuild and publish a selected release tag.
 - **Manifest Key Injection**: `webpack` injects the extension `key` and OAuth consumer key based on build mode. This keeps the extension ID stable for authentication.
 
 ### Salesforce API Compatibility
@@ -167,7 +167,7 @@ Consumers must therefore continue to tolerate unknown or incomplete metadata rec
 - `npm run lint`: Run ESLint on source files
 - `npm run lint-fix`: Fix ESLint issues automatically
 - `npm run format`: Format code with Prettier
-- `npm run bump`: Increment minor version and sync to `src/manifest.json`
+- `npm run release`: Increment the minor version, sync `src/manifest.json`, create an annotated release tag, and push the release commit and tag
 
 Connected apps are configured for a specific extension ID. Same app is reused across any Salesforce org without actual
 deployment, even if the org where the app lived is deleted.
