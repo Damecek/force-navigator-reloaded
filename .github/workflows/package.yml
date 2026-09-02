@@ -11,20 +11,21 @@ on:
 
 permissions:
   contents: write
-  id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-      - uses: actions/setup-node@v6
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '22'
           cache: 'npm'
       - run: npm ci
+      - run: npm audit --audit-level=high
       - run: npm test
 
       - name: Read version
@@ -39,13 +40,13 @@ jobs:
           cd dist && zip -r "../${zip_name}" .
           echo "zip_path=${zip_name}" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: force-navigator-reloaded-${{ env.NEW_VERSION }}
           path: ${{ steps.zip.outputs.zip_path }}
           if-no-files-found: error
 
-      - uses: softprops/action-gh-release@v3
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         if: github.event_name == 'push'
         with:
           tag_name: v${{ env.NEW_VERSION }}
@@ -59,11 +60,11 @@ jobs:
             5. Click Load unpacked
             6. Find and select the unzipped folder
 
-      - uses: mnao305/chrome-extension-upload@v6.0.0
+      - uses: mnao305/chrome-extension-upload@fdfe79400af990f5145a319e834aee64907ccff4 # v6.0.0
         with:
           file-path: ${{ steps.zip.outputs.zip_path }}
           extension-id: ${{ secrets.CHROME_PROD_EXTENSION_ID }}
           client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          publish: ${{ github.event_name == 'workflow_dispatch' }}
+          publish: true
