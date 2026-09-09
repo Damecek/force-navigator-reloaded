@@ -25,6 +25,7 @@ and other org destinations without leaving the keyboard. It is available directl
   Apex triggers, Experience Cloud Workspaces and Builders, Lightning apps, Permission Sets, Permission Set Groups,
   active Users, and Login As actions directly from your org. Edit the JSON settings to include or exclude specific
   command sources from the palette.
+- **Web Console**: Launch the Web Console IDE directly for the current org, alongside the existing Developer Console command. Web Console must be available to your Salesforce user.
 - **Search Prefix**: Type `?` followed by a term to open Salesforce global search results directly from the palette
 - **Command-Controlled Palette Closing**: Commands can keep the palette open after execution when appropriate
 - **Loading Feedback**: A spinner is displayed while refresh-oriented commands are rebuilding the command list

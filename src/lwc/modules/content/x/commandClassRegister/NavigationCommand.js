@@ -12,7 +12,7 @@ export default class NavigationCommand extends Command {
    * @param {string} label - Display text for the command.
    * @param {string} path - URL path segment (appended to origin).
    * @param {string} [appTarget] - Lightning app target used to preserve current page.
-   * @param {'core' | 'lightning'} [host='lightning'] - Salesforce host type.
+   * @param {'core' | 'lightning' | 'setup'} [host='lightning'] - Salesforce host type.
    */
   constructor({ id, label, path, usage, appTarget, host = 'lightning' } = {}) {
     super(id, label, usage);

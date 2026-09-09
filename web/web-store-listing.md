@@ -9,7 +9,7 @@ Press Ctrl + Shift + L on Windows and Linux, or Command + Shift + P on macOS, to
 Find commands with fast, accent-insensitive fuzzy matching that also recognizes words inside CamelCase metadata names. Every matched term is highlighted for easier scanning. Frequently used commands automatically move higher in the results, and positive usage counts make familiar destinations easier to spot.
 
 • Deep Salesforce navigation
-Jump directly to Setup pages, Object Manager sections, Custom Metadata Types, SObject list and new-record pages, Flow definitions and versions, Apex classes, SObject-grouped Apex triggers, active Digital Experience Workspaces and Builders, Lightning apps, Permission Sets, Permission Set Groups, active users, and Login As actions. The palette remains available on supported Experience Cloud pages.
+Jump directly to Setup pages, Object Manager sections, Custom Metadata Types, SObject list and new-record pages, Flow definitions and versions, Apex classes, SObject-grouped Apex triggers, active Digital Experience Workspaces and Builders, Lightning apps, Permission Sets, Permission Set Groups, active users, and Login As actions. Launch Web Console directly for the current org when it is available to your Salesforce user. The palette remains available on supported Experience Cloud pages.
 
 • Salesforce global search from the palette
 Start with ? followed by a search term to open Salesforce global search results directly—without navigating to the search page first.

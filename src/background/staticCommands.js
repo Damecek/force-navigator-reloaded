@@ -8,7 +8,7 @@
  * @property {string} id - Unique identifier of the command
  * @property {string} label - Display text shown in the command palette
  * @property {string} path - Path segment to navigate to (appended to origin)
- * @property {'core' | 'lightning'} [host] - Salesforce host type; defaults to Lightning
+ * @property {'core' | 'lightning' | 'setup'} [host] - Salesforce host type; defaults to Lightning
  */
 
 /**
@@ -45,6 +45,12 @@ export const staticCommands = [
     id: 'developer-console',
     label: 'Developer Console',
     path: '/_ui/common/apex/debug/ApexCSIPage',
+  },
+  {
+    id: 'web-console',
+    label: 'Web Console',
+    path: '/lwr/application/platformdx-webconsole?SetupDomainProbePassed=true&aura.lcdn=0',
+    host: 'setup',
   },
   {
     id: 'agentforce-vibes',

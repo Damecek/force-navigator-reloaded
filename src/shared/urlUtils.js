@@ -102,6 +102,14 @@ export const toCoreHostname = (urlOrHost) =>
 export const toCoreUrl = (urlOrHost) => `https://${toCoreHostname(urlOrHost)}`;
 
 /**
+ * Convert a Salesforce URL or hostname to its Setup URL.
+ * @param {string} urlOrHost Salesforce URL or hostname
+ * @returns {string} Setup URL preserving the org and sandbox
+ */
+export const toSetupUrl = (urlOrHost) =>
+  `https://${mapInstanceHostname(urlOrHost, '.my.salesforce-setup.com')}`;
+
+/**
  * Build Salesforce frontdoor URL with destination to Lightning home.
  * @param {string} orgHostname
  * @param {string} sid
