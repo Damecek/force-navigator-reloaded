@@ -35,3 +35,34 @@ test('buildNavigationCommandUrl resolves explicit core descriptors on the My Dom
     'https://acme.sandbox.my.salesforce.com/servlet/networks/switch?networkId=0DB5g000000AbCd'
   );
 });
+
+for (const [hostname, setupHostname] of [
+  [
+    'carvago--devas.sandbox.lightning.force.com',
+    'carvago--devas.sandbox.my.salesforce-setup.com',
+  ],
+  [
+    'carvago--devas.sandbox.my.salesforce.com',
+    'carvago--devas.sandbox.my.salesforce-setup.com',
+  ],
+  [
+    'carvago--devas.sandbox.my.salesforce-setup.com',
+    'carvago--devas.sandbox.my.salesforce-setup.com',
+  ],
+  ['carvago.lightning.force.com', 'carvago.my.salesforce-setup.com'],
+  ['carvago.my.salesforce.com', 'carvago.my.salesforce-setup.com'],
+  ['carvago.my.salesforce-setup.com', 'carvago.my.salesforce-setup.com'],
+]) {
+  test(`Web Console opens on the current org Setup domain from ${hostname}`, async () => {
+    const { buildNavigationCommandUrl } =
+      await loadNavigationCommandUrlModule();
+    const { staticCommands } =
+      await import('../src/background/staticCommands.js');
+    const command = staticCommands.find(({ id }) => id === 'web-console');
+    assert.ok(command);
+    assert.equal(
+      buildNavigationCommandUrl({ hostname, ...command }),
+      `https://${setupHostname}/lwr/application/platformdx-webconsole?SetupDomainProbePassed=true&aura.lcdn=0`
+    );
+  });
+}

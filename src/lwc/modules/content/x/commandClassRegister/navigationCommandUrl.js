@@ -1,11 +1,15 @@
-import { toCoreUrl, toLightningUrl } from '../../../../../shared/index.js';
+import {
+  toCoreUrl,
+  toLightningUrl,
+  toSetupUrl,
+} from '../../../../../shared/index.js';
 
 /**
  * Resolve a navigation command path against its requested Salesforce host.
  * @param {object} options
  * @param {string} options.hostname Salesforce hostname
  * @param {string} options.path Navigation path
- * @param {'core' | 'lightning'} [options.host='lightning'] Host type
+ * @param {'core' | 'lightning' | 'setup'} [options.host='lightning'] Host type
  * @returns {string}
  */
 export function buildNavigationCommandUrl({
@@ -14,6 +18,10 @@ export function buildNavigationCommandUrl({
   host = 'lightning',
 }) {
   const baseUrl =
-    host === 'core' ? toCoreUrl(hostname) : toLightningUrl(hostname);
+    host === 'setup'
+      ? toSetupUrl(hostname)
+      : host === 'core'
+        ? toCoreUrl(hostname)
+        : toLightningUrl(hostname);
   return `${baseUrl}${path}`;
 }
