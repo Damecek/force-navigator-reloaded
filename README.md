@@ -50,6 +50,14 @@ make the best result easier to scan.
 
 ## Installation
 
+### Salesforce CLI plugin
+
+The companion Salesforce CLI plugin searches the same navigation catalog from your terminal and opens a result in the
+org selected by `--target-org`. It uses your existing Salesforce CLI authorization. Navigation commands open Salesforce
+pages; they do not save records or deploy metadata.
+
+See [CLI installation, commands, and validation](docs/cli-plugin.md) for local installation and usage.
+
 ### From Chrome Web Store
 
 You can install the latest published version directly from
@@ -138,6 +146,8 @@ action.
 - **Options Page** (`src/options`): Settings UI built with LWC modules from `src/lwc/modules/options`
 - **Welcome Page** (`src/welcome`): Post-install onboarding page built with LWC modules from `src/lwc/modules/welcome`
 - **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper and settings management
+- **Navigation Core** (`src/navigator`): Browser-independent Salesforce queries, command descriptors, and fuzzy matching shared by the extension and CLI
+- **Salesforce CLI Plugin** (`packages/sf-plugin`): Terminal search and authenticated navigation using existing `sf` org aliases
 
 ### Build & Toolchain
 

@@ -1,0 +1,63 @@
+{
+  "name": "sf-plugin-force-navigator-reloaded",
+  "version": "0.1.0",
+  "description": "Search and open Salesforce setup pages and metadata from sf CLI.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Force Navigator Reloaded contributors",
+  "homepage": "https://github.com/Damecek/force-navigator-reloaded",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Damecek/force-navigator-reloaded.git",
+    "directory": "packages/sf-plugin"
+  },
+  "bugs": "https://github.com/Damecek/force-navigator-reloaded/issues",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "bin": {
+    "sf-navigator": "./bin/run.js"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/README.md"
+  ],
+  "keywords": [
+    "force",
+    "salesforce",
+    "salesforcedx",
+    "sf",
+    "sf-plugin",
+    "sfdx",
+    "sfdx-plugin"
+  ],
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "prepack": "npm run build",
+    "test": "npm run build && node --test test/*.test.js",
+    "test:e2e": "npm run build && playwright test -c test-e2e/playwright.config.ts"
+  },
+  "dependencies": {
+    "@leeoniya/ufuzzy": "1.0.19",
+    "@oclif/core": "5.0.0",
+    "@salesforce/core": "9.1.11",
+    "@salesforce/sf-plugins-core": "13.0.4",
+    "open": "11.0.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  },
+  "oclif": {
+    "bin": "sf",
+    "commands": "./lib/commands",
+    "flexibleTaxonomy": true,
+    "topicSeparator": " ",
+    "topics": {
+      "navigator": {
+        "description": "Find and open pages in a Salesforce org."
+      }
+    }
+  },
+  "exports": "./lib/index.js"
+}
