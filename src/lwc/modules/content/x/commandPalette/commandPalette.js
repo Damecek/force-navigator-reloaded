@@ -1,5 +1,4 @@
 import { api, LightningElement, track } from 'lwc';
-import uFuzzy from '@leeoniya/ufuzzy';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
 import {
   Channel,
@@ -7,7 +6,10 @@ import {
   loadSettings,
 } from '../../../../../shared';
 import SearchRecordsCommand from '../commandClassRegister/SearchRecordsCommand';
-import { filterCommandsBySearchTerm } from './searchMatching';
+import {
+  createSearchEngine,
+  filterCommandsBySearchTerm,
+} from './searchMatching';
 import { createUsageSettingsLoader } from './usageSettings';
 
 export default class CommandPalette extends LightningElement {
@@ -16,8 +18,7 @@ export default class CommandPalette extends LightningElement {
   /**
    * Fuzzy search engine instance
    */
-  /* eslint-disable new-cap */
-  uf = new uFuzzy({ intraMode: 1, intraSub: 0, intraDel: 0 });
+  uf = createSearchEngine();
   @track filteredCommands = [];
   /**
    * Index of the currently highlighted command in filteredCommands

@@ -12,6 +12,12 @@
 - When changing Settings JSON keys, structure, or defaults (`src/shared/settings.js` / `src/shared/constants.js`), also update `docs/options-settings-reference.md`.
 - When running a development build during agent work, use `npm run dev-build` unless the task explicitly requires watch
   mode.
+- Navigation queries, descriptor builders, and fuzzy matching shared by the extension and Salesforce CLI plugin live in
+  `src/navigator`. Keep this directory independent of Chrome, LWC, authentication, storage, and build-time globals.
+  Update the shared implementation instead of maintaining separate command definitions in the plugin.
+- When changing the CLI plugin or shared navigation core, run the extension checks and the plugin tests and packaging
+  checks in `packages/sf-plugin`. Live browser tests require explicitly selected, authorized orgs. Report unavailable
+  Salesforce features separately from passed route checks, and never commit login URLs, tokens, or browser sessions.
 
 # AGENTS.md spec
 

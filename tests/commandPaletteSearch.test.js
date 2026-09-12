@@ -1,15 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import uFuzzy from '@leeoniya/ufuzzy';
 import {
+  createSearchEngine as createUfuzzy,
   filterCommandsBySearchTerm,
   normalizeSearchValue,
   normalizeSearchValueWithMap,
 } from '../src/lwc/modules/content/x/commandPalette/searchMatching.js';
-
-function createUfuzzy() {
-  return new uFuzzy({ intraMode: 1, intraSub: 0, intraDel: 0 });
-}
 
 test('normalizeSearchValue strips Latin diacritics for matching', () => {
   assert.equal(normalizeSearchValue('Farkaš'), 'farkas');

@@ -1,0 +1,235 @@
+/**
+ * @typedef {Object} SalesforceConnection
+ * @property {(soql: string) => Promise<object[]>} query Fetch all REST records.
+ * @property {(soql: string) => Promise<object[]>} toolingQuery Fetch all Tooling records.
+ */
+/**
+ * Minimal transport implemented by both extension and CLI adapters.
+ * @typedef {Object} SalesforceConnection
+ * @property {(soql: string) => Promise<object[]>} query REST query with pagination.
+ * @property {(soql: string) => Promise<object[]>} toolingQuery Tooling query with pagination.
+ */
+
+/**
+ * @typedef {Object} SetupNode
+ * @property {string} FullName
+ * @property {string} NodeType
+ * @property {string} Label
+ * @property {string} Url
+ */
+
+/**
+ * Fetch menu nodes.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<SetupNode[]>}
+ */
+export async function fetchMenuNodesFromSalesforce(
+  connection,
+  types = ['Setup', 'PersonalSettings']
+) {
+  const soql = `SELECT FullName, NodeType, Label, Url
+    FROM SetupNode
+    WHERE NodeType IN ('${types.join("','")}')`;
+  const result = await connection.toolingQuery(soql);
+  return result;
+}
+
+/**
+ * @typedef {Object} EntityDefinition
+ * @property {string} DurableId
+ * @property {string} KeyPrefix
+ * @property {string} Label
+ * @property {string|null} QualifiedApiName
+ * @property {boolean} IsCustomizable
+ * @property {boolean} IsEverCreatable
+ * @property {boolean} IsCompactLayoutable
+ * @property {boolean} IsSearchLayoutable
+ */
+
+/**
+ * Fetch EntityDefinition records (customizable sObjects and custom metadata) via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<EntityDefinition[]>}
+ */
+export async function fetchEntityDefinitionsFromSalesforce(connection) {
+  const baseSoql = `SELECT DurableId, KeyPrefix, Label, QualifiedApiName, IsCustomizable, IsEverCreatable, IsSearchLayoutable, IsCompactLayoutable
+  FROM EntityDefinition
+  WHERE IsCustomSetting = FALSE AND IsDeprecatedAndHidden = FALSE AND IsIdEnabled = TRUE
+  ORDER BY QualifiedApiName`;
+  const limit = 2000;
+  let offset = 0;
+  const allRecords = [];
+
+  while (true) {
+    const soql = `${baseSoql} LIMIT ${limit}${
+      offset ? ` OFFSET ${offset}` : ''
+    }`;
+    const batch = await connection.toolingQuery(soql);
+    /*
+     * Winter '27 EntityDefinition queries ignore `QualifiedApiName != NULL`,
+     * while SOQL rejects `IS NOT NULL`, so invalid API names are filtered here.
+     */
+    allRecords.push(
+      ...batch.filter(
+        ({ QualifiedApiName }) =>
+          typeof QualifiedApiName === 'string' && QualifiedApiName.length > 0
+      )
+    );
+    if (!Array.isArray(batch) || batch.length < limit) {
+      break;
+    }
+    offset += limit;
+  }
+
+  return allRecords;
+}
+
+/**
+ * @typedef {Object} FlowDefinition
+ * @property {string} ActiveVersionId
+ * @property {string} Id
+ * @property {string} LatestVersionId
+ * @property {{ MasterLabel: string }} LatestVersion
+ */
+
+/**
+ * Fetch flow definitions via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<FlowDefinition[]>}
+ */
+export async function fetchFlowDefinitionsFromSalesforce(connection) {
+  const soql = `SELECT ActiveVersionId, Id, LatestVersionId, LatestVersion.MasterLabel FROM FlowDefinition`;
+  const result = await connection.toolingQuery(soql);
+  return result;
+}
+
+/**
+ * Fetch unmanaged Apex classes via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{Id: string, Name: string, NamespacePrefix: string | null}>>}
+ */
+export async function fetchApexClassesFromSalesforce(connection) {
+  const soql = `SELECT Id, Name, NamespacePrefix FROM ApexClass WHERE ManageableState = 'unmanaged'`;
+  const result = await connection.toolingQuery(soql);
+  return result;
+}
+
+/**
+ * Fetch unmanaged Apex triggers via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{Id: string, Name: string, NamespacePrefix: string | null, TableEnumOrId: string}>>}
+ */
+export async function fetchApexTriggersFromSalesforce(connection) {
+  const soql = `SELECT Id, Name, NamespacePrefix, TableEnumOrId FROM ApexTrigger WHERE ManageableState = 'unmanaged'`;
+  const result = await connection.toolingQuery(soql);
+  return result;
+}
+
+/**
+ * Fetch Experience Cloud networks.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{Id: string, Name: string, Status: string}>>}
+ */
+export async function fetchNetworksFromSalesforce(connection) {
+  const soql = `SELECT Id, Name, Status FROM Network WHERE Status != 'Inactive'`;
+  const result = await connection.query(soql);
+  return result;
+}
+
+/**
+ * Fetch Experience Builder sites.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<Array<{Id: string, MasterLabel: string}>>}
+ */
+export async function fetchExperienceSitesFromSalesforce(connection) {
+  const soql = `SELECT Id, MasterLabel FROM Site WHERE SiteType = 'ChatterNetworkPicasso' AND Status != 'Inactive'`;
+  const result = await connection.query(soql);
+  return result;
+}
+
+/**
+ * @typedef {Object} LightningAppDefinition
+ * @property {string} DeveloperName
+ * @property {string} Label
+ * @property {string | null} NamespacePrefix
+ */
+
+/**
+ * Fetch Lightning AppDefinition records via Tooling API.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<LightningAppDefinition[]>}
+ */
+export async function fetchLightningAppDefinitionsFromSalesforce(connection) {
+  const soql = `SELECT DeveloperName, Label, NamespacePrefix
+    FROM AppDefinition
+    WHERE UiType = 'Lightning' AND IsLargeFormFactorSupported = TRUE
+    ORDER BY DeveloperName`;
+  const result = await connection.query(soql);
+  return result;
+}
+
+/**
+ * @typedef {Object} PermissionSetDefinition
+ * @property {string} Id
+ * @property {string} Label
+ */
+
+/**
+ * Fetch Permission Set records.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<PermissionSetDefinition[]>}
+ */
+export async function fetchPermissionSetsFromSalesforce(connection) {
+  const soql = `SELECT
+    Label,
+    Id
+  FROM PermissionSet
+  WHERE Type = 'Regular' AND NamespacePrefix = NULL`;
+  const result = await connection.query(soql);
+  return result;
+}
+
+/**
+ * @typedef {Object} PermissionSetGroupDefinition
+ * @property {string} DeveloperName
+ * @property {string} MasterLabel
+ * @property {string} Id
+ */
+
+/**
+ * Fetch Permission Set Group records.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<PermissionSetGroupDefinition[]>}
+ */
+export async function fetchPermissionSetGroupsFromSalesforce(connection) {
+  const soql = `SELECT
+    DeveloperName,
+    MasterLabel,
+    Id
+  FROM PermissionSetGroup
+  WHERE NamespacePrefix = NULL AND IsDeleted = FALSE`;
+  const result = await connection.query(soql);
+  return result;
+}
+
+/**
+ * @typedef {Object} UserDefinition
+ * @property {string} Id
+ * @property {string} Name
+ */
+
+/**
+ * Fetch active standard users.
+ * @param {SalesforceConnection} connection Salesforce connection instance
+ * @returns {Promise<UserDefinition[]>}
+ */
+export async function fetchUsersFromSalesforce(connection) {
+  const soql = `SELECT
+    Name,
+    Id
+  FROM User
+  WHERE IsActive = TRUE AND UserType = 'Standard' AND Name != NULL
+  ORDER BY Name`;
+  const result = await connection.query(soql);
+  return result;
+}
