@@ -1,6 +1,6 @@
 # Salesforce CLI navigation plugin
 
-The plugin searches Salesforce navigation destinations and opens the selected page in an authenticated org. It shares
+The plugin provides an interactive Salesforce navigation palette. Select a page to open it in an authenticated org. It shares
 queries, command definitions, and accent-insensitive fuzzy matching with the browser extension.
 
 ## Install from this checkout
@@ -12,7 +12,7 @@ cd packages/sf-plugin
 npm ci
 npm run build
 sf plugins link .
-sf navigator search --help
+sf navigator open --help
 ```
 
 The package name is `sf-plugin-force-navigator-reloaded`. Linking is a local development installation. An npm release
@@ -22,61 +22,56 @@ A linked ESM plugin prints `Warning: ... is a linked ESM module and cannot be au
 Salesforce CLI behavior for `sf plugins link`, not an error; the built `lib` output is used. Installing the published
 package with `sf plugins install` does not show the warning.
 
-## Search and open
+## Open the palette
 
 Pass an existing Salesforce CLI alias or username with `--target-org` / `-o`. Without the flag the command uses the
-configured default org (`sf config set target-org <alias>`), so `-o` is only required when no default is set. Help output
-still labels the flag `(required)` because that is how Salesforce CLI describes every org flag with a default.
+configured default org (`sf config set target-org <alias>`), so `-o` is only required when no default is set.
 
 ```bash
-sf navigator search "account fields" -o my-dev
-sf navigator search "flow onboarding" -o my-uat --source flows --json
+sf navigator open -o my-dev
 sf navigator open "account fields" -o my-dev
-sf navigator open --id sobject-setup-fields-and-relationship-Account -o my-dev
-sf navigator open --id app-home -o my-dev --url-only --json
+sf navigator open "flow onboarding" -o my-uat --source flows
+sf navigator open -o my-dev --refresh --browser chrome
 ```
 
-`search` prints one highlighted label per match with its source in brackets; add `--show-id` to append the exact command
-ID as a tab-separated column, or use `--json` for the full descriptors. Matched characters are emphasized like the
-extension palette; styling is disabled automatically when output is piped or `NO_COLOR` is set.
+`open` always shows the interactive palette, even when only one command matches. An optional query prefills the input;
+you can edit or clear it to search the whole loaded catalog. Type to filter, use `↑`/`↓` to move, and press `Enter` to
+open. `Esc` or `Ctrl+C` cancels without opening a page. The palette requires an interactive terminal and does
+not support JSON output or scripted selection.
 
-In a terminal, `open` shows an interactive palette whenever the query is missing, matches nothing, or matches more than
-one command. The query is prefilled and editable, results re-rank on every keystroke with the same fuzzy matching as
-the extension, `↑`/`↓` move, `Enter` opens, and `Esc` (or `q` on an empty line) cancels with exit code 0. A query with
-exactly one match opens directly. With `--json` or without a TTY the palette is never shown: ambiguous or empty results
-exit with code 1 and ask for a narrower query or an exact `--id`. Use an exact command ID from search results for
-scripts. IDs containing Salesforce record IDs belong to the selected org and must be resolved again when targeting a
-different org.
+Matching ignores Latin diacritics and highlights matched terms, as in the extension. Matching commands are ordered by
+usage count, then alphabetically by label. Successful opens update local history for the selected org and user; this
+history is separate from Chrome and does not store record search terms. Type `? text` to select Salesforce global record search for that text.
 
-`--url-only` returns a normal destination URL, not an authenticated login link. Opening that URL independently requires
-an existing browser session. Normal `open` authenticates the browser using Salesforce CLI without including the login
-URL in the command result.
+Use `--browser` to choose a browser. Opening a destination authenticates the browser using Salesforce CLI without
+printing the login URL.
 
-Use `--source` to restrict loading to a family and `--refresh` to rebuild cached results. Available sources are `static`,
-`setup`, `objects`, `flows`, `apex-classes`, `apex-triggers`, `experience-sites`, `apps`, `permission-sets`,
-`permission-set-groups`, and `users`.
+Use `--source` more than once to restrict loading to selected families and `--refresh` to rebuild cached results.
+Available sources are `static`, `setup`, `objects`, `flows`, `apex-classes`, `apex-triggers`, `experience-sites`, `apps`,
+`permission-sets`, `permission-set-groups`, and `users`. Apex classes and triggers are opt-in, for example
+`sf navigator open -o my-dev --source apex-classes`.
 
 Cached catalogs expire after six hours and are isolated by org, username, API version, catalog version, and selected
 sources. Use `--refresh` after changing permissions or org metadata. A source error is reported separately from an empty
-source; successful sources remain searchable, while failure of every selected source exits unsuccessfully. JSON search
-results include `commands`, `errors`, `cached`, and `generatedAt` so scripts can reject incomplete results when needed.
+source; successful sources remain searchable, while failure of every selected source exits unsuccessfully.
 
 ## Scope
 
-The catalog includes Setup and personal settings, Object Manager sections, object list and new-record pages, custom
-metadata list and new-record pages, flow definitions and versions, unmanaged Apex classes and triggers, Experience
-Cloud workspaces and builders, Lightning apps, permission sets and groups, and active users. Static destinations include
-the developer tools already offered by the extension. Availability depends on the org's features and user permissions.
+Default navigation families match the extension: Setup and personal settings, objects and custom metadata, flows,
+Experience Cloud, Lightning apps, permission sets and groups, and active users, plus static destinations. Availability
+depends on org features and user permissions. Unmanaged Apex classes and triggers can be loaded with `--source`.
+
+Object Manager sections and flow variants use the extension defaults. This includes fields, Lightning pages, buttons
+and actions, record types, object Apex and Flow triggers, and validation rules. Flow definitions and latest versions
+are enabled; active versions are disabled. The CLI does not expose the extension's settings editor or read its custom
+settings, tokens, or history.
 
 Commands navigate to Salesforce UI. Opening a new-record page does not save a record. Login As, extension authorization,
-extension settings, usage tracking, and Chrome-specific actions are not part of this plugin. Switching a Lightning app
-from the CLI opens that app without retaining a page from an existing browser tab.
+extension settings, and Chrome-specific actions are outside the plugin's scope. Switching a Lightning app opens that
+app without retaining the page from an existing browser tab.
 
-The CLI has its own source selection and cache. It does not read Chrome settings or tokens. By default it includes all
-CLI sources, Object Manager sections, and available flow variants. The browser extension retains its existing defaults.
-
-Web Console launch could not be verified in the validation sandboxes: its direct Setup-domain URL also returned Home
-from an authenticated Setup session. The command retains the extension's destination, but a successful IDE launch
+Web Console launch could not be verified in the earlier validation sandboxes: its direct Setup-domain URL also returned
+Home from an authenticated Setup session. The command retains the extension's destination, but a successful IDE launch
 depends on availability for the target user. See the validation report for the observed limitation.
 
 ## Architecture
@@ -85,7 +80,7 @@ depends on availability for the target user. See the validation report for the o
 `toolingQuery`; the CLI adapter uses Salesforce CLI authentication and follows query pagination. Salesforce API requests
 retain the repository's `SALESFORCE_API_VERSION` pin.
 
-`packages/sf-plugin` provides the Salesforce CLI commands, filesystem cache, terminal selection, and authenticated
+`packages/sf-plugin` provides the Salesforce CLI commands, filesystem cache and usage history, terminal selection, and authenticated
 browser opening. Its build packages a copy of the shared source into the distribution so an installed plugin does not
 depend on a checkout of this repository. Make changes in `src/navigator`, not in generated plugin files.
 

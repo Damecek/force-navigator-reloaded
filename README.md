@@ -52,9 +52,10 @@ make the best result easier to scan.
 
 ### Salesforce CLI plugin
 
-The companion Salesforce CLI plugin searches the same navigation catalog from your terminal and opens a result in the
-org selected by `--target-org`. It uses your existing Salesforce CLI authorization. Navigation commands open Salesforce
-pages; they do not save records or deploy metadata.
+The companion Salesforce CLI plugin opens an interactive command palette with `sf navigator open -o my-org`.
+Type to filter, move with the arrow keys, and press Enter to open the selected page using your existing CLI authorization.
+An optional query prefills the palette. Frequently used commands rise to the top, and `? text` opens Salesforce global
+record search. Navigation commands open pages; they do not save records or deploy metadata.
 
 See [CLI installation, commands, and validation](docs/cli-plugin.md) for local installation and usage.
 
@@ -147,7 +148,7 @@ action.
 - **Welcome Page** (`src/welcome`): Post-install onboarding page built with LWC modules from `src/lwc/modules/welcome`
 - **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper and settings management
 - **Navigation Core** (`src/navigator`): Browser-independent Salesforce queries, command descriptors, and fuzzy matching shared by the extension and CLI
-- **Salesforce CLI Plugin** (`packages/sf-plugin`): Terminal search and authenticated navigation using existing `sf` org aliases
+- **Salesforce CLI Plugin** (`packages/sf-plugin`): Interactive command palette and authenticated navigation using existing `sf` org aliases
 
 ### Build & Toolchain
 

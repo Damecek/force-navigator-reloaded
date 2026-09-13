@@ -1,8 +1,8 @@
 # Salesforce browser end-to-end tests
 
-These tests load the live command catalog, resolve each selected command through `navigator open --id --url-only`, authenticate a clean Chrome session through `@salesforce/core`, and verify visible page identity after Salesforce redirects and iframe loads.
+These tests load the live catalog and resolve sample destinations through the plugin's internal catalog and navigation services. They authenticate a clean Chrome session through `@salesforce/core` and verify visible page identity after Salesforce redirects and iframe loads. This route matrix does not exercise the terminal palette; automated plugin tests cover selection and command behavior.
 
-Run against the explicitly approved sandboxes:
+Run only against explicitly selected, authorized orgs:
 
 ```sh
 SF_NAVIGATOR_E2E_ORGS=my-dev,my-uat npm run test:e2e
@@ -15,3 +15,5 @@ After separately proving that a feature is unavailable in the target org, list i
 ```sh
 SF_NAVIGATOR_E2E_ORGS=my-dev SF_NAVIGATOR_E2E_UNAVAILABLE=feature-command-id npm run test:e2e
 ```
+
+The runner includes every supported source, including opt-in Apex classes and triggers. Object Manager sections and flow variants follow the shared palette defaults; disabled variants are skipped separately from passed routes.

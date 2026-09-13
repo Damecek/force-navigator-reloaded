@@ -1,8 +1,16 @@
 import assert from 'node:assert/strict';
+import { after } from 'node:test';
 import { PassThrough } from 'node:stream';
 import test from 'node:test';
 import { searchCatalog } from '../lib/services/catalog.js';
-import { isCancelKey, selectCommand } from '../lib/services/selection.js';
+import { selectCommand } from '../lib/services/selection.js';
+
+const previousTerm = process.env.TERM;
+process.env.TERM = 'xterm-256color';
+after(() => {
+  if (previousTerm === undefined) delete process.env.TERM;
+  else process.env.TERM = previousTerm;
+});
 
 const commands = [
   { id: 'deploy-status', label: 'Deploy > Deployment Status', source: 'setup' },
@@ -23,7 +31,10 @@ async function drive(keys, options = {}) {
   output.on('data', (chunk) => {
     rendered += chunk.toString();
   });
-  const pending = selectCommand({ commands, ...options }, { input, output });
+  const pending = selectCommand(
+    { commands, ...options },
+    { input, output, signal: AbortSignal.timeout(3000) }
+  );
   for (const key of keys) {
     await new Promise((resolve) => setTimeout(resolve, 15));
     input.write(key);
@@ -68,8 +79,30 @@ test('selectCommand returns null when Escape cancels', async () => {
   assert.ok(rendered.includes('cancelled'));
 });
 
-test('selectCommand treats q on an empty line as cancel but as text otherwise', async () => {
-  assert.equal(isCancelKey({ name: 'q' }, ''), true);
-  assert.equal(isCancelKey({ name: 'q' }, 'de'), false);
-  assert.equal(isCancelKey({ name: 'escape' }, 'de'), true);
+test('selectCommand accepts q as text at the start of a query', async () => {
+  const { result, rendered } = await drive(['q', KEY.escape]);
+  assert.equal(result, null);
+  assert.ok(rendered.includes('No matching commands'));
+});
+
+test('selectCommand supports global record search from the initial term', async () => {
+  const { result, rendered } = await drive([KEY.enter], {
+    initialTerm: '? Acme',
+  });
+  assert.equal(result.id, 'search-records');
+  assert.equal(result.label, 'Search > Acme');
+  assert.equal(rendered.includes('[undefined]'), false);
+});
+
+test('selectCommand requires a record term and lets the user edit after Enter', async () => {
+  const { result, rendered } = await drive(['?', KEY.enter, 'A', KEY.enter]);
+  assert.equal(result.label, 'Search > A');
+  assert.ok(rendered.includes('Type a record search after ?'));
+});
+
+test('selectCommand lets a unique prefilled match be replaced before opening', async () => {
+  const { result } = await drive(['\x15', ...'deploy', KEY.enter], {
+    initialTerm: 'home',
+  });
+  assert.equal(result.id, searchCatalog(commands, 'deploy')[0].id);
 });

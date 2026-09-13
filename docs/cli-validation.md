@@ -1,8 +1,26 @@
 # CLI plugin validation
 
-The plugin was validated against two explicitly authorized Salesforce sandboxes. This report uses generic sandbox labels and omits org identifiers, record names, authenticated URLs, and browser session data.
+## Current interactive-only interface
 
-## Automated and package checks
+The plugin now exposes only the interactive `navigator open` palette.
+
+- Extension: 97 regression tests, ESLint, development build, and production build passed. Production retains webpack bundle-size warnings.
+- Plugin: 40 tests passed on Node.js 22 and Node.js 26, covering confirmation, cancellation, editing prefilled text, usage ordering and persistence, global search descriptors, and existing navigation safeguards.
+- Packaging: `npm pack --dry-run` passed. An actual tarball was installed outside the repository and its help verified to expose only the interactive command and supported flags.
+- Terminal: a real PTY confirmed that a unique prefilled match waits for Enter, Ctrl+U clears it, and typing `? Acme` selects global record search.
+- Browser runner: all 46 tests were discovered successfully without contacting an org. Live navigation, including the new global-search entry point, has not been rerun because no org was selected for this work.
+
+The results below are historical evidence for the earlier implementation, not proof that the revised interface passes live browser checks.
+
+The current browser runner loads all supported sources, including opt-in Apex, and resolves sample destinations through internal catalog and navigation
+services. It does not depend on removed public scripting commands and does not exercise the terminal palette.
+
+## Historical validation
+
+The earlier plugin interface was validated against two explicitly authorized Salesforce sandboxes. This report uses
+generic sandbox labels and omits org identifiers, record names, authenticated URLs, and browser session data.
+
+### Earlier automated and package checks
 
 - Extension regression suite: 92 tests passed.
 - Extension ESLint, development build, and production build passed. The production build reports webpack bundle-size warnings.
@@ -10,15 +28,15 @@ The plugin was validated against two explicitly authorized Salesforce sandboxes.
 - The package was built and tested with Node.js 22. An actual npm tarball was installed into a separate directory and executed against a sandbox without access to the repository's source tree.
 - Dependency audits passed the high-severity threshold. Moderate findings remain in existing extension dependencies and the Salesforce SDK dependency tree.
 
-## Command-line checks
+### Earlier command-line checks
 
-Live checks exercised full-catalog refresh, source filtering, fuzzy search, exact-ID resolution, safe URL-only JSON output, native Chrome launch, interactive selection, Ctrl+C cancellation, ambiguous noninteractive queries, and missing IDs.
+Before simplification, live checks exercised full-catalog refresh, source filtering, fuzzy search, exact-ID resolution, safe URL-only JSON output, native Chrome launch, interactive selection, Ctrl+C cancellation, ambiguous noninteractive queries, and missing IDs.
 
 The development sandbox returned 7,002 commands across all 11 sources without a source error. This is catalog coverage; browser coverage samples each distinct navigation route and does not visit every metadata record.
 
-## Browser method
+### Earlier browser method
 
-The committed Playwright runner loads the real CLI catalog and resolves each sample using `navigator open --id --url-only`. It then invokes the plugin's authenticated-opening implementation with Chrome navigation as the injected opener. Assertions inspect the final route and visible page content, including legacy Salesforce iframes.
+The earlier Playwright runner loaded the real CLI catalog and resolved samples through the now-removed exact-ID and URL-only command interface. It then invoked the plugin's authenticated-opening implementation with Chrome navigation as the injected opener. Assertions inspect the final route and visible page content, including legacy Salesforce iframes.
 
 For Lightning apps and Experience Cloud, Salesforce can replace the original navigation URL. These checks also retain navigation requests in memory to verify the selected app/site identifier and inspect the resulting UI. The runner does not persist those requests.
 
@@ -26,7 +44,7 @@ Tests only open pages. They do not save records, activate flows, deploy metadata
 
 See [the runner instructions](../packages/sf-plugin/test-e2e/README.md) to repeat the checks with explicitly selected org aliases.
 
-The browser matrix covers these route variants in each sandbox, plus a check that every catalog command belongs to a classified route family:
+The earlier browser matrix covered these route variants in each sandbox, plus a check that every catalog command belongs to a classified route family:
 
 | Source           | Navigation scenarios                                                                                                                                                                              |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -40,7 +58,7 @@ The browser matrix covers these route variants in each sandbox, plus a check tha
 | Users            | Selected user details                                                                                                                                                                             |
 | Static           | New custom object, new Flow, Flow Trigger Explorer, application Home, Files, Developer Console, Web Console, Agentforce Vibes                                                                     |
 
-## Browser results
+### Earlier browser results
 
 All **44 available navigation variants passed in both sandboxes**, along with catalog classification. Web Console is the remaining, explicitly unvalidated variant out of the 45 navigation cases.
 
@@ -54,7 +72,7 @@ The full runs' failures came from reading only semantic main-content elements in
 
 These results combine full-matrix runs and successful targeted reruns; they do not claim a single uninterrupted green full run. The checks validate one representative of each route variant, not every record in the catalog.
 
-## Web Console limitation
+### Earlier Web Console limitation
 
 Initial live runs reached Lightning Home instead of Web Console in both sandboxes. In the UAT sandbox, opening the same credential-free Setup-domain destination after loading a normal authenticated Setup page also returned Home. Omitting or changing the domain-probe flag did not change that result, and there was no Web Console settings entry in the user's discovered Setup catalog.
 

@@ -1,6 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { loadCatalog, SOURCE_NAMES } from '../src/navigator/index.js';
+import {
+  loadCatalog,
+  SOURCE_NAMES,
+  DEFAULT_SOURCES,
+  DEFAULT_OBJECT_SECTIONS,
+  DEFAULT_FLOW_OPTIONS,
+  compareCommandUsage,
+  buildSearchRecordsCommand,
+  getSearchModeTerm,
+} from '../src/navigator/index.js';
 
 const records = {
   SetupNode: [
@@ -56,6 +65,7 @@ test('catalog imports without browser globals and loads every navigational famil
   assert.equal(typeof globalThis.chrome, 'undefined');
   const { commands, errors } = await loadCatalog({
     connection: { query, toolingQuery: query },
+    sources: SOURCE_NAMES,
   });
   assert.deepEqual(errors, []);
   assert.deepEqual(
@@ -77,8 +87,6 @@ test('catalog imports without browser globals and loads every navigational famil
     'flow-definition-300flow': '/lightning/setup/Flows/page?address=%2F300flow',
     'flow-latest-300flow':
       '/builder_platform_interaction/flowBuilder.app?flowId=301latest',
-    'flow-active-300flow':
-      '/builder_platform_interaction/flowBuilder.app?flowId=301active',
     'apex-class-01pclass':
       '/lightning/setup/ApexClasses/page?address=%2F01pclass',
     'apex-trigger-01qtrigger':
@@ -96,7 +104,7 @@ test('catalog imports without browser globals and loads every navigational famil
   assert.equal(
     commands.filter((command) => command.id.startsWith('sobject-setup-'))
       .length,
-    15
+    8
   );
   assert.equal(
     byId.get('experience-site-builder-0DM000000000001').host,
@@ -155,4 +163,81 @@ test('Service Setup routes use separate query parameters instead of HTML entitie
   assert.equal(url.searchParams.get('setupApp'), 'service');
   assert.equal(url.searchParams.get('SetupDomainProbePassed'), 'true');
   assert.equal(url.searchParams.has('amp;SetupDomainProbePassed'), false);
+});
+
+test('default catalog matches extension navigation settings without opt-in Apex sources', async () => {
+  globalThis.__CLIENT_ID__ = 'test-client';
+  const { DEFAULT_SETTINGS } = await import('../src/shared/settings.js');
+  delete globalThis.__CLIENT_ID__;
+  const settings = DEFAULT_SETTINGS.Commands;
+  const calls = [];
+  const connectionQuery = async (soql) => {
+    calls.push(soql);
+    return query(soql);
+  };
+  const { commands, errors } = await loadCatalog({
+    connection: { query: connectionQuery, toolingQuery: connectionQuery },
+  });
+  assert.deepEqual(errors, []);
+  assert.deepEqual(
+    [...new Set(commands.map((command) => command.source))],
+    DEFAULT_SOURCES
+  );
+  assert.equal(
+    calls.some((soql) => /FROM Apex(Class|Trigger)/.test(soql)),
+    false
+  );
+  const ids = new Set(commands.map((command) => command.id));
+  assert.ok(ids.has('flow-latest-300flow'));
+  assert.equal(ids.has('flow-active-300flow'), false);
+  assert.equal(ids.has('sobject-setup-page-layouts-Account'), false);
+  assert.ok(ids.has('sobject-setup-lightning-pages-Account'));
+  assert.deepEqual(
+    settings.EntityDefinition.SObjectEntityType,
+    DEFAULT_OBJECT_SECTIONS
+  );
+  assert.deepEqual(settings.FlowDefinition, {
+    Definition: DEFAULT_FLOW_OPTIONS.includeDefinition,
+    Latest: DEFAULT_FLOW_OPTIONS.includeLatest,
+    Active: DEFAULT_FLOW_OPTIONS.includeActive,
+  });
+});
+
+test('palette ordering uses descending usage with deterministic label ties', () => {
+  const commands = [
+    { label: 'Zebra', usage: 2 },
+    { label: 'Beta' },
+    { label: 'Alpha', usage: 2 },
+    { label: 'Alpha' },
+  ];
+  assert.deepEqual(commands.sort(compareCommandUsage), [
+    { label: 'Alpha', usage: 2 },
+    { label: 'Zebra', usage: 2 },
+    { label: 'Alpha' },
+    { label: 'Beta' },
+  ]);
+});
+
+test('global search descriptor preserves Unicode and URL punctuation through component encoding', async () => {
+  const term = 'Žluťoučký 🐎 & /?# "客户"';
+  const descriptor = buildSearchRecordsCommand(`  ${term}  `);
+  const payload = JSON.parse(
+    Buffer.from(descriptor.path.split('#')[1], 'base64').toString('utf8')
+  );
+  assert.deepEqual(payload, {
+    componentDef: 'forceSearch:searchPageDesktop',
+    attributes: { term },
+  });
+  assert.equal(descriptor.label, `Search > ${term}`);
+  assert.equal(descriptor.host, 'lightning');
+  const { buildLightningComponentUrl } =
+    await import('../src/shared/urlUtils.js');
+  assert.equal(
+    buildLightningComponentUrl('acme.my.salesforce.com', payload),
+    `https://acme.lightning.force.com${descriptor.path}`
+  );
+  assert.equal(getSearchModeTerm('  ? account  '), 'account');
+  assert.equal(getSearchModeTerm('?'), '');
+  assert.equal(getSearchModeTerm('account?'), null);
+  assert.equal(buildSearchRecordsCommand('').label, 'Search');
 });

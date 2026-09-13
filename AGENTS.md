@@ -15,6 +15,8 @@
 - Navigation queries, descriptor builders, and fuzzy matching shared by the extension and Salesforce CLI plugin live in
   `src/navigator`. Keep this directory independent of Chrome, LWC, authentication, storage, and build-time globals.
   Update the shared implementation instead of maintaining separate command definitions in the plugin.
+- Keep the CLI centered on the interactive `navigator open` palette. Its optional query only prefills editable input;
+  opening always requires confirmation. Shared palette defaults and ordering belong in `src/navigator`.
 - When changing the CLI plugin or shared navigation core, run the extension checks and the plugin tests and packaging
   checks in `packages/sf-plugin`. Live browser tests require explicitly selected, authorized orgs. Report unavailable
   Salesforce features separately from passed route checks, and never commit login URLs, tokens, or browser sessions.

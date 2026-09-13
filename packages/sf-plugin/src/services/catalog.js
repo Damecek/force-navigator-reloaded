@@ -1,5 +1,8 @@
 import {
   createSearchEngine,
+  compareCommandUsage,
+  buildSearchRecordsCommand,
+  getSearchModeTerm,
   filterCommandsBySearchTerm,
   loadCatalog,
 } from '../core/index.js';
@@ -59,47 +62,24 @@ export async function getCatalog({
 }
 
 /**
- * Apply the extension's fuzzy search order to a catalog.
- * Results carry transient `matchRanges` for terminal highlighting; strip them
- * with {@link stripMatchRanges} before returning machine-readable output.
+ * Filter the palette and order matches by usage, then label, like the extension.
+ * A ? prefix selects Salesforce global record search instead of catalog matching.
  * @param {object[]} commands Commands to search.
  * @param {string} query Search text.
  * @returns {object[]}
  */
 export function searchCatalog(commands, query) {
+  const term = getSearchModeTerm(query);
+  if (term !== null) {
+    return term ? [buildSearchRecordsCommand(term)] : [];
+  }
   return filterCommandsBySearchTerm({
     uf: createSearchEngine(),
     commands,
     previousResults: commands,
     searchTerm: query,
     previousSearchTerm: '',
-  });
-}
-
-/**
- * Remove rendering-only match ranges from a command descriptor.
- * @template T
- * @param {T & {matchRanges?: object[]}} command Command with optional ranges.
- * @returns {T}
- */
-export function stripMatchRanges(command) {
-  if (!command || typeof command !== 'object') {
-    return command;
-  }
-  const { matchRanges, ...rest } = command;
-  return rest;
-}
-
-/**
- * Resolve one command by exact ID or fuzzy query.
- * @param {{commands: object[], id?: string, query?: string}} options Selection.
- * @returns {object[]}
- */
-export function resolveCommands({ commands, id, query = '' }) {
-  if (id) {
-    return commands.filter((command) => command.id === id);
-  }
-  return searchCatalog(commands, query);
+  }).sort(compareCommandUsage);
 }
 
 /**

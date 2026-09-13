@@ -5,78 +5,43 @@ import {
   reportCatalogErrors,
 } from '../../command-context.js';
 import { catalogFlags } from '../../flags.js';
-import {
-  didAllSourcesFail,
-  resolveCommands,
-  stripMatchRanges,
-} from '../../services/catalog.js';
-import { addDestinationUrls } from '../../services/destination.js';
-import { openNavigation } from '../../services/navigation.js';
-import { selectCommand } from '../../services/selection.js';
-
-/**
- * Interactive selection needs a terminal on both ends and no JSON output.
- * @param {{jsonEnabled: () => boolean}} command Running command.
- * @returns {boolean}
- */
-function isInteractive(command) {
-  return Boolean(
-    !command.jsonEnabled() && process.stdin.isTTY && process.stdout.isTTY
-  );
-}
+import { didAllSourcesFail } from '../../services/catalog.js';
+import { runPalette } from '../../services/palette.js';
 
 export default class NavigatorOpen extends SfCommand {
-  static summary =
-    'Find and open a Salesforce page in an authenticated browser.';
+  static summary = 'Open the interactive Salesforce navigation palette.';
   static description =
-    'Selects one navigation command and opens it using the target org authentication. Printed and JSON output never contain login credentials.';
+    'Type to filter commands, use arrow keys to select, and press Enter to open the page in the target org. Prefix a term with ? to open Salesforce global record search.';
   static examples = [
+    '<%= config.bin %> <%= command.id %> --target-org dev',
     '<%= config.bin %> <%= command.id %> "account fields" --target-org dev',
-    '<%= config.bin %> <%= command.id %> --id new-flow --target-org uat',
-    '<%= config.bin %> <%= command.id %> flow --target-org dev --url-only --json',
+    '<%= config.bin %> <%= command.id %> "? Acme" --target-org dev',
   ];
   static args = {
     query: Args.string({
-      description: 'Text to match against command labels.',
+      description: 'Optional text to prefill the editable palette search.',
       required: false,
     }),
   };
   static flags = {
     ...catalogFlags,
-    id: Flags.string({
-      char: 'i',
-      summary: 'Exact command ID to open.',
-    }),
-    'url-only': Flags.boolean({
-      char: 'r',
-      summary:
-        'Print the credential-free destination URL without opening a browser.',
-      default: false,
-      exclusive: ['browser'],
-    }),
     browser: Flags.string({
       char: 'b',
-      summary: 'Browser where the page opens.',
+      summary: 'Browser where the selected page opens.',
       options: ['chrome', 'edge', 'firefox'],
     }),
   };
-  static enableJsonFlag = true;
+  static enableJsonFlag = false;
 
-  /** Resolve one navigation command and optionally open it in a browser. */
+  /** Load the target org catalog and open a page after interactive selection. */
   async run() {
     const { args, flags } = await this.parse(NavigatorOpen);
-    if (flags.id && args.query) {
-      this.error('Specify either a query or --id, but not both.', { exit: 1 });
+    if (!process.stdin.isTTY || !process.stdout.isTTY) {
+      this.error('Run sf navigator open in an interactive terminal.', {
+        exit: 1,
+      });
     }
     const context = await createCommandContext(this, flags);
-    const matches = addDestinationUrls(
-      resolveCommands({
-        commands: context.catalog.commands,
-        id: flags.id,
-        query: args.query,
-      }),
-      context.instanceUrl
-    );
     reportCatalogErrors(this, context.catalog.errors);
     if (
       didAllSourcesFail({
@@ -86,63 +51,13 @@ export default class NavigatorOpen extends SfCommand {
     ) {
       this.error('Every selected command source failed to load.', { exit: 1 });
     }
-
-    if (matches.length === 0 && (flags.id || !isInteractive(this))) {
-      const selector = flags.id
-        ? `ID "${flags.id}"`
-        : `query "${args.query ?? ''}"`;
-      this.error(`No command matches ${selector}.`, { exit: 1 });
-    }
-
-    let command;
-    if (matches.length === 1) {
-      [command] = matches;
-    } else if (!isInteractive(this)) {
-      this.error(
-        `${matches.length} commands match. Refine the query or use --id with an exact command ID.`,
-        { exit: 1 }
-      );
-    } else {
-      const selected = await selectCommand({
-        commands: addDestinationUrls(
-          context.catalog.commands,
-          context.instanceUrl
-        ),
-        initialTerm: args.query ?? '',
-        message: `Open in ${context.username}`,
-      });
-      if (!selected) {
-        this.log('Selection cancelled.');
-        return this.exit(0);
-      }
-      command = stripMatchRanges(selected);
-    }
-
-    if (!flags['url-only']) {
-      await openNavigation({
-        org: context.org,
-        command,
-        browser: flags.browser,
-      });
-    }
-
-    if (!this.jsonEnabled()) {
-      if (flags['url-only']) {
-        this.log(command.url);
-      } else {
-        this.logSuccess(`Opened ${command.label} in ${context.username}.`);
-      }
-    }
-
-    return {
-      orgId: context.orgId,
-      username: context.username,
-      command: stripMatchRanges(command),
-      url: command.url,
-      opened: !flags['url-only'],
-      cached: context.catalog.cached,
-      generatedAt: context.catalog.generatedAt,
-      errors: context.catalog.errors,
-    };
+    await runPalette({
+      context,
+      query: args.query ?? '',
+      browser: flags.browser,
+      dataDirectory: this.config.dataDir,
+      log: (message) => this.log(message),
+      warn: (message) => this.warn(message),
+    });
   }
 }

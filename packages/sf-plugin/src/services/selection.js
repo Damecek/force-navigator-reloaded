@@ -17,16 +17,6 @@ import { formatCommandLine } from './highlight.js';
 
 export const DEFAULT_PAGE_SIZE = 12;
 
-/**
- * Check whether a keypress should cancel the selection.
- * @param {{name?: string, ctrl?: boolean}} key Keypress.
- * @param {string} line Current input line.
- * @returns {boolean}
- */
-export function isCancelKey(key, line) {
-  return key.name === 'escape' || (line === '' && key.name === 'q');
-}
-
 const commandPrompt = createPrompt((config, done) => {
   const { commands, initialTerm = '', pageSize = DEFAULT_PAGE_SIZE } = config;
   const theme = makeTheme(config.theme);
@@ -46,7 +36,7 @@ const commandPrompt = createPrompt((config, done) => {
   }, []);
 
   useKeypress((key, rl) => {
-    if (isCancelKey(key, rl.line)) {
+    if (key.name === 'escape') {
       setCancelled(true);
       setStatus('done');
       done(null);
@@ -87,11 +77,17 @@ const commandPrompt = createPrompt((config, done) => {
   });
   const body =
     results.length === 0
-      ? theme.style.error('No matching commands')
+      ? theme.style.error(
+          term.trim() === '?'
+            ? 'Type a record search after ?'
+            : 'No matching commands'
+        )
       : `${page}\n${ansis.dim(
           `${results.length} match${results.length === 1 ? '' : 'es'}`
         )}`;
-  const help = ansis.dim('↑↓ move · Enter open · Esc cancel');
+  const help = ansis.dim(
+    '↑↓ move · Enter open · Esc cancel · ? search records'
+  );
   return [`${prefix} ${message} ${ansis.cyan(term)}`, `${body}\n${help}`];
 });
 

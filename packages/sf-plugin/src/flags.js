@@ -1,5 +1,5 @@
 import { Flags } from '@salesforce/sf-plugins-core';
-import { SOURCE_NAMES } from './core/index.js';
+import { DEFAULT_SOURCES, SOURCE_NAMES } from './core/index.js';
 
 export const catalogFlags = {
   'target-org': Flags.requiredOrg({
@@ -21,10 +21,12 @@ export const catalogFlags = {
 };
 
 /**
- * Expand source flags to the complete catalog when no filters were supplied.
+ * Expand source flags to the default catalog when no filters were supplied.
  * @param {{source?: string[]}} flags Parsed CLI flags.
  * @returns {string[]}
  */
 export function selectedSources(flags) {
-  return flags.source?.length ? [...new Set(flags.source)] : [...SOURCE_NAMES];
+  return flags.source?.length
+    ? [...new Set(flags.source)]
+    : [...DEFAULT_SOURCES];
 }

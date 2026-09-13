@@ -1,3 +1,4 @@
+import { buildLightningComponentPath } from '../navigator/componentUrl.js';
 import { toLightningUrl, toCoreUrl } from '../navigator/urls.js';
 export {
   toLightningHostname,
@@ -35,22 +36,7 @@ export function buildFrontdoorUrl(
  * @returns {string}
  */
 export function buildLightningComponentUrl(orgHostname, payload) {
-  const encodedPayload = encodeBase64Utf8(JSON.stringify(payload));
-  return `${toLightningUrl(orgHostname)}/one/one.app#${encodedPayload}`;
-}
-
-/**
- * Encode a UTF-8 string as base64.
- * @param {string} value
- * @returns {string}
- */
-function encodeBase64Utf8(value) {
-  const bytes = new TextEncoder().encode(value);
-  let binary = '';
-  for (const byte of bytes) {
-    binary += String.fromCharCode(byte);
-  }
-  return btoa(binary);
+  return `${toLightningUrl(orgHostname)}${buildLightningComponentPath(payload)}`;
 }
 
 /**

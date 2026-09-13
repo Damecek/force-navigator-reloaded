@@ -1,7 +1,7 @@
 {
   "name": "sf-plugin-force-navigator-reloaded",
   "version": "0.1.0",
-  "description": "Search and open Salesforce setup pages and metadata from sf CLI.",
+  "description": "Interactive Salesforce navigation palette for sf CLI.",
   "type": "module",
   "license": "MIT",
   "author": "Force Navigator Reloaded contributors",

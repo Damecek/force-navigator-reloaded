@@ -1,7 +1,7 @@
 import { Org } from '@salesforce/core';
 import { expect, test } from '@playwright/test';
 import { openNavigation } from '../lib/services/navigation.js';
-import { resolveOpen, searchCommands, type NavigationCommand } from './cli.js';
+import { loadNavigationCatalog, type NavigationCommand } from './cli.js';
 import { navigationMatrix } from './navigation-matrix.js';
 import { expectSalesforcePage } from './page-identity.js';
 
@@ -28,10 +28,8 @@ for (const targetOrg of targetOrgs) {
     let org: Org;
 
     test.beforeAll(async () => {
-      [catalog, org] = await Promise.all([
-        searchCommands(targetOrg),
-        Org.create({ aliasOrUsername: targetOrg }),
-      ]);
+      org = await Org.create({ aliasOrUsername: targetOrg });
+      catalog = await loadNavigationCatalog(org);
       expect(catalog.length).toBeGreaterThan(0);
     });
 
@@ -85,16 +83,10 @@ for (const targetOrg of targetOrgs) {
               candidates[0]));
         test.skip(
           !catalogCommand,
-          `org exposes no ${navigationCase.name} command`
+          `catalog contains no ${navigationCase.name} command; feature may be disabled or unavailable`
         );
 
-        const resolved = await resolveOpen(targetOrg, catalogCommand!.id);
-        expect(resolved.opened).toBe(false);
-        expect(resolved.command.id).toBe(catalogCommand!.id);
-        expect(resolved.command.path).toBe(catalogCommand!.path);
-        expect(resolved.url).toBe(catalogCommand!.url);
-
-        const destination = new URL(resolved.url);
+        const destination = new URL(catalogCommand!.url);
         const instance = new URL(org.getConnection().instanceUrl);
         expect(destination.protocol).toBe('https:');
         expect(destination.hostname).toMatch(
@@ -104,14 +96,14 @@ for (const targetOrg of targetOrgs) {
           instance.hostname.split('.')[0]
         );
         test.skip(
-          unavailableCommandIds.has(resolved.command.id),
-          `${resolved.command.id} was explicitly marked unavailable for this validation run`
+          unavailableCommandIds.has(catalogCommand!.id),
+          `${catalogCommand!.id} was explicitly marked unavailable for this validation run`
         );
 
         try {
           await openNavigation({
             org,
-            command: resolved.command,
+            command: catalogCommand!,
             opener: async (authenticatedUrl) => {
               await page.goto(authenticatedUrl, {
                 waitUntil: 'domcontentloaded',
@@ -130,8 +122,8 @@ for (const targetOrg of targetOrgs) {
         }
         await expectSalesforcePage(
           page,
-          resolved.command,
-          navigationCase.dom(resolved.command),
+          catalogCommand!,
+          navigationCase.dom(catalogCommand!),
           navigationUrls
         );
       });

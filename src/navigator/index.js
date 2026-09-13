@@ -1,3 +1,18 @@
+import {
+  DEFAULT_SOURCES,
+  DEFAULT_OBJECT_SECTIONS,
+  DEFAULT_FLOW_OPTIONS,
+} from './defaults.js';
+export {
+  DEFAULT_SOURCES,
+  DEFAULT_OBJECT_SECTIONS,
+  DEFAULT_FLOW_OPTIONS,
+} from './defaults.js';
+export {
+  compareCommandUsage,
+  buildSearchRecordsCommand,
+  getSearchModeTerm,
+} from './palette.js';
 export { toLightningUrl, toCoreUrl, toSetupUrl } from './urls.js';
 import * as queries from './queries.js';
 import * as builders from './builders.js';
@@ -22,11 +37,14 @@ const SOURCE_LOADERS = {
     ),
   objects: async (connection) =>
     builders.buildEntityCommands(
-      await queries.fetchEntityDefinitionsFromSalesforce(connection)
+      await queries.fetchEntityDefinitionsFromSalesforce(connection),
+      true,
+      DEFAULT_OBJECT_SECTIONS
     ),
   flows: async (connection) =>
     builders.buildFlowCommands(
-      await queries.fetchFlowDefinitionsFromSalesforce(connection)
+      await queries.fetchFlowDefinitionsFromSalesforce(connection),
+      DEFAULT_FLOW_OPTIONS
     ),
   'apex-classes': async (connection) =>
     buildApexClassCommands(
@@ -72,7 +90,7 @@ export const SOURCE_NAMES = Object.freeze(Object.keys(SOURCE_LOADERS));
  * @param {{connection: {query: Function, toolingQuery: Function}, sources?: string[]}} options
  * @returns {Promise<{commands: object[], errors: Array<{source: string, message: string}>}>}
  */
-export async function loadCatalog({ connection, sources = SOURCE_NAMES }) {
+export async function loadCatalog({ connection, sources = DEFAULT_SOURCES }) {
   if (
     !Array.isArray(sources) ||
     sources.some((source) => !SOURCE_NAMES.includes(source))

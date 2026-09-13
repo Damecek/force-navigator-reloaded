@@ -1,3 +1,8 @@
+import {
+  compareCommandUsage,
+  buildSearchRecordsCommand,
+  getSearchModeTerm,
+} from '../../../../../navigator/palette.js';
 import { api, LightningElement, track } from 'lwc';
 import VirtualScroller from '../../virtualScroller/virtualScroller';
 import {
@@ -78,11 +83,7 @@ export default class CommandPalette extends LightningElement {
   }
 
   usageSort(a, b) {
-    const diff = (b.usage || 0) - (a.usage || 0);
-    if (diff !== 0) {
-      return diff;
-    }
-    return a.label < b.label ? -1 : a.label > b.label ? 1 : 0;
+    return compareCommandUsage(a, b);
   }
 
   get loadingIndicatorClass() {
@@ -166,11 +167,7 @@ export default class CommandPalette extends LightningElement {
    * @returns {string|null}
    */
   getSearchModeTerm(value) {
-    const normalizedValue = typeof value === 'string' ? value.trimStart() : '';
-    if (!normalizedValue.startsWith('?')) {
-      return null;
-    }
-    return normalizedValue.slice(1).trim();
+    return getSearchModeTerm(value);
   }
 
   /**
@@ -179,11 +176,8 @@ export default class CommandPalette extends LightningElement {
    * @returns {{ id: string, label: string, usage: number, className: string, createInstance: () => SearchRecordsCommand }}
    */
   createSearchDescriptor(term) {
-    const labelSuffix = term ? ` > ${term}` : '';
     return {
-      id: 'search-records',
-      label: `Search${labelSuffix}`,
-      usage: 0,
+      ...buildSearchRecordsCommand(term),
       className: 'SearchRecordsCommand',
       createInstance: () => new SearchRecordsCommand({ term }),
     };
