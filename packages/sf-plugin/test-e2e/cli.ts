@@ -21,21 +21,46 @@ export type NavigationCommand = {
 
 type JsonEnvelope<T> = { status: number; result: T };
 
+type JsonError = { status?: number; name?: string; message?: string };
+
+const redactUrls = (text: string): string =>
+  text.replace(/https?:\/\/\S+/g, '[redacted-url]');
+
+/** Build a credential-free error for a failed CLI invocation. */
+function describeCliFailure(label: string, error: unknown): Error {
+  const output = error as {
+    stdout?: string;
+    stderr?: string;
+    message?: string;
+  };
+  try {
+    const payload = JSON.parse(output.stdout ?? '') as JsonError;
+    return new Error(
+      `CLI ${label} failed with status ${payload.status ?? 'unknown'}: ${payload.name ?? 'Error'}: ${redactUrls(payload.message ?? '')}`
+    );
+  } catch {
+    const fallback = (output.stderr || output.message || '').trim();
+    return new Error(
+      `CLI ${label} failed: ${redactUrls(fallback.split('\n')[0] ?? '')}`
+    );
+  }
+}
+
 async function runJson<T>(args: string[]): Promise<T> {
-  const { stdout } = await execFileAsync(
-    process.execPath,
-    [executable, ...args],
-    {
+  const label = args.slice(0, 2).join(' ');
+  let stdout: string;
+  try {
+    ({ stdout } = await execFileAsync(process.execPath, [executable, ...args], {
       cwd: packageRoot,
       env: { ...process.env, SF_DISABLE_TELEMETRY: 'true' },
       maxBuffer: 16 * 1024 * 1024,
-    }
-  );
+    }));
+  } catch (error) {
+    throw describeCliFailure(label, error);
+  }
   const envelope = JSON.parse(stdout) as JsonEnvelope<T>;
   if (envelope.status !== 0 || !envelope.result) {
-    throw new Error(
-      `CLI returned invalid JSON for ${args.slice(0, 2).join(' ')}`
-    );
+    throw new Error(`CLI returned invalid JSON for ${label}`);
   }
   return envelope.result;
 }

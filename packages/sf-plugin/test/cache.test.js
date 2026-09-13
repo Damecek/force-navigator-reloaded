@@ -17,7 +17,10 @@ test('CatalogCache isolates scopes, persists safe catalog data, and expires', as
   t.after(async () => rm(directory, { force: true, recursive: true }));
   let now = 1_000;
   const cache = new CatalogCache({ directory, ttlMs: 100, now: () => now });
-  const catalog = { commands: [{ id: 'home' }], errors: [] };
+  const catalog = {
+    commands: [{ id: 'home', label: 'Home', path: '/lightning/page/home' }],
+    errors: [],
+  };
 
   await cache.write(scope, catalog);
   assert.deepEqual(await cache.read(scope), {
@@ -67,4 +70,28 @@ test('CatalogCache treats non-object JSON values as misses', async (t) => {
     );
     assert.equal(await cache.read(scope), null);
   }
+});
+
+test('CatalogCache treats catalogs with malformed command descriptors as misses', async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), 'sf-navigator-cache-'));
+  t.after(async () => rm(directory, { force: true, recursive: true }));
+  const cache = new CatalogCache({ directory, now: () => 1_000 });
+  const valid = { id: 'home', label: 'Home', path: '/lightning/page/home' };
+  const malformed = [
+    null,
+    'home',
+    { ...valid, id: '' },
+    { ...valid, path: 'lightning/page/home' },
+    { ...valid, path: undefined },
+    { ...valid, host: 'evil' },
+  ];
+  for (const command of malformed) {
+    await cache.write(scope, { commands: [valid, command], errors: [] });
+    assert.equal(await cache.read(scope), null, JSON.stringify(command));
+  }
+  await cache.write(scope, {
+    commands: [valid, { ...valid, id: 'setup', host: 'setup' }],
+    errors: [],
+  });
+  assert.equal((await cache.read(scope)).commands.length, 2);
 });

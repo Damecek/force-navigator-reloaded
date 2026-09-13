@@ -151,3 +151,19 @@ test('search preserves partial successes when another selected source fails', as
   );
   assert.equal(calls.warnings.length, 1);
 });
+
+test('open fails when every selected source fails instead of reporting no match', async (t) => {
+  const { context, calls } = await commandContext(t, {
+    flags: { source: ['users', 'apex-classes'] },
+    args: { query: 'anything' },
+    query: async () => {
+      throw new Error('Source unavailable');
+    },
+  });
+  await assert.rejects(
+    NavigatorOpen.prototype.run.call(context),
+    isCommandError(/Every selected command source failed to load/)
+  );
+  assert.equal(calls.warnings.length, 2);
+  assert.equal(calls.authentication, 0);
+});

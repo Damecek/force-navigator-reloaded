@@ -118,9 +118,14 @@ for (const targetOrg of targetOrgs) {
               });
             },
           });
-        } catch {
+        } catch (error) {
+          const cause = error as Error;
+          const redacted = (cause?.message ?? '').replace(
+            /https?:\/\/\S+/g,
+            '[redacted-url]'
+          );
           throw new Error(
-            `${catalogCommand!.id} failed during authenticated browser navigation`
+            `${catalogCommand!.id} failed during authenticated browser navigation: ${cause?.name ?? 'Error'}: ${redacted}`
           );
         }
         await expectSalesforcePage(

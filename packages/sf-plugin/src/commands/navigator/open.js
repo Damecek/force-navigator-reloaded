@@ -5,7 +5,7 @@ import {
   reportCatalogErrors,
 } from '../../command-context.js';
 import { catalogFlags } from '../../flags.js';
-import { resolveCommands } from '../../services/catalog.js';
+import { didAllSourcesFail, resolveCommands } from '../../services/catalog.js';
 import { addDestinationUrls } from '../../services/destination.js';
 import { openNavigation } from '../../services/navigation.js';
 import { selectCommand } from '../../services/selection.js';
@@ -63,6 +63,14 @@ export default class NavigatorOpen extends SfCommand {
       context.instanceUrl
     );
     reportCatalogErrors(this, context.catalog.errors);
+    if (
+      didAllSourcesFail({
+        errors: context.catalog.errors,
+        sources: context.sources,
+      })
+    ) {
+      this.error('Every selected command source failed to load.', { exit: 1 });
+    }
 
     if (matches.length === 0) {
       const selector = flags.id

@@ -21,6 +21,27 @@ export function cacheFilename({ orgId, username, sources, apiVersion }) {
   return `${digest}.json`;
 }
 
+const COMMAND_HOSTS = new Set(['core', 'lightning', 'setup']);
+
+/**
+ * Check that a cached command descriptor can be searched and turned into a URL.
+ * @param {unknown} command Cached descriptor.
+ * @returns {boolean}
+ */
+export function isValidCachedCommand(command) {
+  return (
+    command !== null &&
+    typeof command === 'object' &&
+    !Array.isArray(command) &&
+    typeof command.id === 'string' &&
+    command.id.length > 0 &&
+    typeof command.label === 'string' &&
+    typeof command.path === 'string' &&
+    command.path.startsWith('/') &&
+    (command.host === undefined || COMMAND_HOSTS.has(command.host))
+  );
+}
+
 export class CatalogCache {
   /**
    * @param {{directory: string, ttlMs?: number, now?: () => number}} options Cache options.
@@ -48,6 +69,7 @@ export class CatalogCache {
         !Number.isFinite(value.createdAt) ||
         this.now() - value.createdAt >= this.ttlMs ||
         !Array.isArray(value.commands) ||
+        !value.commands.every(isValidCachedCommand) ||
         !Array.isArray(value.errors)
       ) {
         return null;

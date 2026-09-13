@@ -56,7 +56,13 @@ export async function fetchEntityDefinitionsFromSalesforce(connection) {
   FROM EntityDefinition
   WHERE IsCustomSetting = FALSE AND IsDeprecatedAndHidden = FALSE AND IsIdEnabled = TRUE
   ORDER BY QualifiedApiName`;
+  /*
+   * EntityDefinition does not support queryMore, so pages are fetched with
+   * LIMIT/OFFSET. SOQL caps OFFSET at 2000, so at most 4000 rows are loaded;
+   * stopping there keeps the source usable instead of failing the whole query.
+   */
   const limit = 2000;
+  const maxOffset = 2000;
   let offset = 0;
   const allRecords = [];
 
@@ -79,6 +85,9 @@ export async function fetchEntityDefinitionsFromSalesforce(connection) {
       break;
     }
     offset += limit;
+    if (offset > maxOffset) {
+      break;
+    }
   }
 
   return allRecords;
