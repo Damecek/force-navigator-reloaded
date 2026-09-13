@@ -60,6 +60,8 @@ export async function getCatalog({
 
 /**
  * Apply the extension's fuzzy search order to a catalog.
+ * Results carry transient `matchRanges` for terminal highlighting; strip them
+ * with {@link stripMatchRanges} before returning machine-readable output.
  * @param {object[]} commands Commands to search.
  * @param {string} query Search text.
  * @returns {object[]}
@@ -71,7 +73,21 @@ export function searchCatalog(commands, query) {
     previousResults: commands,
     searchTerm: query,
     previousSearchTerm: '',
-  }).map(({ matchRanges, ...command }) => command);
+  });
+}
+
+/**
+ * Remove rendering-only match ranges from a command descriptor.
+ * @template T
+ * @param {T & {matchRanges?: object[]}} command Command with optional ranges.
+ * @returns {T}
+ */
+export function stripMatchRanges(command) {
+  if (!command || typeof command !== 'object') {
+    return command;
+  }
+  const { matchRanges, ...rest } = command;
+  return rest;
 }
 
 /**

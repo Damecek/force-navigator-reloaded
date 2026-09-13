@@ -18,9 +18,15 @@ sf navigator search --help
 The package name is `sf-plugin-force-navigator-reloaded`. Linking is a local development installation. An npm release
 is a separate publishing step; opening or merging the implementation PR does not publish a package.
 
+A linked ESM plugin prints `Warning: ... is a linked ESM module and cannot be auto-transpiled` on every run. This is
+Salesforce CLI behavior for `sf plugins link`, not an error; the built `lib` output is used. Installing the published
+package with `sf plugins install` does not show the warning.
+
 ## Search and open
 
-Pass an existing Salesforce CLI alias or username with `--target-org` / `-o`, or use the standard CLI default org.
+Pass an existing Salesforce CLI alias or username with `--target-org` / `-o`. Without the flag the command uses the
+configured default org (`sf config set target-org <alias>`), so `-o` is only required when no default is set. Help output
+still labels the flag `(required)` because that is how Salesforce CLI describes every org flag with a default.
 
 ```bash
 sf navigator search "account fields" -o my-dev
@@ -30,9 +36,17 @@ sf navigator open --id sobject-setup-fields-and-relationship-Account -o my-dev
 sf navigator open --id app-home -o my-dev --url-only --json
 ```
 
-An interactive open command offers a selection when the search is ambiguous. Use an exact command ID from search
-results for scripts. IDs containing Salesforce record IDs belong to the selected org and must be resolved again when
-targeting a different org.
+`search` prints one highlighted label per match with its source in brackets; add `--show-id` to append the exact command
+ID as a tab-separated column, or use `--json` for the full descriptors. Matched characters are emphasized like the
+extension palette; styling is disabled automatically when output is piped or `NO_COLOR` is set.
+
+In a terminal, `open` shows an interactive palette whenever the query is missing, matches nothing, or matches more than
+one command. The query is prefilled and editable, results re-rank on every keystroke with the same fuzzy matching as
+the extension, `↑`/`↓` move, `Enter` opens, and `Esc` (or `q` on an empty line) cancels with exit code 0. A query with
+exactly one match opens directly. With `--json` or without a TTY the palette is never shown: ambiguous or empty results
+exit with code 1 and ask for a narrower query or an exact `--id`. Use an exact command ID from search results for
+scripts. IDs containing Salesforce record IDs belong to the selected org and must be resolved again when targeting a
+different org.
 
 `--url-only` returns a normal destination URL, not an authenticated login link. Opening that URL independently requires
 an existing browser session. Normal `open` authenticates the browser using Salesforce CLI without including the login

@@ -4,7 +4,8 @@ import { SOURCE_NAMES } from './core/index.js';
 export const catalogFlags = {
   'target-org': Flags.requiredOrg({
     char: 'o',
-    summary: 'Username or alias of the target org.',
+    summary:
+      'Username or alias of the target org. Defaults to the configured target-org.',
   }),
   source: Flags.string({
     char: 's',

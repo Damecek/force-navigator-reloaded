@@ -167,3 +167,37 @@ test('open fails when every selected source fails instead of reporting no match'
   assert.equal(calls.warnings.length, 2);
   assert.equal(calls.authentication, 0);
 });
+
+test('search prints highlighted labels without IDs unless --show-id is set', async (t) => {
+  const plain = await commandContext(t, {
+    args: { query: 'home' },
+    json: false,
+  });
+  await NavigatorSearch.prototype.run.call(plain.context);
+  assert.ok(plain.calls.logs.length > 0);
+  assert.ok(plain.calls.logs.every((line) => !line.includes('app-home')));
+  assert.ok(plain.calls.logs.some((line) => line.includes('[static]')));
+
+  const withId = await commandContext(t, {
+    args: { query: 'home' },
+    flags: { 'show-id': true },
+    json: false,
+  });
+  await NavigatorSearch.prototype.run.call(withId.context);
+  assert.ok(withId.calls.logs.some((line) => line.endsWith('\tapp-home')));
+});
+
+test('search and open JSON results do not carry rendering match ranges', async (t) => {
+  const search = await commandContext(t, { args: { query: 'home' } });
+  const searchResult = await NavigatorSearch.prototype.run.call(search.context);
+  assert.ok(searchResult.commands.length > 0);
+  assert.ok(
+    searchResult.commands.every((command) => !('matchRanges' in command))
+  );
+
+  const open = await commandContext(t, {
+    flags: { id: 'app-home', 'url-only': true },
+  });
+  const openResult = await NavigatorOpen.prototype.run.call(open.context);
+  assert.equal('matchRanges' in openResult.command, false);
+});

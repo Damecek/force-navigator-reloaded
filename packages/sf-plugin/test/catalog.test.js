@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  stripMatchRanges,
   didAllSourcesFail,
   resolveCommands,
   searchCatalog,
@@ -15,10 +16,13 @@ const commands = [
   { id: 'permissions', label: 'Users > Permission Sets > Sales Česko' },
 ];
 
-test('searchCatalog preserves shared fuzzy ranking and strips render ranges', () => {
+test('searchCatalog preserves shared fuzzy ranking and exposes render ranges', () => {
   const matches = searchCatalog(commands, 'acc fields');
   assert.equal(matches[0].id, 'account-fields');
-  assert.equal('matchRanges' in matches[0], false);
+  assert.ok(Array.isArray(matches[0].matchRanges));
+  assert.ok(matches[0].matchRanges.length > 0);
+  assert.equal('matchRanges' in stripMatchRanges(matches[0]), false);
+  assert.equal(stripMatchRanges(matches[0]).id, 'account-fields');
   assert.equal(searchCatalog(commands, 'cesko')[0].id, 'permissions');
   assert.equal(
     searchCatalog(commands, 'acocunt fields')[0].id,

@@ -1,12 +1,17 @@
 import { Args } from '@oclif/core';
-import { SfCommand } from '@salesforce/sf-plugins-core';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import {
   createCommandContext,
   reportCatalogErrors,
 } from '../../command-context.js';
 import { catalogFlags } from '../../flags.js';
-import { didAllSourcesFail, searchCatalog } from '../../services/catalog.js';
+import {
+  didAllSourcesFail,
+  searchCatalog,
+  stripMatchRanges,
+} from '../../services/catalog.js';
 import { addDestinationUrls } from '../../services/destination.js';
+import { formatCommandLine } from '../../services/highlight.js';
 
 export default class NavigatorSearch extends SfCommand {
   static summary = 'Search Salesforce setup pages and metadata in an org.';
@@ -15,6 +20,7 @@ export default class NavigatorSearch extends SfCommand {
   static examples = [
     '<%= config.bin %> <%= command.id %> "account fields" --target-org dev',
     '<%= config.bin %> <%= command.id %> flow --target-org uat --source flows --json',
+    '<%= config.bin %> <%= command.id %> "deployment status" --show-id',
   ];
   static args = {
     query: Args.string({
@@ -23,7 +29,13 @@ export default class NavigatorSearch extends SfCommand {
       default: '',
     }),
   };
-  static flags = catalogFlags;
+  static flags = {
+    ...catalogFlags,
+    'show-id': Flags.boolean({
+      summary: 'Append the exact command ID to each printed match.',
+      default: false,
+    }),
+  };
   static enableJsonFlag = true;
 
   /** Load, search, and render an org's navigation catalog. */
@@ -49,7 +61,8 @@ export default class NavigatorSearch extends SfCommand {
         this.log('No matching commands.');
       } else {
         commands.forEach((command) => {
-          this.log(`${command.label}\t${command.source}\t${command.id}`);
+          const line = formatCommandLine(command);
+          this.log(flags['show-id'] ? `${line}\t${command.id}` : line);
         });
       }
     }
@@ -62,7 +75,7 @@ export default class NavigatorSearch extends SfCommand {
       sources: context.sources,
       cached: context.catalog.cached,
       generatedAt: context.catalog.generatedAt,
-      commands,
+      commands: commands.map(stripMatchRanges),
       errors: context.catalog.errors,
     };
   }

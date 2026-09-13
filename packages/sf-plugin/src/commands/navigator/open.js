@@ -5,10 +5,25 @@ import {
   reportCatalogErrors,
 } from '../../command-context.js';
 import { catalogFlags } from '../../flags.js';
-import { didAllSourcesFail, resolveCommands } from '../../services/catalog.js';
+import {
+  didAllSourcesFail,
+  resolveCommands,
+  stripMatchRanges,
+} from '../../services/catalog.js';
 import { addDestinationUrls } from '../../services/destination.js';
 import { openNavigation } from '../../services/navigation.js';
 import { selectCommand } from '../../services/selection.js';
+
+/**
+ * Interactive selection needs a terminal on both ends and no JSON output.
+ * @param {{jsonEnabled: () => boolean}} command Running command.
+ * @returns {boolean}
+ */
+function isInteractive(command) {
+  return Boolean(
+    !command.jsonEnabled() && process.stdin.isTTY && process.stdout.isTTY
+  );
+}
 
 export default class NavigatorOpen extends SfCommand {
   static summary =
@@ -72,7 +87,7 @@ export default class NavigatorOpen extends SfCommand {
       this.error('Every selected command source failed to load.', { exit: 1 });
     }
 
-    if (matches.length === 0) {
+    if (matches.length === 0 && (flags.id || !isInteractive(this))) {
       const selector = flags.id
         ? `ID "${flags.id}"`
         : `query "${args.query ?? ''}"`;
@@ -82,17 +97,25 @@ export default class NavigatorOpen extends SfCommand {
     let command;
     if (matches.length === 1) {
       [command] = matches;
-    } else if (
-      this.jsonEnabled() ||
-      !process.stdin.isTTY ||
-      !process.stdout.isTTY
-    ) {
+    } else if (!isInteractive(this)) {
       this.error(
         `${matches.length} commands match. Refine the query or use --id with an exact command ID.`,
         { exit: 1 }
       );
     } else {
-      command = await selectCommand(matches);
+      const selected = await selectCommand({
+        commands: addDestinationUrls(
+          context.catalog.commands,
+          context.instanceUrl
+        ),
+        initialTerm: args.query ?? '',
+        message: `Open in ${context.username}`,
+      });
+      if (!selected) {
+        this.log('Selection cancelled.');
+        return this.exit(0);
+      }
+      command = stripMatchRanges(selected);
     }
 
     if (!flags['url-only']) {
@@ -114,7 +137,7 @@ export default class NavigatorOpen extends SfCommand {
     return {
       orgId: context.orgId,
       username: context.username,
-      command,
+      command: stripMatchRanges(command),
       url: command.url,
       opened: !flags['url-only'],
       cached: context.catalog.cached,

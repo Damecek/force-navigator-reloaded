@@ -17,9 +17,13 @@ sf navigator open "flow onboarding" --target-org uat
 sf navigator open --id new-flow --target-org dev
 ```
 
+`--target-org` falls back to the configured default org. `search` prints highlighted labels; add `--show-id` for exact command IDs. In a terminal, `open` shows an interactive palette when the query is ambiguous or empty: type to re-rank, `↑`/`↓` to move, `Enter` to open, `Esc` to cancel.
+
 Use `--source` more than once to limit dynamic API queries. `--refresh` bypasses the six-hour local cache. `navigator open --url-only` prints a credential-free destination URL and never creates or prints a Salesforce login URL.
 
 Scripts can use `--json`. If an open query has multiple matches in JSON or a non-interactive terminal, the command exits with an error and asks for a more specific query or exact `--id`.
+
+Running a linked build prints a Salesforce CLI warning about a linked ESM module that cannot be auto-transpiled. It is informational; the built `lib` output is used.
 
 Commands open Salesforce pages without saving records or changing metadata. Login As and extension-specific actions are excluded. Salesforce features and permissions determine which destinations can be used in an org.
 
