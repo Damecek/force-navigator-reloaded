@@ -62,7 +62,19 @@ plugin fetches commands from your org on a cache miss or refresh. Add `--debug` 
 request timings; combine it with `--refresh` to measure loading from the org. Navigation commands open pages; they do not save
 records or deploy metadata.
 
-See [CLI installation, commands, and validation](docs/cli-plugin.md) for local installation and usage.
+With [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli) installed, the published plugin is installed with:
+
+```sh
+sf plugins install force-navigator-reloaded
+sf navigator open -o my-org
+```
+
+The first npm release is pending. The install command becomes available after publication.
+Salesforce CLI downloads the built package; no checkout or local build is required. It may ask you to trust this unsigned
+community plugin. Update installed plugins with `sf plugins update`.
+
+See [CLI installation and usage](docs/cli-plugin.md), [contributor setup](docs/cli-plugin.md#contribute),
+and [maintainer release instructions](docs/cli-release.md).
 
 ### From Chrome Web Store
 

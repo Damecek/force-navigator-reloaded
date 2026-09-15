@@ -2,14 +2,19 @@
 
 Open the Force Navigator Reloaded command palette in your terminal and choose a Salesforce page to open in an authenticated org.
 
-Build and link from a checkout of the repository with Node.js 22.19.0 or newer and Salesforce CLI:
+## Install
+
+Install [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli), then install the published plugin:
 
 ```sh
-cd packages/sf-plugin
-npm ci
-npm run build
-sf plugins link .
+sf plugins install force-navigator-reloaded
 ```
+
+The first npm release is pending. This command becomes available after that release.
+Salesforce CLI downloads the built package and dependencies. No checkout or local build is required.
+The CLI runtime must use Node.js 22.19.0 or newer. Salesforce CLI may ask you to trust this unsigned community plugin.
+
+## Use
 
 ```sh
 sf navigator open --target-org dev
@@ -42,10 +47,12 @@ queried object, any numeric `LIMIT` or `OFFSET`, elapsed time, and record count.
 combine `--debug --refresh` to measure requests to the org. Debug output omits full SOQL, returned org records,
 authentication tokens, login URLs, and error payloads.
 
-Running a linked build prints a Salesforce CLI warning about a linked ESM module that cannot be auto-transpiled. It is informational; the built `lib` output is used.
-
 Commands open Salesforce pages without saving records or changing metadata. Login As and extension-specific actions are excluded. Salesforce features and permissions determine which destinations can be used in an org.
 
-The npm package name is `sf-plugin-force-navigator-reloaded`. Publishing is separate from building this checkout; after a package release, install it with `sf plugins install sf-plugin-force-navigator-reloaded`.
+## Update or uninstall
+
+Run `sf plugins update` to update installed plugins, or repeat the install command to update only Navigator.
+Remove it with `sf plugins uninstall force-navigator-reloaded`.
 
 See the [full CLI guide](https://github.com/Damecek/force-navigator-reloaded/blob/main/docs/cli-plugin.md) for source families, caching, and validation.
+For local builds and linking, see [Contribute](https://github.com/Damecek/force-navigator-reloaded/blob/main/docs/cli-plugin.md#contribute).

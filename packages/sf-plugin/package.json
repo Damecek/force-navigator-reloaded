@@ -1,5 +1,5 @@
 {
-  "name": "sf-plugin-force-navigator-reloaded",
+  "name": "force-navigator-reloaded",
   "version": "0.1.0",
   "description": "Interactive Salesforce navigation palette for sf CLI.",
   "type": "module",
@@ -35,6 +35,7 @@
   "scripts": {
     "build": "node ./scripts/build.mjs",
     "prepack": "npm run build",
+    "test:package": "node ./scripts/test-package.mjs",
     "test": "npm run build && node --test test/*.test.js",
     "test:e2e": "npm run build && playwright test -c test-e2e/playwright.config.ts"
   },
@@ -62,5 +63,9 @@
       }
     }
   },
-  "exports": "./lib/index.js"
+  "exports": "./lib/index.js",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
 }

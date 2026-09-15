@@ -3,24 +3,38 @@
 The plugin provides an interactive Salesforce navigation palette. Select a page to open it in an authenticated org. It shares
 queries, command definitions, and accent-insensitive fuzzy matching with the browser extension.
 
-## Install from this checkout
+## Install
 
-Use Node.js 22.19.0 or newer and Salesforce CLI. Build and link the plugin:
+Install [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli) first. Once the first npm release is published, install the plugin with:
 
 ```bash
-cd packages/sf-plugin
-npm ci
-npm run build
-sf plugins link .
+sf plugins install force-navigator-reloaded
 sf navigator open --help
 ```
 
-The package name is `sf-plugin-force-navigator-reloaded`. Linking is a local development installation. An npm release
-is a separate publishing step; opening or merging the implementation PR does not publish a package.
+Salesforce CLI downloads the built npm package and its dependencies. No repository checkout or local build is required.
+The plugin requires Node.js 22.19.0 or newer in the CLI runtime. This community plugin is unsigned; Salesforce CLI may
+ask you to confirm that you trust it during installation.
 
-A linked ESM plugin prints `Warning: ... is a linked ESM module and cannot be auto-transpiled` on every run. This is
-Salesforce CLI behavior for `sf plugins link`, not an error; the built `lib` output is used. Installing the published
-package with `sf plugins install` does not show the warning.
+The first npm release is pending. If installation reports that the package was not found, it has not been published yet.
+Maintainers can follow the [release guide](cli-release.md).
+
+## Update or uninstall
+
+Update installed plugins through Salesforce CLI:
+
+```bash
+sf plugins update
+```
+
+This updates all installed plugins. To update only Navigator, run the install command again.
+To remove Navigator:
+
+```bash
+sf plugins uninstall force-navigator-reloaded
+```
+
+These commands use Salesforce CLI's [plugin manager](https://github.com/oclif/plugin-plugins#commands).
 
 ## Open the palette
 
@@ -98,6 +112,21 @@ Web Console launch could not be verified in the earlier validation sandboxes: it
 Home from an authenticated Setup session. The command retains the extension's destination, but a successful IDE launch
 depends on availability for the target user. See the validation report for the observed limitation.
 
+## Contribute
+
+For plugin development, use Node.js 22.19.0 or newer and Salesforce CLI. From a repository checkout:
+
+```bash
+cd packages/sf-plugin
+npm ci
+npm run build
+sf plugins link .
+```
+
+Rebuild after changing plugin or shared navigation source. A linked ESM plugin prints an informational warning about
+not being auto-transpiled; Salesforce CLI uses the built `lib` output. To switch back to the published package, run
+`sf plugins unlink force-navigator-reloaded`, then the install command above.
+
 ## Architecture
 
 `src/navigator` owns the shared catalog. Its connection interface returns complete record arrays from `query` and
@@ -129,6 +158,7 @@ cd packages/sf-plugin
 npm ci
 npm test
 npm pack --dry-run
+npm run test:package
 ```
 
 Live navigation tests require an explicitly selected, already authorized org and Chrome. They must verify destination
