@@ -5,7 +5,7 @@ queries, command definitions, and accent-insensitive fuzzy matching with the bro
 
 ## Install from this checkout
 
-Use Node.js 22 or newer and Salesforce CLI. Build and link the plugin:
+Use Node.js 22.19.0 or newer and Salesforce CLI. Build and link the plugin:
 
 ```bash
 cd packages/sf-plugin

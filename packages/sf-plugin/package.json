@@ -13,7 +13,7 @@
   },
   "bugs": "https://github.com/Damecek/force-navigator-reloaded/issues",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.19.0"
   },
   "bin": {
     "sf-navigator": "./bin/run.js"

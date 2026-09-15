@@ -38,6 +38,8 @@ export function isValidCachedCommand(command) {
     typeof command.label === 'string' &&
     typeof command.path === 'string' &&
     command.path.startsWith('/') &&
+    !command.path.startsWith('//') &&
+    !command.path.includes('\\') &&
     (command.host === undefined || COMMAND_HOSTS.has(command.host))
   );
 }

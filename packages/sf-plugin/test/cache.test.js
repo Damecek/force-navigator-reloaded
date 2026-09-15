@@ -82,6 +82,9 @@ test('CatalogCache treats catalogs with malformed command descriptors as misses'
     'home',
     { ...valid, id: '' },
     { ...valid, path: 'lightning/page/home' },
+    { ...valid, path: '//example.com/home' },
+    { ...valid, path: '/\\example.com/home' },
+    { ...valid, path: '/lightning\\page/home' },
     { ...valid, path: undefined },
     { ...valid, host: 'evil' },
   ];

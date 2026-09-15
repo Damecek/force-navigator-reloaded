@@ -29,6 +29,21 @@ test('openNavigation passes the safe destination through single-access auth in m
   ]);
 });
 
+test('openNavigation uses the required relative redirect for Setup destinations', async () => {
+  const destination =
+    'https://acme.my.salesforce-setup.com/lwr/application/one/one.app';
+  await openNavigation({
+    org: {
+      getFrontDoorUrl: async (redirectUri) => {
+        assert.equal(redirectUri, '/lwr/application/one/one.app');
+        return 'https://acme.my.salesforce.com/secur/frontdoor.jsp?sid=secret';
+      },
+    },
+    command: { path: '/lwr/application/one/one.app', url: destination },
+    opener: async () => {},
+  });
+});
+
 test('openNavigation returns no authenticated URL', async () => {
   const result = await openNavigation({
     org: { getFrontDoorUrl: async () => 'https://example.test/?sid=secret' },

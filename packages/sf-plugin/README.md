@@ -2,7 +2,7 @@
 
 Open the Force Navigator Reloaded command palette in your terminal and choose a Salesforce page to open in an authenticated org.
 
-Build and link from a checkout of the repository with Node.js 22 or newer and Salesforce CLI:
+Build and link from a checkout of the repository with Node.js 22.19.0 or newer and Salesforce CLI:
 
 ```sh
 cd packages/sf-plugin
