@@ -1,0 +1,54 @@
+import {
+  SOBJECT_APEX_TRIGGERS_ENTITY_TYPE,
+  SOBJECT_BUTTONS_LINKS_ACTIONS_ENTITY_TYPE,
+  SOBJECT_COMPACT_LAYOUTS_ENTITY_TYPE,
+  SOBJECT_FIELD_SETS_ENTITY_TYPE,
+  SOBJECT_FIELDS_RELATIONSHIPS_ENTITY_TYPE,
+  SOBJECT_FLOW_TRIGGERS_ENTITY_TYPE,
+  SOBJECT_LIGHTNING_PAGES_ENTITY_TYPE,
+  SOBJECT_LIMITS_ENTITY_TYPE,
+  SOBJECT_OBJECT_ACCESS_ENTITY_TYPE,
+  SOBJECT_PAGE_LAYOUTS_ENTITY_TYPE,
+  SOBJECT_RECORD_TYPES_ENTITY_TYPE,
+  SOBJECT_RELATED_LOOKUP_FILTERS_ENTITY_TYPE,
+  SOBJECT_SEARCH_LAYOUTS_ENTITY_TYPE,
+  SOBJECT_VALIDATION_RULES_ENTITY_TYPE,
+} from './constants.js';
+
+/** Default Object Manager sections for the configurable browser extension. */
+export const DEFAULT_OBJECT_SECTIONS = Object.freeze({
+  [SOBJECT_FIELDS_RELATIONSHIPS_ENTITY_TYPE]: true,
+  [SOBJECT_PAGE_LAYOUTS_ENTITY_TYPE]: false,
+  [SOBJECT_LIGHTNING_PAGES_ENTITY_TYPE]: true,
+  [SOBJECT_BUTTONS_LINKS_ACTIONS_ENTITY_TYPE]: true,
+  [SOBJECT_COMPACT_LAYOUTS_ENTITY_TYPE]: false,
+  [SOBJECT_FIELD_SETS_ENTITY_TYPE]: false,
+  [SOBJECT_LIMITS_ENTITY_TYPE]: false,
+  [SOBJECT_RECORD_TYPES_ENTITY_TYPE]: true,
+  [SOBJECT_RELATED_LOOKUP_FILTERS_ENTITY_TYPE]: false,
+  [SOBJECT_SEARCH_LAYOUTS_ENTITY_TYPE]: false,
+  [SOBJECT_OBJECT_ACCESS_ENTITY_TYPE]: false,
+  [SOBJECT_APEX_TRIGGERS_ENTITY_TYPE]: true,
+  [SOBJECT_FLOW_TRIGGERS_ENTITY_TYPE]: true,
+  [SOBJECT_VALIDATION_RULES_ENTITY_TYPE]: true,
+});
+
+/** Default flow destinations for the configurable browser extension. */
+export const DEFAULT_FLOW_OPTIONS = Object.freeze({
+  includeDefinition: true,
+  includeLatest: true,
+  includeActive: false,
+});
+
+/** Default extension sources. The CLI loads all supported sources. */
+export const DEFAULT_SOURCES = Object.freeze([
+  'static',
+  'setup',
+  'objects',
+  'flows',
+  'experience-sites',
+  'apps',
+  'permission-sets',
+  'permission-set-groups',
+  'users',
+]);

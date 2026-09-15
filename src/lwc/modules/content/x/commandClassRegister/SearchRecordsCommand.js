@@ -1,5 +1,6 @@
 import Command from './Command';
-import { buildLightningComponentUrl } from '../../../../../shared';
+import { toLightningUrl } from '../../../../../shared';
+import { buildSearchRecordsCommand } from '../../../../../navigator/palette.js';
 
 /**
  * Command that opens Salesforce global search for the provided term.
@@ -11,8 +12,8 @@ export default class SearchRecordsCommand extends Command {
    */
   constructor({ term } = {}) {
     const normalizedTerm = typeof term === 'string' ? term.trim() : '';
-    const labelSuffix = normalizedTerm ? ` > ${normalizedTerm}` : '';
-    super('search-records', `Search${labelSuffix}`, 0);
+    const descriptor = buildSearchRecordsCommand(normalizedTerm);
+    super(descriptor.id, descriptor.label, descriptor.usage);
     this.term = normalizedTerm;
   }
 
@@ -28,12 +29,7 @@ export default class SearchRecordsCommand extends Command {
     }
     await this.incrementUsage();
 
-    const url = buildLightningComponentUrl(this.hostname, {
-      componentDef: 'forceSearch:searchPageDesktop',
-      attributes: {
-        term: this.term,
-      },
-    });
+    const url = `${toLightningUrl(this.hostname)}${buildSearchRecordsCommand(this.term).path}`;
 
     if (openInNewTab) {
       window.open(url, '_blank');

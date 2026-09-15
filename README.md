@@ -50,6 +50,31 @@ make the best result easier to scan.
 
 ## Installation
 
+### Salesforce CLI plugin
+
+The companion Salesforce CLI plugin opens an interactive command palette with `sf navigator open -o my-org`.
+Type to filter, move with the arrow keys, and press Enter to open the selected page using your existing CLI authorization.
+An optional query prefills the palette. Frequently used commands rise to the top, and `? text` opens Salesforce global
+record search. Results align command labels, sources, and usage counts in separate columns. All supported navigation
+sources, Object Manager sections, and flow variants are enabled by default.
+Use `--source` to select categories or `--exclude-source` to leave categories out. A loading indicator shows when the
+plugin fetches commands from your org on a cache miss or refresh. Add `--debug` to inspect cache status and Salesforce
+request timings; combine it with `--refresh` to measure loading from the org. Navigation commands open pages; they do not save
+records or deploy metadata.
+
+With [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli) installed, the published plugin is installed with:
+
+```sh
+sf plugins install force-navigator-reloaded
+sf navigator open -o my-org
+```
+
+Salesforce CLI downloads the built package; no checkout or local build is required. It may ask you to trust this unsigned
+community plugin. Update installed plugins with `sf plugins update`.
+
+See [CLI installation and usage](docs/cli-plugin.md), [contributor setup](docs/cli-plugin.md#contribute),
+and [maintainer release instructions](docs/cli-release.md).
+
 ### From Chrome Web Store
 
 You can install the latest published version directly from
@@ -138,6 +163,8 @@ action.
 - **Options Page** (`src/options`): Settings UI built with LWC modules from `src/lwc/modules/options`
 - **Welcome Page** (`src/welcome`): Post-install onboarding page built with LWC modules from `src/lwc/modules/welcome`
 - **Shared Utilities** (`src/shared`): Common modules for background and content scripts, including the Channel messaging wrapper and settings management
+- **Navigation Core** (`src/navigator`): Browser-independent Salesforce queries, command descriptors, and fuzzy matching shared by the extension and CLI
+- **Salesforce CLI Plugin** (`packages/sf-plugin`): Interactive command palette and authenticated navigation using existing `sf` org aliases
 
 ### Build & Toolchain
 
