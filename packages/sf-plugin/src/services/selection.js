@@ -13,7 +13,7 @@ import {
 } from '@inquirer/core';
 import ansis from 'ansis';
 import { searchCatalog } from './catalog.js';
-import { formatCommandLine } from './highlight.js';
+import { createPaletteTable } from './paletteTable.js';
 
 export const DEFAULT_PAGE_SIZE = 12;
 
@@ -24,10 +24,18 @@ const commandPrompt = createPrompt((config, done) => {
   const [term, setTerm] = useState(initialTerm);
   const [cursor, setCursor] = useState(0);
   const [cancelled, setCancelled] = useState(false);
+  const [columns, setColumns] = useState(config.output.columns || 80);
   const prefix = usePrefix({ status, theme });
   const results = useMemo(() => searchCatalog(commands, term), [term]);
   const active = Math.min(cursor, Math.max(results.length - 1, 0));
   const selected = results[active];
+  const table = useMemo(() => createPaletteTable(commands, columns), [columns]);
+
+  useEffect(() => {
+    const resize = () => setColumns(config.output.columns || 80);
+    config.output.on('resize', resize);
+    return () => config.output.removeListener('resize', resize);
+  }, []);
 
   useEffect((rl) => {
     if (initialTerm) {
@@ -71,7 +79,7 @@ const commandPrompt = createPrompt((config, done) => {
     pageSize,
     loop: false,
     renderItem: ({ item, isActive }) => {
-      const line = formatCommandLine(item);
+      const line = table.row(item);
       return isActive ? theme.style.highlight(`❯ ${line}`) : `  ${line}`;
     },
   });
@@ -82,7 +90,7 @@ const commandPrompt = createPrompt((config, done) => {
             ? 'Type a record search after ?'
             : 'No matching commands'
         )
-      : `${page}\n${ansis.dim(
+      : `${table.header}\n${page}\n${ansis.dim(
           `${results.length} match${results.length === 1 ? '' : 'es'}`
         )}`;
   const help = ansis.dim(
@@ -108,7 +116,13 @@ export async function selectCommand(
 ) {
   try {
     return await commandPrompt(
-      { commands, initialTerm, message, pageSize },
+      {
+        commands,
+        initialTerm,
+        message,
+        pageSize,
+        output: streams.output || process.stdout,
+      },
       { ...streams, clearPromptOnDone: false }
     );
   } catch (error) {

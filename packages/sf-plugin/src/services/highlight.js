@@ -30,15 +30,3 @@ export function highlightMatches(
   }
   return rendered + label.slice(cursor);
 }
-
-/**
- * Render a command line for terminal output: highlighted label and dim source.
- * @param {{label: string, source?: string, matchRanges?: object[]}} command Command.
- * @returns {string}
- */
-export function formatCommandLine(command) {
-  const label = highlightMatches(command.label, command.matchRanges);
-  return command.source
-    ? `${label} ${ansis.dim(`[${command.source}]`)}`
-    : label;
-}

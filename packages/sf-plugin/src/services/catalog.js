@@ -6,6 +6,7 @@ import {
   filterCommandsBySearchTerm,
   loadCatalog,
 } from '../core/index.js';
+import { Diagnostics } from './diagnostics.js';
 import { CatalogCache } from './cache.js';
 import { createNavigatorConnection } from './connection.js';
 
@@ -19,6 +20,7 @@ import { createNavigatorConnection } from './connection.js';
  * @param {string} options.apiVersion Pinned API version.
  * @param {() => void} [options.onLoadStart] Called on an org-backed cache miss or refresh.
  * @param {(status: string) => void} [options.onLoadEnd] Called before returning or throwing after loading.
+ * @param {Diagnostics} [options.diagnostics] Optional cache and query timings.
  * @param {CatalogCache} [options.cache] Cache override for tests.
  * @returns {Promise<{commands: object[], errors: object[], cached: boolean, generatedAt: string}>}
  */
@@ -28,6 +30,7 @@ export async function getCatalog({
   refresh,
   cacheDirectory,
   apiVersion,
+  diagnostics = new Diagnostics(),
   onLoadStart = () => {},
   onLoadEnd = () => {},
   cache = new CatalogCache({ directory: cacheDirectory }),
@@ -39,7 +42,10 @@ export async function getCatalog({
     apiVersion,
   };
   if (!refresh) {
-    const cachedCatalog = await cache.read(scope);
+    const cachedCatalog = await diagnostics.measure('Cache read', () =>
+      cache.read(scope)
+    );
+    diagnostics.note(`Cache: ${cachedCatalog ? 'hit' : 'miss'}`);
     if (cachedCatalog) {
       return {
         commands: cachedCatalog.commands,
@@ -48,6 +54,8 @@ export async function getCatalog({
         generatedAt: new Date(cachedCatalog.createdAt).toISOString(),
       };
     }
+  } else {
+    diagnostics.note('Cache: bypassed (--refresh)');
   }
 
   const communicatesWithOrg = sources.some((source) => source !== 'static');
@@ -55,13 +63,17 @@ export async function getCatalog({
   if (communicatesWithOrg) onLoadStart();
   try {
     const catalog = await loadCatalog({
-      connection: createNavigatorConnection(org, apiVersion),
+      connection: createNavigatorConnection(org, apiVersion, diagnostics),
       sources,
     });
     const createdAt = Date.now();
     if (catalog.errors.length === 0) {
-      await cache.write(scope, catalog);
+      await diagnostics.measure('Cache write', () =>
+        cache.write(scope, catalog)
+      );
     }
+    if (catalog.errors.length > 0)
+      diagnostics.note('Cache write: skipped (source errors)');
     status = didAllSourcesFail({ errors: catalog.errors, sources })
       ? 'Failed'
       : catalog.errors.length

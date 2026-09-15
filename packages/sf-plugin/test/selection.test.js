@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { after } from 'node:test';
 import { PassThrough } from 'node:stream';
+import { stripVTControlCharacters } from 'node:util';
 import test from 'node:test';
 import { searchCatalog } from '../lib/services/catalog.js';
 import { selectCommand } from '../lib/services/selection.js';
@@ -27,6 +28,7 @@ const KEY = { enter: '\r', down: '\x1b[B', up: '\x1b[A', escape: '\x1b' };
 async function drive(keys, options = {}) {
   const input = new PassThrough();
   const output = new PassThrough();
+  output.columns = 80;
   let rendered = '';
   output.on('data', (chunk) => {
     rendered += chunk.toString();
@@ -37,11 +39,27 @@ async function drive(keys, options = {}) {
   );
   for (const key of keys) {
     await new Promise((resolve) => setTimeout(resolve, 15));
-    input.write(key);
+    if (typeof key === 'number') {
+      output.columns = key;
+      output.emit('resize');
+    } else {
+      input.write(key);
+    }
   }
   const result = await pending;
-  return { result, rendered };
+  return { result, rendered, resizeListeners: output.listenerCount('resize') };
 }
+
+test('selectCommand renders column headers and adapts to terminal resize', async () => {
+  const { result, rendered, resizeListeners } = await drive([40, KEY.enter], {
+    initialTerm: 'deploy stat',
+  });
+  assert.equal(result.id, 'deploy-status');
+  const text = stripVTControlCharacters(rendered);
+  assert.match(text, /Command\s+Source\s+Uses/);
+  assert.match(text, /Deploy > Deployment Sta…\s+setup\s+0/);
+  assert.equal(resizeListeners, 0);
+});
 
 test('selectCommand returns the top match for the initial term on Enter', async () => {
   const { result, rendered } = await drive([KEY.enter], {

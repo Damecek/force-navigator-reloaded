@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { SALESFORCE_API_VERSION } from './core/index.js';
 import { getCatalog } from './services/catalog.js';
+import { Diagnostics } from './services/diagnostics.js';
 import { selectedSources } from './flags.js';
 
 /**
@@ -20,18 +21,34 @@ export async function createCommandContext(command, flags) {
   const org = flags['target-org'];
   const connection = org.getConnection(SALESFORCE_API_VERSION);
   const instanceUrl = connection.instanceUrl;
-  const catalog = await getCatalog({
-    org,
-    sources,
-    refresh: flags.refresh,
-    cacheDirectory: join(command.config.cacheDir, 'navigator', 'catalog'),
-    apiVersion: SALESFORCE_API_VERSION,
-    onLoadStart: () =>
-      command.spinner.start(
-        `Loading Salesforce commands from ${org.getUsername()}`
-      ),
-    onLoadEnd: (status) => command.spinner.stop(status),
+  const diagnostics = new Diagnostics({
+    enabled: flags.debug,
+    write: (line) => command.log(line),
   });
+  let catalog;
+  try {
+    catalog = await diagnostics.measure(
+      'Catalog total',
+      () =>
+        getCatalog({
+          org,
+          sources,
+          diagnostics,
+          refresh: flags.refresh,
+          cacheDirectory: join(command.config.cacheDir, 'navigator', 'catalog'),
+          apiVersion: SALESFORCE_API_VERSION,
+          onLoadStart: () =>
+            command.spinner.start(
+              `Loading Salesforce commands from ${org.getUsername()}`
+            ),
+          onLoadEnd: (status) => command.spinner.stop(status),
+        }),
+      (result) =>
+        `${result.commands.length} commands, ${result.errors.length} source errors`
+    );
+  } finally {
+    diagnostics.flush();
+  }
   return {
     org,
     orgId: org.getOrgId(),

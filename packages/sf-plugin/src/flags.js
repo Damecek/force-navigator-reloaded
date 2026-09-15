@@ -20,6 +20,11 @@ export const catalogFlags = {
     options: SOURCE_NAMES,
     multiple: true,
   }),
+  debug: Flags.boolean({
+    summary:
+      'Show cache status, Salesforce query timings, and catalog loading time.',
+    default: false,
+  }),
   refresh: Flags.boolean({
     summary: 'Refresh command data instead of using the local cache.',
     default: false,

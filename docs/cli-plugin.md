@@ -33,12 +33,16 @@ sf navigator open "account fields" -o my-dev
 sf navigator open "flow onboarding" -o my-uat --source flows
 sf navigator open -o my-dev --exclude-source apex-classes --exclude-source apex-triggers
 sf navigator open -o my-dev --refresh --browser chrome
+sf navigator open -o my-dev --debug --refresh
 ```
 
 `open` always shows the interactive palette, even when only one command matches. An optional query prefills the input;
 you can edit or clear it to search the whole loaded catalog. Type to filter, use `↑`/`↓` to move, and press `Enter` to
 open. `Esc` or `Ctrl+C` cancels without opening a page. The palette requires an interactive terminal and does
 not support JSON output or scripted selection.
+
+The palette aligns results in `Command`, `Source`, and `Uses` columns so labels, categories, and local usage counts
+are easy to compare. Long labels are truncated to fit the terminal; very narrow terminals hide Source, then Uses.
 
 Matching ignores Latin diacritics and highlights matched terms, as in the extension. Matching commands are ordered by
 usage count, then alphabetically by label. Successful opens update local history for the selected org and user; this
@@ -60,6 +64,21 @@ A cache hit or a `static`-only selection does not show this org-loading indicato
 
 A source error is reported separately from an empty
 source; successful sources remain searchable, while failure of every selected source exits unsuccessfully.
+
+## Diagnose loading time
+
+Add `--debug` to see timings after the loading spinner stops and before the palette opens. The output reports cache
+hits, misses, or bypasses, cache read/write time, and total catalog load time, command count, and source error count.
+Each Salesforce query page shows REST or Tooling API, the queried object, any numeric `LIMIT` or `OFFSET`, elapsed time,
+and returned record count.
+
+```bash
+sf navigator open -o my-dev --debug
+sf navigator open -o my-dev --debug --refresh
+```
+
+A cache hit avoids catalog queries. Use `--debug --refresh` to bypass the cache and measure requests to the org.
+Debug output omits full SOQL, returned org records, authentication tokens, login URLs, and error payloads.
 
 ## Scope
 

@@ -10,8 +10,9 @@ and refreshes show org-loading feedback before the palette; cached catalogs and 
 Current local validation:
 
 - Extension: 97 regression tests, ESLint, development build, and production build passed. Production retains webpack bundle-size warnings.
-- Plugin: 49 tests passed on Node.js 22 and Node.js 26. Coverage includes full-catalog defaults, source exclusions, empty-selection errors, cache-hit silence, loading lifecycle on refresh/miss/failure, and existing palette/navigation behavior.
-- Packaging: `npm pack --dry-run` passed; built command help exposes the repeatable `--exclude-source` flag.
+- Plugin: 60 tests passed on Node.js 22 and Node.js 26. Coverage includes optional debug timing and cache decisions, query pagination diagnostics, aligned Unicode-aware columns and resizing, full-catalog defaults, source exclusions, loading lifecycle, and existing palette/navigation behavior.
+- Packaging: `npm pack --dry-run` passed. An actual tarball was installed outside the repository; its `--debug` help and table-rendering dependencies loaded successfully. Dependency audit passed the high-severity threshold; four moderate findings remain in the Salesforce SDK tree.
+- Terminal: a PTY rendered Command/Source/Uses with Unicode names, long-label truncation, and right-aligned usage counts; Escape cancelled without navigation.
 - Browser runner: all 47 tests were discovered without contacting an org, including the new Service Setup case. Live navigation has not been rerun because no org was selected for this work.
 
 The earlier interactive-only revision also passed installation from an actual tarball outside the repository and PTY checks for editable prefill and global-search selection. Those checks were not repeated for this change.

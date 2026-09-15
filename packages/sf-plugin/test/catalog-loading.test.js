@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { Diagnostics } from '../lib/services/diagnostics.js';
 import { getCatalog } from '../lib/services/catalog.js';
 
 function fixture({
@@ -83,4 +84,37 @@ test('static-only loading does not report communication with an org', async () =
   const { options, events } = fixture({ sources: ['static'] });
   await getCatalog(options);
   assert.deepEqual(events, ['read', 'write']);
+});
+
+test('debug reports cache decisions and only measures requests when needed', async () => {
+  for (const scenario of [{ hit: true }, {}, { refresh: true }]) {
+    const { options, events } = fixture(scenario);
+    const lines = [];
+    options.diagnostics = new Diagnostics({
+      enabled: true,
+      write: (line) => lines.push(line),
+    });
+    await getCatalog(options);
+    assert.deepEqual(lines, []);
+    options.diagnostics.flush();
+    assert.ok(
+      lines.some((line) =>
+        line.includes(
+          `Cache: ${scenario.refresh ? 'bypassed' : scenario.hit ? 'hit' : 'miss'}`
+        )
+      )
+    );
+    assert.equal(
+      lines.some((line) => line.includes('REST User page 1:')),
+      !scenario.hit
+    );
+    assert.equal(
+      lines.some((line) => line.includes('Cache read:')),
+      !scenario.refresh
+    );
+    assert.equal(
+      lines.some((line) => line.includes('Cache write:')),
+      !scenario.hit
+    );
+  }
 });

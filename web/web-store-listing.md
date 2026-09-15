@@ -28,6 +28,6 @@ Force Navigator Reloaded uses Lightning Web Components and the Salesforce Lightn
 100% open source. Browse the code, report an issue, or contribute on GitHub:
 https://github.com/Damecek/force-navigator-reloaded
 
-Developers can also build the companion Salesforce CLI plugin from the repository. Run sf navigator open to filter an interactive command palette, choose a destination with the arrow keys, and open it in a selected org using an existing CLI login. The CLI offers all supported navigation categories by default, with flags to include or exclude categories and loading feedback when fetching commands from the org.
+Developers can also build the companion Salesforce CLI plugin from the repository. Run sf navigator open to filter an interactive command palette, choose a destination with the arrow keys, and open it in a selected org using an existing CLI login. The CLI offers all supported navigation categories by default, with flags to include or exclude categories. Aligned command, source, and usage columns make results easier to scan. Loading feedback and optional debug timings help identify slow org requests and cache use.
 
 You can customise the keyboard shortcut at chrome://extensions/shortcuts.

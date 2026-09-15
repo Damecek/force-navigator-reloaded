@@ -132,3 +132,31 @@ test('open rejects an empty source selection before connecting', async (t) => {
   );
   assert.equal(calls.connection, 0);
 });
+
+test('debug flushes query and catalog failures after stopping the spinner', async (t) => {
+  terminal(t, true);
+  const { context, calls } = await commandContext(t, {
+    flags: { source: ['users'], debug: true },
+    query: async () => {
+      throw new Error('private request details');
+    },
+  });
+  const output = [];
+  context.spinner.stop = () => output.push('spinner stopped');
+  context.log = (line) => output.push(line);
+  await assert.rejects(
+    NavigatorOpen.prototype.run.call(context),
+    isCommandError(/Every selected command source failed/)
+  );
+  assert.equal(output[0], 'spinner stopped');
+  assert.ok(output.some((line) => /REST User page 1: .*failed/.test(line)));
+  assert.ok(
+    output.some((line) =>
+      /Catalog total: .*0 commands, 1 source errors/.test(line)
+    )
+  );
+  assert.equal(
+    output.some((line) => line.includes('private request details')),
+    false
+  );
+});
