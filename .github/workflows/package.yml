@@ -39,13 +39,20 @@ jobs:
       - run: npm run build
 
       - name: Build and verify CLI package
-        working-directory: packages/sf-plugin
+        id: plugin
         run: |
+          if [ ! -d packages/sf-plugin ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Tag predates the CLI plugin; releasing the extension only."
+            exit 0
+          fi
+          cd packages/sf-plugin
           npm ci
           npm audit --audit-level=high
           npm test
           npm run test:package
           npm pack
+          echo "present=true" >> "$GITHUB_OUTPUT"
 
       - name: Zip dist
         id: zip
@@ -65,7 +72,7 @@ jobs:
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
           tag_name: v${{ env.NEW_VERSION }}
-          fail_on_unmatched_files: true
+          fail_on_unmatched_files: ${{ steps.plugin.outputs.present == 'true' }}
           files: |
             ${{ steps.zip.outputs.zip_path }}
             packages/sf-plugin/force-navigator-reloaded-*.tgz
