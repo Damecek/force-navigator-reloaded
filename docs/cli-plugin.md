@@ -5,7 +5,7 @@ queries, command definitions, and accent-insensitive fuzzy matching with the bro
 
 ## Install
 
-Install [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli) first. Once the first npm release is published, install the plugin with:
+Install [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli) first. Install the plugin with:
 
 ```bash
 sf plugins install force-navigator-reloaded
@@ -16,7 +16,6 @@ Salesforce CLI downloads the built npm package and its dependencies. No reposito
 The plugin requires Node.js 22.19.0 or newer in the CLI runtime. This community plugin is unsigned; Salesforce CLI may
 ask you to confirm that you trust it during installation.
 
-The first npm release is pending. If installation reports that the package was not found, it has not been published yet.
 Maintainers can follow the [release guide](cli-release.md).
 
 ## Update or uninstall

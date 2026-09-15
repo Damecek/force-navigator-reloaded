@@ -69,7 +69,6 @@ sf plugins install force-navigator-reloaded
 sf navigator open -o my-org
 ```
 
-The first npm release is pending. The install command becomes available after publication.
 Salesforce CLI downloads the built package; no checkout or local build is required. It may ask you to trust this unsigned
 community plugin. Update installed plugins with `sf plugins update`.
 

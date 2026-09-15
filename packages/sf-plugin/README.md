@@ -10,7 +10,6 @@ Install [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli), 
 sf plugins install force-navigator-reloaded
 ```
 
-The first npm release is pending. This command becomes available after that release.
 Salesforce CLI downloads the built package and dependencies. No checkout or local build is required.
 The CLI runtime must use Node.js 22.19.0 or newer. Salesforce CLI may ask you to trust this unsigned community plugin.
 
