@@ -68,9 +68,18 @@
   and a preview org. During preview windows, do not select a version newer than the current production release. Do not
   derive the version dynamically per org.
 
+# Releases
+
+- Before releasing, read `docs/cli-release.md`. It covers both products, CI workflows, authentication, and artifact recovery.
+- Every new GitHub release must contain both the extension `force-navigator-reloaded-<extension-version>.zip` and the CLI plugin `force-navigator-reloaded-<plugin-version>.tgz`, built from the release tag. Verify both assets after CI finishes.
+- Extension `v<version>` releases use `npm run release`; plugin npm releases use independent `sf-plugin-v<version>` tags and the manual `publish-cli.yml` workflow. Attaching a plugin tarball to an extension release does not publish it to npm.
+- The npm bootstrap is complete. Use Trusted Publishing for future npm releases; verify its npm configuration before publishing. Do not recreate `NPM_TOKEN` or enable bootstrap as a routine fallback.
+- If npm publication succeeded but GitHub assets are missing, use `publish-cli.yml` with `artifacts_only` enabled for the existing plugin tag. Never republish an existing npm version.
+
 # Versioning
 
-- Versions follow semver and are managed **locally** — CI never commits back to the repo.
+- Versions follow semver and are managed **locally**. CI never commits back to the repo.
+- The rules below apply to the root extension version. The plugin version in `packages/sf-plugin` is independent; bump it with `npm version patch --no-git-tag-version` in that directory, choosing minor or major when appropriate. Commit its package and lockfile changes before tagging.
 - **Patch** bumps happen automatically on every `git commit` via the `.husky/pre-commit` hook.
   - The hook runs `npm version patch`, syncs `src/manifest.json`, and stages the version files.
   - To skip the automatic bump (e.g. during amend or rebase), set `SKIP_PATCH_BUMP=1`.

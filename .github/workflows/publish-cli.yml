@@ -7,6 +7,11 @@ on:
         description: Existing plugin release tag, for example sf-plugin-v0.1.0
         required: true
         type: string
+      artifacts_only:
+        description: Attach both artifacts for an already-published npm version without publishing again
+        required: false
+        default: false
+        type: boolean
       bootstrap:
         description: First npm release only, using the temporary NPM_TOKEN secret
         required: false
@@ -14,7 +19,7 @@ on:
         type: boolean
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 concurrency:
@@ -53,12 +58,35 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm test
       - run: npm run test:package
-      - run: npm pack
+      - name: Pack plugin for publication
+        if: ${{ !inputs.artifacts_only }}
+        run: npm pack
+      - name: Download already-published plugin archive
+        if: ${{ inputs.artifacts_only }}
+        run: |
+          version=$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")
+          npm pack "force-navigator-reloaded@${version}" --ignore-scripts --registry=https://registry.npmjs.org
+      - name: Build companion extension
+        working-directory: .
+        run: |
+          npm ci
+          npm audit --audit-level=high
+          npm test
+          npm run lint
+          npm run build
+      - name: Package companion extension
+        id: extension
+        working-directory: .
+        run: |
+          version=$(node -p "require('./package.json').version")
+          zip_name="force-navigator-reloaded-${version}.zip"
+          (cd dist && zip -r "../${zip_name}" .)
+          echo "path=${zip_name}" >> "$GITHUB_OUTPUT"
       - name: Publish with npm Trusted Publishing
-        if: ${{ !inputs.bootstrap }}
+        if: ${{ !inputs.artifacts_only && !inputs.bootstrap }}
         run: npm publish ./force-navigator-reloaded-*.tgz --access public --ignore-scripts
       - name: Publish first version with temporary token
-        if: ${{ inputs.bootstrap }}
+        if: ${{ !inputs.artifacts_only && inputs.bootstrap }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -67,3 +95,21 @@ jobs:
             exit 1
           fi
           npm publish ./force-navigator-reloaded-*.tgz --access public --ignore-scripts
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
+        with:
+          tag_name: ${{ inputs.tag }}
+          make_latest: false
+          fail_on_unmatched_files: true
+          files: |
+            ${{ steps.extension.outputs.path }}
+            packages/sf-plugin/force-navigator-reloaded-*.tgz
+          body: |
+            ## Salesforce CLI plugin
+            Install with `sf plugins install force-navigator-reloaded`. Update installed plugins with `sf plugins update`.
+            To install this exact version, download the attached `.tgz` and run `sf plugins install ./<downloaded-file>.tgz`.
+
+            ## Browser extension
+            The attached ZIP is built from the same source tag. Extract it and use **Load unpacked** at `chrome://extensions` with Developer mode enabled.
+            For the store release, use the [Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak).
+
+            Extension and plugin versions are independent. This workflow does not publish to the Chrome Web Store.
