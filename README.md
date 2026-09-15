@@ -84,7 +84,7 @@ version might occasionally lag behind the latest release.
 
 ### Manual Installation (Developer Mode)
 
-1. Download `force-navigator-reloaded.zip` from the [GitHub Releases page](https://github.com/Damecek/force-navigator-reloaded/releases)
+1. Download `force-navigator-reloaded-<version>.zip` from the [GitHub Releases page](https://github.com/Damecek/force-navigator-reloaded/releases)
 2. Extract the archive
 3. Open Chrome and navigate to `chrome://extensions`
 4. Enable **Developer mode** in the top-right corner
@@ -172,7 +172,7 @@ action.
 - **LWC**: Uses Lightning Web Components via lwc-webpack-plugin
 - **Code Quality**: Prettier and ESLint configured with Salesforce LWC standards
 - **Git Hooks**: Husky pre-commit hook runs formatting
-- **CI Build & Web Store Release**: A GitHub Action builds and attaches a zipped archive for every release tag and automatically publishes that release to the Chrome Web Store. A manual dispatch can rebuild and publish a selected release tag.
+- **CI releases**: GitHub releases contain the extension ZIP and a built CLI plugin tarball from the same tag. Extension releases also publish to the Chrome Web Store; CLI releases publish to npm through a separate workflow. See the [maintainer release runbook](docs/cli-release.md) for both release paths and artifact recovery.
 - **Manifest Key Injection**: `webpack` injects the extension `key` and OAuth consumer key based on build mode. This keeps the extension ID stable for authentication.
 
 ### Salesforce API Compatibility

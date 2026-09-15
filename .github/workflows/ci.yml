@@ -16,6 +16,7 @@ on:
       - 'packages/sf-plugin/**'
       - '.github/workflows/ci.yml'
       - '.github/workflows/publish-cli.yml'
+      - '.github/workflows/package.yml'
   pull_request:
     branches: [main]
     paths:
@@ -29,6 +30,7 @@ on:
       - 'packages/sf-plugin/**'
       - '.github/workflows/ci.yml'
       - '.github/workflows/publish-cli.yml'
+      - '.github/workflows/package.yml'
 
 jobs:
   build:

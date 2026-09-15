@@ -31,7 +31,21 @@ jobs:
       - name: Read version
         run: echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
 
+      - name: Validate release tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: test "$RELEASE_TAG" = "v${NEW_VERSION}"
+
       - run: npm run build
+
+      - name: Build and verify CLI package
+        working-directory: packages/sf-plugin
+        run: |
+          npm ci
+          npm audit --audit-level=high
+          npm test
+          npm run test:package
+          npm pack
 
       - name: Zip dist
         id: zip
@@ -43,22 +57,28 @@ jobs:
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: force-navigator-reloaded-${{ env.NEW_VERSION }}
-          path: ${{ steps.zip.outputs.zip_path }}
+          path: |
+            ${{ steps.zip.outputs.zip_path }}
+            packages/sf-plugin/force-navigator-reloaded-*.tgz
           if-no-files-found: error
 
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
-        if: github.event_name == 'push'
         with:
           tag_name: v${{ env.NEW_VERSION }}
-          files: ${{ steps.zip.outputs.zip_path }}
+          fail_on_unmatched_files: true
+          files: |
+            ${{ steps.zip.outputs.zip_path }}
+            packages/sf-plugin/force-navigator-reloaded-*.tgz
           body: |
-            # Steps to install extension:
-            1. Download the force-navigator-reloaded.zip
-            2. Unzip
-            3. Go to chrome://extensions/
-            4. At the top right, turn on Developer mode
-            5. Click Load unpacked
-            6. Find and select the unzipped folder
+            ## Browser extension
+            Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/iniflnopffblekndhplennjijdcfkeak), or extract the attached ZIP and use **Load unpacked** at `chrome://extensions` with Developer mode enabled.
+
+            ## Salesforce CLI plugin
+            Install the latest npm release with `sf plugins install force-navigator-reloaded`.
+            The attached `.tgz` contains the plugin built from this release's source. To install that exact build, download it and run `sf plugins install ./<downloaded-file>.tgz`.
+            Update registry-installed plugins with `sf plugins update`.
+
+            Extension and plugin versions are independent. Attaching a plugin archive does not publish a new version to npm.
 
       - uses: mnao305/chrome-extension-upload@fdfe79400af990f5145a319e834aee64907ccff4 # v6.0.0
         with:
