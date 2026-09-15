@@ -16,4 +16,4 @@ After separately proving that a feature is unavailable in the target org, list i
 SF_NAVIGATOR_E2E_ORGS=my-dev SF_NAVIGATOR_E2E_UNAVAILABLE=feature-command-id npm run test:e2e
 ```
 
-The runner includes every supported source, including opt-in Apex classes and triggers. Object Manager sections and flow variants follow the shared palette defaults; disabled variants are skipped separately from passed routes.
+The runner includes every supported source, including Apex classes and triggers. It enables all supported Object Manager sections and flow variants, matching the CLI catalog. Missing commands are skipped separately from passed routes.

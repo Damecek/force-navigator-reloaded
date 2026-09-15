@@ -11,7 +11,13 @@ async function commandContext(
 ) {
   const cacheDir = await mkdtemp(join(tmpdir(), 'navigator-command-test-'));
   t.after(() => rm(cacheDir, { force: true, recursive: true }));
-  const calls = { connection: 0, authentication: 0, logs: [], warnings: [] };
+  const calls = {
+    connection: 0,
+    authentication: 0,
+    logs: [],
+    warnings: [],
+    loading: [],
+  };
   const org = {
     getOrgId: () => '00D000000000001AAA',
     getUsername: () => 'navigator-test@example.invalid',
@@ -33,6 +39,10 @@ async function commandContext(
   };
   const context = {
     config: { cacheDir },
+    spinner: {
+      start: (message) => calls.loading.push(message),
+      stop: (status) => calls.loading.push(status),
+    },
     parse: async () => ({
       args,
       flags: { 'target-org': org, source: ['static'], refresh: true, ...flags },
@@ -104,5 +114,21 @@ test('open fails when every selected source fails instead of prompting', async (
     isCommandError(/Every selected command source failed to load/)
   );
   assert.equal(calls.warnings.length, 2);
+  assert.deepEqual(calls.loading, [
+    'Loading Salesforce commands from navigator-test@example.invalid',
+    'Failed',
+  ]);
   assert.equal(calls.authentication, 0);
+});
+
+test('open rejects an empty source selection before connecting', async (t) => {
+  terminal(t, true);
+  const { context, calls } = await commandContext(t, {
+    flags: { source: ['users'], 'exclude-source': ['users'] },
+  });
+  await assert.rejects(
+    NavigatorOpen.prototype.run.call(context),
+    isCommandError(/No command sources remain/)
+  );
+  assert.equal(calls.connection, 0);
 });

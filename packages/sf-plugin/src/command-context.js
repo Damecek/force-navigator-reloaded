@@ -10,16 +10,27 @@ import { selectedSources } from './flags.js';
  * @returns {Promise<object>}
  */
 export async function createCommandContext(command, flags) {
+  const sources = selectedSources(flags);
+  if (sources.length === 0) {
+    command.error(
+      'No command sources remain. Adjust --source or --exclude-source.',
+      { exit: 1 }
+    );
+  }
   const org = flags['target-org'];
   const connection = org.getConnection(SALESFORCE_API_VERSION);
   const instanceUrl = connection.instanceUrl;
-  const sources = selectedSources(flags);
   const catalog = await getCatalog({
     org,
     sources,
     refresh: flags.refresh,
     cacheDirectory: join(command.config.cacheDir, 'navigator', 'catalog'),
     apiVersion: SALESFORCE_API_VERSION,
+    onLoadStart: () =>
+      command.spinner.start(
+        `Loading Salesforce commands from ${org.getUsername()}`
+      ),
+    onLoadEnd: (status) => command.spinner.stop(status),
   });
   return {
     org,

@@ -3,7 +3,7 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const CACHE_SCHEMA_VERSION = 1;
-const CATALOG_VERSION = 2;
+const CATALOG_VERSION = 3;
 export const DEFAULT_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 /**

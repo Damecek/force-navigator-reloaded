@@ -25,7 +25,7 @@ test('CatalogCache isolates scopes, persists safe catalog data, and expires', as
   await cache.write(scope, catalog);
   assert.deepEqual(await cache.read(scope), {
     schemaVersion: 1,
-    catalogVersion: 2,
+    catalogVersion: 3,
     createdAt: 1_000,
     ...catalog,
   });

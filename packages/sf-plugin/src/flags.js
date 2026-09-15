@@ -1,5 +1,5 @@
 import { Flags } from '@salesforce/sf-plugins-core';
-import { DEFAULT_SOURCES, SOURCE_NAMES } from './core/index.js';
+import { SOURCE_NAMES } from './core/index.js';
 
 export const catalogFlags = {
   'target-org': Flags.requiredOrg({
@@ -14,6 +14,12 @@ export const catalogFlags = {
     options: SOURCE_NAMES,
     multiple: true,
   }),
+  'exclude-source': Flags.string({
+    summary:
+      'Command source to exclude. Repeat to exclude more sources. Exclusions override --source.',
+    options: SOURCE_NAMES,
+    multiple: true,
+  }),
   refresh: Flags.boolean({
     summary: 'Refresh command data instead of using the local cache.',
     default: false,
@@ -21,12 +27,12 @@ export const catalogFlags = {
 };
 
 /**
- * Expand source flags to the default catalog when no filters were supplied.
- * @param {{source?: string[]}} flags Parsed CLI flags.
+ * Select sources from the full catalog, then apply exclusions.
+ * @param {{source?: string[], "exclude-source"?: string[]}} flags Parsed CLI flags.
  * @returns {string[]}
  */
 export function selectedSources(flags) {
-  return flags.source?.length
-    ? [...new Set(flags.source)]
-    : [...DEFAULT_SOURCES];
+  const included = flags.source?.length ? flags.source : SOURCE_NAMES;
+  const excluded = new Set(flags['exclude-source'] ?? []);
+  return [...new Set(included)].filter((source) => !excluded.has(source));
 }

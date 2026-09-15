@@ -20,6 +20,12 @@ const records = {
       NodeType: 'Setup',
       Url: '/users',
     },
+    {
+      FullName: 'Service.Users',
+      Label: 'Service Users',
+      NodeType: 'ServiceSetup',
+      Url: '/users',
+    },
   ],
   EntityDefinition: [
     {
@@ -76,6 +82,8 @@ test('catalog imports without browser globals and loads every navigational famil
   const expected = {
     'Setup-Root.Users':
       '/lightning/setup/Users/home?setupApp=all&SetupDomainProbePassed=true',
+    'ServiceSetup-Service.Users':
+      '/lightning/setup/Users/home?setupApp=service&SetupDomainProbePassed=true',
     'sobject-setup-fields-and-relationship-Account':
       '/lightning/setup/ObjectManager/Account/FieldsAndRelationships/view',
     'sobject-new-Account': '/lightning/o/Account/new',
@@ -87,6 +95,8 @@ test('catalog imports without browser globals and loads every navigational famil
     'flow-definition-300flow': '/lightning/setup/Flows/page?address=%2F300flow',
     'flow-latest-300flow':
       '/builder_platform_interaction/flowBuilder.app?flowId=301latest',
+    'flow-active-300flow':
+      '/builder_platform_interaction/flowBuilder.app?flowId=301active',
     'apex-class-01pclass':
       '/lightning/setup/ApexClasses/page?address=%2F01pclass',
     'apex-trigger-01qtrigger':
@@ -104,7 +114,7 @@ test('catalog imports without browser globals and loads every navigational famil
   assert.equal(
     commands.filter((command) => command.id.startsWith('sobject-setup-'))
       .length,
-    8
+    15
   );
   assert.equal(
     byId.get('experience-site-builder-0DM000000000001').host,
@@ -165,7 +175,7 @@ test('Service Setup routes use separate query parameters instead of HTML entitie
   assert.equal(url.searchParams.has('amp;SetupDomainProbePassed'), false);
 });
 
-test('default catalog matches extension navigation settings without opt-in Apex sources', async () => {
+test('default catalog includes all navigation while extension defaults remain configurable', async () => {
   globalThis.__CLIENT_ID__ = 'test-client';
   const { DEFAULT_SETTINGS } = await import('../src/shared/settings.js');
   delete globalThis.__CLIENT_ID__;
@@ -181,16 +191,20 @@ test('default catalog matches extension navigation settings without opt-in Apex 
   assert.deepEqual(errors, []);
   assert.deepEqual(
     [...new Set(commands.map((command) => command.source))],
-    DEFAULT_SOURCES
+    SOURCE_NAMES
   );
   assert.equal(
     calls.some((soql) => /FROM Apex(Class|Trigger)/.test(soql)),
-    false
+    true
+  );
+  assert.match(
+    calls.find((soql) => /FROM SetupNode/.test(soql)),
+    /NodeType IN \('Setup','PersonalSettings','ServiceSetup'\)/
   );
   const ids = new Set(commands.map((command) => command.id));
   assert.ok(ids.has('flow-latest-300flow'));
-  assert.equal(ids.has('flow-active-300flow'), false);
-  assert.equal(ids.has('sobject-setup-page-layouts-Account'), false);
+  assert.ok(ids.has('flow-active-300flow'));
+  assert.ok(ids.has('sobject-setup-page-layouts-Account'));
   assert.ok(ids.has('sobject-setup-lightning-pages-Account'));
   assert.deepEqual(
     settings.EntityDefinition.SObjectEntityType,
@@ -201,6 +215,13 @@ test('default catalog matches extension navigation settings without opt-in Apex 
     Latest: DEFAULT_FLOW_OPTIONS.includeLatest,
     Active: DEFAULT_FLOW_OPTIONS.includeActive,
   });
+  assert.equal(DEFAULT_SOURCES.includes('apex-classes'), false);
+  assert.equal(DEFAULT_SOURCES.includes('apex-triggers'), false);
+  assert.equal(settings.ApexClass, false);
+  assert.equal(settings.ApexTrigger, false);
+  assert.equal(settings.SetupBased.ServiceSetup, false);
+  assert.equal(settings.FlowDefinition.Active, false);
+  assert.equal(settings.EntityDefinition.SObjectEntityType.PageLayouts, false);
 });
 
 test('palette ordering uses descending usage with deterministic label ties', () => {

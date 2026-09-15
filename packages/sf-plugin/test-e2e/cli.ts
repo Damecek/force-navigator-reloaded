@@ -16,7 +16,7 @@ export type NavigationCommand = {
   url: string;
 };
 
-/** Load the palette catalog including opt-in Apex sources through the plugin's internal services. */
+/** Load the complete palette catalog through the plugin's internal services. */
 export async function loadNavigationCatalog(
   org: Org
 ): Promise<NavigationCommand[]> {

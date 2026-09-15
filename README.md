@@ -55,7 +55,10 @@ make the best result easier to scan.
 The companion Salesforce CLI plugin opens an interactive command palette with `sf navigator open -o my-org`.
 Type to filter, move with the arrow keys, and press Enter to open the selected page using your existing CLI authorization.
 An optional query prefills the palette. Frequently used commands rise to the top, and `? text` opens Salesforce global
-record search. Navigation commands open pages; they do not save records or deploy metadata.
+record search. All supported navigation sources, Object Manager sections, and flow variants are enabled by default.
+Use `--source` to select categories or `--exclude-source` to leave categories out. A loading indicator shows when the
+plugin fetches commands from your org on a cache miss or refresh. Navigation commands open pages; they do not save
+records or deploy metadata.
 
 See [CLI installation, commands, and validation](docs/cli-plugin.md) for local installation and usage.
 

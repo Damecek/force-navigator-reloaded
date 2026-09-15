@@ -15,7 +15,7 @@ import {
   SOBJECT_VALIDATION_RULES_ENTITY_TYPE,
 } from './constants.js';
 
-/** Default Object Manager sections shared by both palettes. */
+/** Default Object Manager sections for the configurable browser extension. */
 export const DEFAULT_OBJECT_SECTIONS = Object.freeze({
   [SOBJECT_FIELDS_RELATIONSHIPS_ENTITY_TYPE]: true,
   [SOBJECT_PAGE_LAYOUTS_ENTITY_TYPE]: false,
@@ -33,14 +33,14 @@ export const DEFAULT_OBJECT_SECTIONS = Object.freeze({
   [SOBJECT_VALIDATION_RULES_ENTITY_TYPE]: true,
 });
 
-/** Default flow destinations shared by both palettes. */
+/** Default flow destinations for the configurable browser extension. */
 export const DEFAULT_FLOW_OPTIONS = Object.freeze({
   includeDefinition: true,
   includeLatest: true,
   includeActive: false,
 });
 
-/** Default navigation sources. Apex catalogs remain opt-in. */
+/** Default extension sources. The CLI loads all supported sources. */
 export const DEFAULT_SOURCES = Object.freeze([
   'static',
   'setup',

@@ -63,6 +63,7 @@ const lightningApp = (command: NavigationCommand): string[][] => {
 /** One live navigation case for every distinct route shape emitted by the catalog. */
 export const navigationMatrix: NavigationCase[] = [
   { name: 'Setup node', id: /^Setup-/, dom: leaf },
+  { name: 'Service Setup node', id: /^ServiceSetup-/, dom: leaf },
   { name: 'Personal Settings node', id: /^PersonalSettings-/, dom: leaf },
   { name: 'Object details', id: /^sobject-setup-detail-/, dom: objectSection },
   {

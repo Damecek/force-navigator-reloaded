@@ -31,6 +31,7 @@ configured default org (`sf config set target-org <alias>`), so `-o` is only req
 sf navigator open -o my-dev
 sf navigator open "account fields" -o my-dev
 sf navigator open "flow onboarding" -o my-uat --source flows
+sf navigator open -o my-dev --exclude-source apex-classes --exclude-source apex-triggers
 sf navigator open -o my-dev --refresh --browser chrome
 ```
 
@@ -46,25 +47,29 @@ history is separate from Chrome and does not store record search terms. Type `? 
 Use `--browser` to choose a browser. Opening a destination authenticates the browser using Salesforce CLI without
 printing the login URL.
 
-Use `--source` more than once to restrict loading to selected families and `--refresh` to rebuild cached results.
-Available sources are `static`, `setup`, `objects`, `flows`, `apex-classes`, `apex-triggers`, `experience-sites`, `apps`,
-`permission-sets`, `permission-set-groups`, and `users`. Apex classes and triggers are opt-in, for example
-`sf navigator open -o my-dev --source apex-classes`.
+All supported sources load by default. Repeat `--source` to load only selected families, or repeat `--exclude-source`
+to omit families. When combined, exclusions remove sources from the explicit selection; an excluded source always wins.
+A selection that leaves no sources is rejected before loading. Available sources are `static`, `setup`, `objects`,
+`flows`, `apex-classes`, `apex-triggers`, `experience-sites`, `apps`, `permission-sets`, `permission-set-groups`, and `users`.
+For example, `--source objects --source flows --exclude-source flows` loads only objects.
 
 Cached catalogs expire after six hours and are isolated by org, username, API version, catalog version, and selected
-sources. Use `--refresh` after changing permissions or org metadata. A source error is reported separately from an empty
+sources. Use `--refresh` after changing permissions or org metadata. On a cache miss or refresh, a
+`Loading Salesforce commands from <username>` spinner runs while fetching the catalog and stops before the palette opens.
+A cache hit or a `static`-only selection does not show this org-loading indicator.
+
+A source error is reported separately from an empty
 source; successful sources remain searchable, while failure of every selected source exits unsuccessfully.
 
 ## Scope
 
-Default navigation families match the extension: Setup and personal settings, objects and custom metadata, flows,
-Experience Cloud, Lightning apps, permission sets and groups, and active users, plus static destinations. Availability
-depends on org features and user permissions. Unmanaged Apex classes and triggers can be loaded with `--source`.
+The default catalog includes Setup, Service Setup and personal settings, objects and custom metadata, flows,
+unmanaged Apex classes and triggers, Experience Cloud, Lightning apps, permission sets and groups, active users, and
+static destinations. Availability depends on org features and user permissions.
 
-Object Manager sections and flow variants use the extension defaults. This includes fields, Lightning pages, buttons
-and actions, record types, object Apex and Flow triggers, and validation rules. Flow definitions and latest versions
-are enabled; active versions are disabled. The CLI does not expose the extension's settings editor or read its custom
-settings, tokens, or history.
+All supported Object Manager sections are enabled, including Page Layouts, along with flow definitions, latest versions,
+and active versions. The CLI deliberately offers more commands by default than the extension because it has no settings
+editor. Extension defaults are unchanged. The CLI does not read the extension's custom settings, tokens, or history.
 
 Commands navigate to Salesforce UI. Opening a new-record page does not save a record. Login As, extension authorization,
 extension settings, and Chrome-specific actions are outside the plugin's scope. Switching a Lightning app opens that

@@ -17,6 +17,8 @@ import { createNavigatorConnection } from './connection.js';
  * @param {boolean} options.refresh Bypass cache.
  * @param {string} options.cacheDirectory Cache directory.
  * @param {string} options.apiVersion Pinned API version.
+ * @param {() => void} [options.onLoadStart] Called on an org-backed cache miss or refresh.
+ * @param {(status: string) => void} [options.onLoadEnd] Called before returning or throwing after loading.
  * @param {CatalogCache} [options.cache] Cache override for tests.
  * @returns {Promise<{commands: object[], errors: object[], cached: boolean, generatedAt: string}>}
  */
@@ -26,6 +28,8 @@ export async function getCatalog({
   refresh,
   cacheDirectory,
   apiVersion,
+  onLoadStart = () => {},
+  onLoadEnd = () => {},
   cache = new CatalogCache({ directory: cacheDirectory }),
 }) {
   const scope = {
@@ -46,19 +50,31 @@ export async function getCatalog({
     }
   }
 
-  const catalog = await loadCatalog({
-    connection: createNavigatorConnection(org, apiVersion),
-    sources,
-  });
-  const createdAt = Date.now();
-  if (catalog.errors.length === 0) {
-    await cache.write(scope, catalog);
+  const communicatesWithOrg = sources.some((source) => source !== 'static');
+  let status = 'Failed';
+  if (communicatesWithOrg) onLoadStart();
+  try {
+    const catalog = await loadCatalog({
+      connection: createNavigatorConnection(org, apiVersion),
+      sources,
+    });
+    const createdAt = Date.now();
+    if (catalog.errors.length === 0) {
+      await cache.write(scope, catalog);
+    }
+    status = didAllSourcesFail({ errors: catalog.errors, sources })
+      ? 'Failed'
+      : catalog.errors.length
+        ? 'Partial'
+        : 'Done';
+    return {
+      ...catalog,
+      cached: false,
+      generatedAt: new Date(createdAt).toISOString(),
+    };
+  } finally {
+    if (communicatesWithOrg) onLoadEnd(status);
   }
-  return {
-    ...catalog,
-    cached: false,
-    generatedAt: new Date(createdAt).toISOString(),
-  };
 }
 
 /**

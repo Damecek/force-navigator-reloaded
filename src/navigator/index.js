@@ -1,8 +1,3 @@
-import {
-  DEFAULT_SOURCES,
-  DEFAULT_OBJECT_SECTIONS,
-  DEFAULT_FLOW_OPTIONS,
-} from './defaults.js';
 export {
   DEFAULT_SOURCES,
   DEFAULT_OBJECT_SECTIONS,
@@ -33,18 +28,19 @@ const SOURCE_LOADERS = {
   static: async () => staticCommands,
   setup: async (connection) =>
     builders.buildSetupCommands(
-      await queries.fetchMenuNodesFromSalesforce(connection)
+      await queries.fetchMenuNodesFromSalesforce(connection, [
+        'Setup',
+        'PersonalSettings',
+        'ServiceSetup',
+      ])
     ),
   objects: async (connection) =>
     builders.buildEntityCommands(
-      await queries.fetchEntityDefinitionsFromSalesforce(connection),
-      true,
-      DEFAULT_OBJECT_SECTIONS
+      await queries.fetchEntityDefinitionsFromSalesforce(connection)
     ),
   flows: async (connection) =>
     builders.buildFlowCommands(
-      await queries.fetchFlowDefinitionsFromSalesforce(connection),
-      DEFAULT_FLOW_OPTIONS
+      await queries.fetchFlowDefinitionsFromSalesforce(connection)
     ),
   'apex-classes': async (connection) =>
     buildApexClassCommands(
@@ -87,10 +83,11 @@ export const SOURCE_NAMES = Object.freeze(Object.keys(SOURCE_LOADERS));
  * Load navigation descriptors without authentication, cache, or browser state.
  * Both connection methods must return every record, following API query locators.
  * A failed family is reported separately from an empty family.
+ * All supported sources, object sections, and flow destinations are included by default.
  * @param {{connection: {query: Function, toolingQuery: Function}, sources?: string[]}} options
  * @returns {Promise<{commands: object[], errors: Array<{source: string, message: string}>}>}
  */
-export async function loadCatalog({ connection, sources = DEFAULT_SOURCES }) {
+export async function loadCatalog({ connection, sources = SOURCE_NAMES }) {
   if (
     !Array.isArray(sources) ||
     sources.some((source) => !SOURCE_NAMES.includes(source))

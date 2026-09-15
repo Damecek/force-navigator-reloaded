@@ -15,6 +15,7 @@ sf plugins link .
 sf navigator open --target-org dev
 sf navigator open "flow onboarding" --target-org uat
 sf navigator open --target-org dev --source apex-classes
+sf navigator open --target-org dev --exclude-source apex-classes --exclude-source apex-triggers
 ```
 
 `--target-org` falls back to the configured default org. `open` always shows the palette, including when only one result
@@ -24,10 +25,15 @@ to cancel. An interactive terminal is required; JSON output and scripted selecti
 Frequently used commands appear first, followed by alphabetical label order. Usage history is local to the org and user
 and separate from Chrome. Enter `? text` in the palette to open Salesforce global record search.
 
-Default navigation families, Object Manager sections, and flow variants match the extension. Apex classes and triggers
-are opt-in through `--source`. Repeat `--source` to limit API queries to selected families. `--refresh` bypasses the
-six-hour local cache, and `--browser` selects a browser. Authentication uses the existing Salesforce CLI login without
-printing a login URL.
+All supported navigation families, Object Manager sections, and flow variants are enabled by default, including Apex
+and Service Setup. Extension defaults are unchanged. Repeat `--source` to load only selected families, or repeat
+`--exclude-source` to omit families. Exclusions also apply to an explicit `--source` selection and take precedence.
+Leaving no sources is an error.
+
+`--refresh` bypasses the six-hour local cache. A loading spinner identifies the user while fetching commands from the
+org on a cache miss or refresh, then stops before the palette opens. Cached catalogs and static-only selections do not
+show the org-loading spinner. `--browser` selects a browser. Authentication uses the existing Salesforce CLI login
+without printing a login URL.
 
 Running a linked build prints a Salesforce CLI warning about a linked ESM module that cannot be auto-transpiled. It is informational; the built `lib` output is used.
 

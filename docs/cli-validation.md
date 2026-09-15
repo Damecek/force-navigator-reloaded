@@ -2,17 +2,23 @@
 
 ## Current interactive-only interface
 
-The plugin now exposes only the interactive `navigator open` palette.
+The plugin exposes only the interactive `navigator open` palette. Its current default catalog enables every supported
+navigation source, Object Manager section, and flow variant. Repeatable `--exclude-source` removes categories from the
+default catalog or an explicit `--source` selection. Exclusions win and an empty selection is rejected. Cache misses
+and refreshes show org-loading feedback before the palette; cached catalogs and static-only selections omit it.
+
+Current local validation:
 
 - Extension: 97 regression tests, ESLint, development build, and production build passed. Production retains webpack bundle-size warnings.
-- Plugin: 40 tests passed on Node.js 22 and Node.js 26, covering confirmation, cancellation, editing prefilled text, usage ordering and persistence, global search descriptors, and existing navigation safeguards.
-- Packaging: `npm pack --dry-run` passed. An actual tarball was installed outside the repository and its help verified to expose only the interactive command and supported flags.
-- Terminal: a real PTY confirmed that a unique prefilled match waits for Enter, Ctrl+U clears it, and typing `? Acme` selects global record search.
-- Browser runner: all 46 tests were discovered successfully without contacting an org. Live navigation, including the new global-search entry point, has not been rerun because no org was selected for this work.
+- Plugin: 49 tests passed on Node.js 22 and Node.js 26. Coverage includes full-catalog defaults, source exclusions, empty-selection errors, cache-hit silence, loading lifecycle on refresh/miss/failure, and existing palette/navigation behavior.
+- Packaging: `npm pack --dry-run` passed; built command help exposes the repeatable `--exclude-source` flag.
+- Browser runner: all 47 tests were discovered without contacting an org, including the new Service Setup case. Live navigation has not been rerun because no org was selected for this work.
+
+The earlier interactive-only revision also passed installation from an actual tarball outside the repository and PTY checks for editable prefill and global-search selection. Those checks were not repeated for this change.
 
 The results below are historical evidence for the earlier implementation, not proof that the revised interface passes live browser checks.
 
-The current browser runner loads all supported sources, including opt-in Apex, and resolves sample destinations through internal catalog and navigation
+The current browser runner loads all supported sources, including Apex, and resolves sample destinations through internal catalog and navigation
 services. It does not depend on removed public scripting commands and does not exercise the terminal palette.
 
 ## Historical validation
@@ -78,4 +84,5 @@ Initial live runs reached Lightning Home instead of Web Console in both sandboxe
 
 These observations do not establish successful Web Console launch or prove a CLI-specific defect. The shared command and its tested Setup-domain URL remain available. Web Console must be recorded as unavailable/unvalidated in these sandboxes, not as a successful browser check. The final runner can explicitly skip this diagnosed case with `SF_NAVIGATOR_E2E_UNAVAILABLE=web-console`; no commands are skipped by that setting by default.
 
-Service Setup is outside the CLI catalog: the shared Setup query includes `Setup` and `PersonalSettings`, matching the extension's existing query. It is not counted as a missing sandbox capability.
+Service Setup was outside the CLI catalog during this historical validation. The Setup query then included only `Setup` and
+`PersonalSettings`. The current CLI includes Service Setup, but its routes have not been live-validated by these earlier runs.
