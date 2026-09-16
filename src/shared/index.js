@@ -5,3 +5,4 @@ export * from './constants.js';
 export * from './urlUtils.js';
 export * from './settings.js';
 export * from './authFailure.js';
+export * from './authFailureCopy.js';

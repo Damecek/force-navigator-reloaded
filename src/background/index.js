@@ -3,7 +3,9 @@ import {
   CacheManager,
   Channel,
   CHANNEL_AUTOLOGIN_MYDOMAIN,
+  AUTH_HELP_PAGE,
   CHANNEL_LOGIN_AS_PRIVATE,
+  CHANNEL_OPEN_AUTH_HELP,
   CHANNEL_OPEN_OPTIONS,
   CHANNEL_OPEN_POPUP,
   CHANNEL_OPEN_REVIEW_PAGE,
@@ -98,6 +100,10 @@ new Channel(CHANNEL_OPEN_POPUP).subscribe(() => {
   } else {
     return console.warn('openPopup is not supported');
   }
+});
+
+new Channel(CHANNEL_OPEN_AUTH_HELP).subscribe(() => {
+  return chrome.tabs.create({ url: chrome.runtime.getURL(AUTH_HELP_PAGE) });
 });
 
 new Channel(CHANNEL_OPEN_REVIEW_PAGE).subscribe(() => {

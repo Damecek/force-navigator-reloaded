@@ -63,6 +63,11 @@ module.exports = (env, argv) => {
     plugins: [
       new webpack.DefinePlugin({
         __CLIENT_ID__: JSON.stringify(isProd ? PROD_CLIENT_ID : DEV_CLIENT_ID),
+        __CONNECTED_APP_LABEL__: JSON.stringify(
+          isProd
+            ? 'Force Navigator Reloaded Prod'
+            : 'Force Navigator Reloaded Dev'
+        ),
       }),
       new LwcWebpackPlugin(),
       new CopyWebpackPlugin({

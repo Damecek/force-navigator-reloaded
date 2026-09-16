@@ -107,3 +107,21 @@ E2E evidence (administrator, consent page reachable):
 - Choosing **Deny** returned `error=access_denied` to the callback and published `kind: access_denied`, `source: oauth_callback`.
 
 Automated tests added: `tests/authFailureClassification.test.js`, `tests/oauthErrorPageDetection.test.js`, `tests/authAttempts.test.js`, `tests/authFlowController.test.js`, `tests/interactiveLoginErrors.test.js`.
+
+### Commit 2: help inside the OAuth error window
+
+Implemented behavior:
+
+- The background answers `reportOauthErrorPage` with the attributed failure (`Channel.request` / `subscribe(cb, { respond: true })`). Unattributed pages receive `null` and stay untouched.
+- `src/content_scripts/oauthErrorHelpPanel.js` prepends an extension-owned panel (shadow DOM, `role="region"`, focused heading) above the original Salesforce error. Copy comes from `src/shared/authFailureCopy.js` and names the build-specific connected app label (`CONNECTED_APP_LABEL`, defined by webpack as "Force Navigator Reloaded Dev" or "Force Navigator Reloaded Prod").
+- The missing-install text states that a Salesforce administrator needs to install the connected app, that "Allowed" is not "Installed", the Setup path, and the retry. The original Salesforce error code and description remain visible in the panel and on the page.
+- "Open authorization help" asks the background (`openAuthorizationHelp`) to open `welcome.html#authorization-help`; the anchor keeps the public README section as a fallback `href`. The welcome section itself is added in the onboarding commit.
+
+E2E evidence (nonadmin, app not installed):
+
+- The panel was attached within 9 ms of the error page URL being observed, as the first child of `body`, with `data-force-navigator-failure-kind="app_not_installed"`, the expected title, message, administrator steps, and `Salesforce reported: invalid_client: app must be installed into org`. The Salesforce "OAuth Error" text stayed visible below it. Screenshot reviewed.
+- Focus started on the panel heading; `Tab` moved to the help link and `Enter` opened `chrome-extension://<id>/welcome.html#authorization-help` in the browser.
+- The palette received the failure only after the window was closed, still as `app_not_installed`.
+- The same error URL opened manually in a regular tab rendered no panel.
+
+Automated tests added: `tests/authFailureCopy.test.js`.
