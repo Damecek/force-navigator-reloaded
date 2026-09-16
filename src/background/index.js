@@ -2,10 +2,7 @@ import {
   buildFrontdoorUrl,
   CacheManager,
   Channel,
-  CHANNEL_COMPLETED_AUTH_FLOW,
   CHANNEL_AUTOLOGIN_MYDOMAIN,
-  CHANNEL_FAILED_AUTH_FLOW,
-  CHANNEL_INVOKE_AUTH_FLOW,
   CHANNEL_LOGIN_AS_PRIVATE,
   CHANNEL_OPEN_OPTIONS,
   CHANNEL_OPEN_POPUP,
@@ -19,11 +16,8 @@ import {
   toCoreUrl,
 } from '../shared/index.js';
 import { getCommands } from './commandRegister.js';
-import {
-  ensureToken,
-  ensureWebScopedToken,
-  interactiveLogin,
-} from './auth/auth.js';
+import { ensureToken, ensureWebScopedToken } from './auth/auth.js';
+import { registerAuthFlowListeners } from './auth/authFlowController.js';
 
 chrome.commands.onCommand.addListener((command, tab) => {
   const url = tab?.url;
@@ -55,21 +49,7 @@ new Channel(CHANNEL_REFRESH_COMMANDS).subscribe(async ({ sender }) => {
   });
 });
 
-new Channel(CHANNEL_INVOKE_AUTH_FLOW).subscribe(async ({ sender }) => {
-  const hostname = getSenderHostname(sender);
-  try {
-    await interactiveLogin(hostname);
-    return new Channel(CHANNEL_COMPLETED_AUTH_FLOW).publish({
-      tabId: sender.tab.id,
-    });
-  } catch (error) {
-    console.error('Auth flow failed', error);
-    return new Channel(CHANNEL_FAILED_AUTH_FLOW).publish({
-      data: { message: error?.message || 'Auth flow failed' },
-      tabId: sender.tab.id,
-    });
-  }
-});
+registerAuthFlowListeners();
 
 new Channel(CHANNEL_AUTOLOGIN_MYDOMAIN).subscribe(async ({ sender }) => {
   const tabId = sender?.tab?.id;

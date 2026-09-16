@@ -22,6 +22,8 @@ export default class App extends LightningElement {
   @track commands = [];
   @track isLoading = false;
   isCommandPaletteVisible = false;
+  /** @type {import('../../../../../background/auth/authFlowController.js').AuthFailurePayload|null} */
+  authFailure = null;
 
   /**
    * Subscribe to background channels and set up event listeners.
@@ -46,11 +48,18 @@ export default class App extends LightningElement {
 
   _handleAuth = () => {
     console.log('auth completed');
+    this.authFailure = null;
     return this.publishRefreshCommands();
   };
 
   _handleAuthFailure = ({ data }) => {
-    console.error('auth failed', data);
+    const failure = data?.failure ?? null;
+    this.authFailure = failure;
+    console.error('auth failed', {
+      kind: failure?.kind,
+      confirmed: failure?.confirmed,
+      salesforceError: failure?.salesforceError,
+    });
     this.isLoading = false;
     return false;
   };

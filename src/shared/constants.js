@@ -129,3 +129,11 @@ export const CHANNEL_OPEN_REVIEW_PAGE = 'openReviewPage';
 export const CHANNEL_LOGIN_AS_PRIVATE = 'loginAsPrivate';
 export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';
 export const CHANNEL_AUTOLOGIN_MYDOMAIN = 'autoLoginMyDomain';
+export const CHANNEL_REPORT_OAUTH_ERROR_PAGE = 'reportOauthErrorPage';
+
+/**
+ * Path of the Salesforce page that shows terminal OAuth errors such as
+ * `invalid_client` when the connected app is not installed in the org.
+ */
+export const SALESFORCE_OAUTH_ERROR_PAGE_PATH =
+  '/setup/secur/RemoteAccessErrorPage.apexp';

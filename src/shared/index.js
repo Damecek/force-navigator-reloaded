@@ -4,3 +4,4 @@ export { default as UsageTracker } from './usageTracker.js';
 export * from './constants.js';
 export * from './urlUtils.js';
 export * from './settings.js';
+export * from './authFailure.js';
