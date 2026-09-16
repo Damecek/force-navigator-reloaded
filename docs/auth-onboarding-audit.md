@@ -125,3 +125,22 @@ E2E evidence (nonadmin, app not installed):
 - The same error URL opened manually in a regular tab rendered no panel.
 
 Automated tests added: `tests/authFailureCopy.test.js`.
+
+### Commit 3: native Salesforce error toast
+
+Implemented behavior:
+
+- `src/content_scripts/lightningToast.js` runs in the page context (injected through `src/content_scripts/pageScriptInjector.js`, shared with the navigation bridge) and fires `force:showToast` inside `$A.getCallback`. It sets `message` and, for a help link, `messageTemplate` plus `messageTemplateData`; Salesforce silently drops toasts that carry a template without `message`. It can close toasts it created and forwards clicks on the help link as `forceNavigatorOpenAuthHelp`.
+- `src/content_scripts/lightningToastBridge.js` exposes `showLightningToast` and `dismissLightningToasts` to the content script. `src/content_scripts/authHelpLink.js` opens `welcome.html#authorization-help` through the background.
+- `src/lwc/modules/content/x/authFeedback/authFeedback.js` shows one sticky error toast per authorization attempt with the copy from `authFailureCopy.js`, closes the toast of a previous attempt before showing the next one, and falls back to `src/content_scripts/fallbackNotice.js` (shadow DOM, `role="alert"`, z-index above the palette, dismiss button, help link) when the host toast mechanism is unavailable.
+
+E2E evidence (nonadmin, app not installed):
+
+- After closing the OAuth window, the originating tab showed the native error toast titled "Force Navigator Reloaded needs to be installed in this Salesforce org" with the administrator steps and the "Open authorization help" link. The palette stayed open; hit testing at the toast center returned the toast content (container z-index 10000 above the palette backdrop). Screenshot reviewed.
+- Clicking the toast link opened `welcome.html#authorization-help`; the toast stayed visible.
+- A second failed attempt replaced the first toast; exactly one toast remained.
+- With `window.$A` removed from the page, a third failed attempt rendered the fallback notice (`role="alert"`, help link, z-index 10001, hit test on the notice) and no native toast; the dismiss button removed it.
+
+E2E evidence (administrator): closing the consent window produced the toast "Authorization was not completed" without any claim about installation.
+
+Automated tests added: `tests/authFeedback.test.js`.

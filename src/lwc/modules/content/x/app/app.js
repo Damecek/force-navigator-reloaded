@@ -9,6 +9,8 @@ import {
 } from '../../../../../shared';
 import { createCommandDescriptors } from '../commandClassRegister/commandFactory';
 import { COMMAND_LOADING_EVENT } from '../loading/loadingEvents';
+import { createAuthFeedback } from '../authFeedback/authFeedback';
+import { openAuthHelp } from '../../../../../content_scripts/authHelpLink';
 
 /**
  * App component for the command palette.
@@ -24,6 +26,7 @@ export default class App extends LightningElement {
   isCommandPaletteVisible = false;
   /** @type {import('../../../../../background/auth/authFlowController.js').AuthFailurePayload|null} */
   authFailure = null;
+  _authFeedback = createAuthFeedback({ openHelp: openAuthHelp });
 
   /**
    * Subscribe to background channels and set up event listeners.
@@ -61,6 +64,7 @@ export default class App extends LightningElement {
       salesforceError: failure?.salesforceError,
     });
     this.isLoading = false;
+    this._authFeedback.showFailure(failure);
     return false;
   };
 

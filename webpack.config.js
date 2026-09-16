@@ -105,6 +105,10 @@ module.exports = (env, argv) => {
             from: 'src/content_scripts/lightningNavigation.js',
             to: 'lightningNavigation.js',
           },
+          {
+            from: 'src/content_scripts/lightningToast.js',
+            to: 'lightningToast.js',
+          },
           { from: 'src/icons', to: 'icons' },
         ],
       }),

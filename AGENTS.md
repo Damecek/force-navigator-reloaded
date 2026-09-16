@@ -63,6 +63,9 @@
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.
 - For long-running command executions, emit explicit loading events from command classes so `app` can toggle loading indicators without command-id filtering.
+- Page-context bridges (Aura navigation, native toasts) are plain scripts in `src/content_scripts` injected through
+  `pageScriptInjector.js` and driven by DOM events. Register new ones in `webpack.config.js` copy patterns and in the
+  manifest `web_accessible_resources`; keep authorization failure copy in `src/shared/authFailureCopy.js`.
 - Keep Salesforce REST and Tooling API requests pinned through `SALESFORCE_API_VERSION`. Advance the pin deliberately,
   one version at a time, only after every command source has been validated against both the current production release
   and a preview org. During preview windows, do not select a version newer than the current production release. Do not

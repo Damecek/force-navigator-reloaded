@@ -1,7 +1,7 @@
 {
   "name": "Force Navigator Reloaded for Salesforce",
   "manifest_version": 3,
-  "version": "5.16.12",
+  "version": "5.16.13",
   "description": "Keyboard-first Salesforce command palette and shortcuts for Setup, objects, flows, permissions, users, and Login As.",
   "background": {
     "service_worker": "background.js"
@@ -51,7 +51,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["lightningNavigation.js"],
+      "resources": ["lightningNavigation.js", "lightningToast.js"],
       "matches": [
         "https://*.force.com/*",
         "https://*.my.site.com/*",
