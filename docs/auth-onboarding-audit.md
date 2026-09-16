@@ -144,3 +144,22 @@ E2E evidence (nonadmin, app not installed):
 E2E evidence (administrator): closing the consent window produced the toast "Authorization was not completed" without any claim about installation.
 
 Automated tests added: `tests/authFeedback.test.js`.
+
+### Commit 4: onboarding and documentation
+
+Implemented behavior:
+
+- Welcome (`src/lwc/modules/welcome/x/welcomeApp`): a fourth quick-start step "Authorize once per org" and a new section "Authorize the extension" anchored at `#authorization-help`. It explains the three authorization steps, the "app must be installed into org" error, that Allowed is not Installed, possible user assignment under the app's Permitted Users policy, five administrator steps, other authorization messages, and a copyable message for administrators (`src/shared/authorizationHelp.js`, clipboard with selection fallback and a live status). The page scrolls to and focuses the section when opened with the anchor. The connected app label comes from the build (`CONNECTED_APP_LABEL`).
+- Popup: an "Authorization" section with the `authorization help` link opening `welcome.html#authorization-help`.
+- README: the section is now "Authorization & Connected Apps" (the anchor used by the toast and panel fallback link). It documents how to authorize, the administrator prerequisite, the Setup steps with the correct app name per build, Allowed vs Installed, user assignment, and the other messages. The claim that approving access is always sufficient was removed, and connected-app installation in the org is distinguished from deploying metadata and from installing the Chrome extension.
+- `web/web-store-listing.md`: one unwrapped "Authorize once per org" paragraph naming "Force Navigator Reloaded Prod" and the administrator prerequisite.
+- None of the surfaces promise that auto-login bypasses VPN, identity verification, or account freezing.
+
+E2E evidence (development build):
+
+- `welcome.html#authorization-help` opened with the section at the top of the viewport and focused; it named "Force Navigator Reloaded Dev", listed five administrator steps, and stated that Allowed does not mean Installed. Inline boundaries were checked programmatically after LWC dropped whitespace before inline elements; the template now uses `&nbsp;` there. Screenshot reviewed.
+- "Copy instructions for your administrator" set the status "Copied to clipboard."; pasting into a scratch page reproduced the 1,040-character text exactly.
+- The popup's authorization help link opened the welcome anchor in a new tab; the popup mentions the "app must be installed into org" error.
+- From the real missing-install failure, both the OAuth window panel link and the Salesforce toast link opened the welcome page with the section at the top and focused, completing the journey from failure to administrator instructions and retry guidance.
+
+Automated tests added: `tests/authorizationHelp.test.js`, `tests/authorizationDocs.test.js`, and an extended `tests/welcomeCopy.test.js`.

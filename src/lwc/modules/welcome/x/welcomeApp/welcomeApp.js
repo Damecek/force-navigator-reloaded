@@ -1,5 +1,10 @@
-import { LightningElement } from 'lwc';
-import { CONTENT_SCRIPT_ENABLED_BASE_DOMAINS } from '../../../../../shared';
+import { LightningElement, track } from 'lwc';
+import {
+  buildAdminInstallSteps,
+  buildAdminInstructions,
+  CONNECTED_APP_LABEL,
+  CONTENT_SCRIPT_ENABLED_BASE_DOMAINS,
+} from '../../../../../shared';
 
 const LIGHTNING_URLS = CONTENT_SCRIPT_ENABLED_BASE_DOMAINS.map(
   (baseDomain) => `https://*${baseDomain}/*`
@@ -7,6 +12,7 @@ const LIGHTNING_URLS = CONTENT_SCRIPT_ENABLED_BASE_DOMAINS.map(
 const APPLE_PLATFORM_REGEX = /(mac|iphone|ipad|ipod)/i;
 const IPAD_OS_REGEX = /MacIntel/i;
 const SALESFORCE_LOGIN_URL = 'https://login.salesforce.com/';
+const AUTHORIZATION_HELP_HASH = '#authorization-help';
 
 /**
  * Return true when running on Apple platform (Mac/iOS/iPadOS).
@@ -38,9 +44,103 @@ export default class WelcomeApp extends LightningElement {
 
   firstLightningTabId = null;
   hasLightningTab = false;
+  @track copyStatus = '';
+  _scrolledToHash = false;
 
   connectedCallback() {
     void this.setupLightningLink();
+    window.addEventListener('hashchange', this._handleHashChange);
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('hashchange', this._handleHashChange);
+  }
+
+  renderedCallback() {
+    if (this._scrolledToHash) {
+      return;
+    }
+    this._scrolledToHash = true;
+    this.scrollToAuthorizationHelpIfRequested();
+  }
+
+  /**
+   * Connected app label administrators see for this build.
+   * @returns {string}
+   */
+  get connectedAppLabel() {
+    return CONNECTED_APP_LABEL;
+  }
+
+  /**
+   * Administrator installation steps for the template loop.
+   * @returns {{id: string, text: string}[]}
+   */
+  get adminSteps() {
+    return buildAdminInstallSteps(CONNECTED_APP_LABEL).map((text, index) => ({
+      id: `admin-step-${index}`,
+      text,
+    }));
+  }
+
+  /**
+   * Copyable message for a Salesforce administrator.
+   * @returns {string}
+   */
+  get adminInstructions() {
+    return buildAdminInstructions({ appLabel: CONNECTED_APP_LABEL });
+  }
+
+  /**
+   * Copy the administrator instructions to the clipboard.
+   * @returns {Promise<void>}
+   */
+  async handleCopyAdminInstructions() {
+    try {
+      await navigator.clipboard.writeText(this.adminInstructions);
+      this.copyStatus = 'Copied to clipboard.';
+    } catch (error) {
+      console.error('Clipboard write failed', error);
+      this.selectAdminInstructions();
+      this.copyStatus =
+        'Clipboard access is unavailable. The text is selected, press Ctrl+C or Cmd+C.';
+    }
+  }
+
+  /**
+   * Select the instructions text as a manual copy fallback.
+   * @returns {void}
+   */
+  selectAdminInstructions() {
+    const target = this.refs.adminInstructions;
+    if (!target) {
+      return;
+    }
+    const range = document.createRange();
+    range.selectNodeContents(target);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  }
+
+  _handleHashChange = () => {
+    this.scrollToAuthorizationHelpIfRequested();
+  };
+
+  /**
+   * Scroll to and focus the authorization help when the page was opened with its anchor.
+   * @returns {void}
+   */
+  scrollToAuthorizationHelpIfRequested() {
+    if (window.location.hash !== AUTHORIZATION_HELP_HASH) {
+      return;
+    }
+    const target = this.refs.authorizationHelp;
+    if (!target) {
+      return;
+    }
+    target.scrollIntoView({ block: 'start' });
+    target.focus({ preventScroll: true });
   }
 
   /**

@@ -6,3 +6,4 @@ export * from './urlUtils.js';
 export * from './settings.js';
 export * from './authFailure.js';
 export * from './authFailureCopy.js';
+export * from './authorizationHelp.js';

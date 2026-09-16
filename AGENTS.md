@@ -59,6 +59,8 @@
   - AGENTS.md contains instructions for AI agents working in this repository. Add or update instructions as repeated
     patterns are discovered.
   - README.md describes the project and its features.
+- LWC templates drop whitespace between a line break and an inline element such as `<strong>`, `<code>`, or `<a>`.
+  Put `&nbsp;` before the inline element (see `welcomeApp.html`) instead of relying on the line break.
 - Use JSDoc comments to document public APIs and to introduce types for parameters and return values.
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.

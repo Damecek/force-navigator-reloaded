@@ -80,6 +80,16 @@
             </p>
           </li>
           <li class="slds-box slds-theme_default">
+            <h3 class="slds-text-heading_small">Authorize once per org</h3>
+            <p class="slds-text-body_regular">
+              Run <strong>Extension &gt; Authorize</strong> and choose Allow in
+              the Salesforce window. Some orgs need an administrator first,
+              see&nbsp;<a class="slds-text-link" href="#authorization-help"
+                >Authorize the extension</a
+              >.
+            </p>
+          </li>
+          <li class="slds-box slds-theme_default">
             <h3 class="slds-text-heading_small">Search and launch</h3>
             <p class="slds-text-body_regular">
               Type a command, object, flow, or setup page name and press Enter.
@@ -87,6 +97,140 @@
           </li>
         </ol>
       </x-welcome-section>
+
+      <div
+        class="welcome-anchor"
+        id="authorization-help"
+        lwc:ref="authorizationHelp"
+        tabindex="-1"
+      >
+        <x-welcome-section title="Authorize the extension">
+          <p class="slds-text-body_regular welcome-lead">
+            The palette reads Setup pages, objects, flows, and other metadata
+            through the Salesforce connected
+            app&nbsp;<strong>{connectedAppLabel}</strong>. Each org is
+            authorized once per browser. Until then the palette offers
+            only&nbsp;<strong>Extension &gt; Authorize</strong> and&nbsp;<strong
+              >Extension &gt; Options</strong
+            >.
+          </p>
+          <ol class="welcome-steps">
+            <li class="slds-box slds-theme_default">
+              <h3 class="slds-text-heading_small">
+                1. Open the org in Lightning
+              </h3>
+              <p class="slds-text-body_regular">
+                Open any Lightning page of the org you want to navigate and
+                press <kbd>{shortcutText}</kbd> to open the command palette.
+              </p>
+            </li>
+            <li class="slds-box slds-theme_default">
+              <h3 class="slds-text-heading_small">
+                2. Run Extension &gt; Authorize
+              </h3>
+              <p class="slds-text-body_regular">
+                Salesforce opens a window. Sign in if asked and
+                choose&nbsp;<strong>Allow</strong>. The extension requests
+                the&nbsp;<code>api</code> and <code>refresh_token</code> scopes,
+                plus&nbsp;<code>web</code> when My Domain auto-login is enabled.
+              </p>
+            </li>
+            <li class="slds-box slds-theme_default">
+              <h3 class="slds-text-heading_small">3. Wait for the commands</h3>
+              <p class="slds-text-body_regular">
+                After the window closes, the palette reloads and lists the org's
+                commands. Access tokens stay in local extension storage and are
+                refreshed automatically.
+              </p>
+            </li>
+          </ol>
+
+          <section
+            aria-labelledby="authorization-admin-title"
+            class="slds-box slds-theme_default welcome-admin"
+          >
+            <h3 class="slds-text-heading_small" id="authorization-admin-title">
+              When Salesforce shows "app must be installed into org"
+            </h3>
+            <p class="slds-text-body_regular">
+              Org policy can require a Salesforce administrator to install the
+              connected app before anyone can authorize it. In that case
+              Salesforce shows an OAuth error instead of the consent
+              page:&nbsp;<code
+                >invalid_client: app must be installed into org</code
+              >. The extension recognizes this error and explains it in the
+              OAuth window and in the Salesforce tab. Approving access in the
+              consent window is not always sufficient.
+            </p>
+            <p class="slds-text-body_regular">
+              In&nbsp;<strong>Setup &gt; Connected Apps OAuth Usage</strong
+              >,&nbsp;<strong>Allowed</strong> does not
+              mean&nbsp;<strong>Installed</strong>. An allowed app can still be
+              refused until an administrator
+              clicks&nbsp;<strong>Install</strong>. Depending on the app's
+              Permitted Users policy, the administrator may also have to assign
+              your profile or a permission set.
+            </p>
+            <h4 class="slds-text-title_bold">Administrator steps</h4>
+            <ol class="welcome-admin__steps">
+              <template for:each={adminSteps} for:item="step">
+                <li key={step.id} class="slds-text-body_regular">
+                  {step.text}
+                </li>
+              </template>
+            </ol>
+            <h4 class="slds-text-title_bold">Message for your administrator</h4>
+            <p class="slds-text-body_small">
+              Copy this text and send it to a Salesforce administrator of the
+              org.
+            </p>
+            <pre
+              class="welcome-admin__instructions"
+              lwc:ref="adminInstructions"
+              tabindex="0"
+            >
+{adminInstructions}</pre>
+            <div class="welcome-actions">
+              <button
+                class="slds-button slds-button_brand"
+                onclick={handleCopyAdminInstructions}
+                type="button"
+              >
+                Copy instructions for your administrator
+              </button>
+              <span
+                aria-live="polite"
+                class="slds-text-body_small welcome-admin__status"
+                role="status"
+                >{copyStatus}</span
+              >
+            </div>
+          </section>
+
+          <section class="slds-box slds-theme_default">
+            <h3 class="slds-text-heading_small">
+              Other authorization messages
+            </h3>
+            <ul class="welcome-list">
+              <li class="slds-text-body_regular">
+                <strong>Authorization was not completed.</strong> The window was
+                closed before Salesforce confirmed access. Run the&nbsp;<strong
+                  >Extension &gt; Authorize</strong
+                >&nbsp;command again.
+              </li>
+              <li class="slds-text-body_regular">
+                <strong>Authorization was declined.</strong> Deny was chosen on
+                the consent page. Run the command again and choose Allow.
+              </li>
+              <li class="slds-text-body_regular">
+                <strong>Salesforce reported an authorization error.</strong
+                >&nbsp;Retry, and if it persists share the reported error code
+                with your administrator.
+              </li>
+            </ul>
+          </section>
+        </x-welcome-section>
+      </div>
 
       <x-welcome-section title="What it can do">
         <div class="slds-grid slds-wrap slds-gutters">
@@ -110,7 +254,7 @@
           </div>
           <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
             <x-welcome-feature-card
-              description="My Domain auto-login. Enable it in Settings for automatic login behavior."
+              description="Continue through supported My Domain login pages for orgs you already authorized. Off by default; enable it in Settings."
               title="Optional My Domain auto-login"
             ></x-welcome-feature-card>
           </div>

@@ -13,6 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const authorizationHelp = document.getElementById('authorization-help-link');
+  if (authorizationHelp) {
+    authorizationHelp.addEventListener('click', (event) => {
+      event.preventDefault();
+      chrome.tabs.create({
+        url: chrome.runtime.getURL('welcome.html#authorization-help'),
+        active: true,
+      });
+    });
+  }
+
   const shortcuts = document.getElementById('shortcuts-link');
   if (shortcuts) {
     shortcuts.addEventListener('click', (event) => {
