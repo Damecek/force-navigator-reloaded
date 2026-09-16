@@ -24,8 +24,6 @@ export default class App extends LightningElement {
   @track commands = [];
   @track isLoading = false;
   isCommandPaletteVisible = false;
-  /** @type {import('../../../../../background/auth/authFlowController.js').AuthFailurePayload|null} */
-  authFailure = null;
   _authFeedback = createAuthFeedback({ openHelp: openAuthHelp });
 
   /**
@@ -49,15 +47,14 @@ export default class App extends LightningElement {
     return new Channel(CHANNEL_REFRESH_COMMANDS).publish();
   }
 
-  _handleAuth = () => {
-    console.log('auth completed');
-    this.authFailure = null;
+  _handleAuth = ({ data }) => {
+    console.log('auth completed', { attemptId: data?.attemptId });
+    this._authFeedback.showSuccess(data);
     return this.publishRefreshCommands();
   };
 
   _handleAuthFailure = ({ data }) => {
     const failure = data?.failure ?? null;
-    this.authFailure = failure;
     console.error('auth failed', {
       kind: failure?.kind,
       confirmed: failure?.confirmed,

@@ -3,8 +3,13 @@ import assert from 'node:assert/strict';
 
 globalThis.__CLIENT_ID__ = 'test-client-id';
 
-const { createAuthFeedback, buildAuthFailureToast, AUTH_HELP_LABEL } =
-  await import('../src/lwc/modules/content/x/authFeedback/authFeedback.js');
+const {
+  createAuthFeedback,
+  buildAuthFailureToast,
+  buildAuthSuccessToast,
+  AUTH_HELP_LABEL,
+  AUTH_SUCCESS_TITLE,
+} = await import('../src/lwc/modules/content/x/authFeedback/authFeedback.js');
 
 const NOT_INSTALLED = {
   attemptId: 'attempt-1',
@@ -110,4 +115,40 @@ test('falls back to the accessible notice when the host toast is unavailable', (
   });
   assert.equal(prevented, true);
   assert.equal(calls.help, 1);
+});
+
+test('success toast is brief, native-first, and states the extension is ready', () => {
+  const request = buildAuthSuccessToast();
+  assert.equal(request.title, AUTH_SUCCESS_TITLE);
+  assert.equal(request.variant, 'success');
+  assert.equal(request.mode, 'dismissible');
+  assert.ok(request.duration > 0);
+  assert.match(request.message, /ready to use/);
+});
+
+test('success clears stale failure feedback and is shown once per attempt', () => {
+  const { calls, deps } = createDeps();
+  const feedback = createAuthFeedback(deps);
+  feedback.showFailure(NOT_INSTALLED);
+  assert.equal(feedback.showSuccess({ attemptId: 'attempt-9' }), 'scheduled');
+  assert.equal(feedback.showSuccess({ attemptId: 'attempt-9' }), 'skipped');
+  assert.equal(calls.toasts.length, 2);
+  assert.equal(calls.toasts[1].variant, 'success');
+  assert.deepEqual(calls.dismissed[0], [calls.toasts[0].title]);
+  assert.equal(calls.fallbackDismissed, 2);
+});
+
+test('success without a previous notification shows the toast immediately', () => {
+  const { calls, deps } = createDeps();
+  const feedback = createAuthFeedback(deps);
+  assert.equal(feedback.showSuccess({ attemptId: 'attempt-1' }), 'toast');
+  assert.equal(calls.dismissed.length, 0);
+});
+
+test('success falls back to a timed status notice without the host toast', () => {
+  const { calls, deps } = createDeps({ toastHandled: false });
+  const feedback = createAuthFeedback(deps);
+  assert.equal(feedback.showSuccess({ attemptId: 'attempt-1' }), 'fallback');
+  assert.equal(calls.fallbacks[0].variant, 'success');
+  assert.ok(calls.fallbacks[0].duration > 0);
 });

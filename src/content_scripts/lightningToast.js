@@ -61,11 +61,38 @@
         fire();
       }
       shownTitles.add(detail.title);
+      if (params.mode !== 'sticky' && typeof params.duration === 'number') {
+        setTimeout(() => closeToastsByTitle([detail.title]), params.duration);
+      }
       event.preventDefault();
     } catch (error) {
       console.error('Force Navigator toast failed:', error.message);
     }
   });
+
+  /**
+   * Close rendered toasts whose title matches. Lightning does not always
+   * auto-dismiss timed toasts, so brief toasts are closed explicitly.
+   * @param {string[]} titles
+   * @returns {number} Number of toasts closed.
+   */
+  function closeToastsByTitle(titles) {
+    let closed = 0;
+    document.querySelectorAll('.forceToastMessage').forEach((toast) => {
+      const title = toast.querySelector('.toastTitle')?.textContent?.trim();
+      if (!title || !titles.includes(title)) {
+        return;
+      }
+      const close = toast.querySelector(
+        'button.toastClose, button[title="Close"]'
+      );
+      if (close) {
+        close.click();
+        closed += 1;
+      }
+    });
+    return closed;
+  }
 
   document.addEventListener(DISMISS_EVENT, (event) => {
     const titles = Array.isArray(event.detail?.titles)

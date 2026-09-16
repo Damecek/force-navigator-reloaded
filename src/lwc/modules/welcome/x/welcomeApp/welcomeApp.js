@@ -128,6 +128,19 @@ export default class WelcomeApp extends LightningElement {
   };
 
   /**
+   * Scroll to the authorization help from the in-page link, even when the hash is already set.
+   * @param {MouseEvent} event
+   * @returns {void}
+   */
+  handleAuthorizationHelpLinkClick(event) {
+    event.preventDefault();
+    if (window.location.hash !== AUTHORIZATION_HELP_HASH) {
+      window.location.hash = AUTHORIZATION_HELP_HASH;
+    }
+    this.scrollToAuthorizationHelpIfRequested();
+  }
+
+  /**
    * Scroll to and focus the authorization help when the page was opened with its anchor.
    * @returns {void}
    */

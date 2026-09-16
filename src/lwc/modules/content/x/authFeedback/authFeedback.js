@@ -1,6 +1,7 @@
 import {
   AUTH_HELP_README_URL,
   describeAuthFailure,
+  EXTENSION_DISPLAY_NAME,
 } from '../../../../../shared/index.js';
 import {
   dismissLightningToasts,
@@ -12,6 +13,8 @@ import {
 } from '../../../../../content_scripts/fallbackNotice.js';
 
 export const AUTH_HELP_LABEL = 'Open authorization help';
+export const AUTH_SUCCESS_TITLE = `${EXTENSION_DISPLAY_NAME} is authorized`;
+const SUCCESS_DURATION_MS = 6000;
 
 /**
  * @typedef {Object} AuthFeedbackDeps
@@ -41,6 +44,21 @@ export function buildAuthFailureToast(failure) {
     mode: 'sticky',
     helpLabel: AUTH_HELP_LABEL,
     helpUrl: AUTH_HELP_README_URL,
+  };
+}
+
+/**
+ * Build the toast request confirming a completed authorization.
+ * @returns {import('../../../../../content_scripts/lightningToastBridge').ToastRequest}
+ */
+export function buildAuthSuccessToast() {
+  return {
+    title: AUTH_SUCCESS_TITLE,
+    message:
+      'Salesforce confirmed access for this org. The command palette is loading its commands and is ready to use.',
+    variant: 'success',
+    mode: 'dismissible',
+    duration: SUCCESS_DURATION_MS,
   };
 }
 
@@ -98,6 +116,25 @@ export function createAuthFeedback({
       }
       notifiedAttempts.add(key);
       const request = buildAuthFailureToast(failure);
+      if (this.clear()) {
+        scheduleAfterDismiss(() => present(request));
+        return 'scheduled';
+      }
+      return present(request);
+    },
+
+    /**
+     * Confirm a completed authorization once per attempt and drop stale failure feedback.
+     * @param {{attemptId?: string}|null|undefined} completion
+     * @returns {'toast'|'fallback'|'scheduled'|'skipped'}
+     */
+    showSuccess(completion) {
+      const key = `success:${completion?.attemptId || Date.now()}`;
+      if (notifiedAttempts.has(key)) {
+        return 'skipped';
+      }
+      notifiedAttempts.add(key);
+      const request = buildAuthSuccessToast();
       if (this.clear()) {
         scheduleAfterDismiss(() => present(request));
         return 'scheduled';

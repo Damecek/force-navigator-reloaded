@@ -163,3 +163,32 @@ E2E evidence (development build):
 - From the real missing-install failure, both the OAuth window panel link and the Salesforce toast link opened the welcome page with the section at the top and focused, completing the journey from failure to administrator instructions and retry guidance.
 
 Automated tests added: `tests/authorizationHelp.test.js`, `tests/authorizationDocs.test.js`, and an extended `tests/welcomeCopy.test.js`.
+
+### Commit 5: successful authorization confirmation
+
+Implemented behavior:
+
+- `completedAuthFlow` carries the attempt id. `authFeedback.showSuccess` closes the failure toast or fallback notice of an earlier attempt, then shows one native success toast ("Force Navigator Reloaded is authorized", 6 seconds) per attempt. The page-context toast script closes brief toasts itself because Lightning did not auto-dismiss timed toasts in the tested org. Without the Aura toast host a timed `role="status"` notice is shown instead.
+- The palette drops its failure state on completion and reloads the org's commands; the loading indicator follows the command refresh.
+- Welcome step 3 mentions the confirmation toast. The in-page "Authorize the extension" link scrolls to the help section even when the hash is already set.
+
+E2E evidence (nonadmin):
+
+1. With the app uninstalled, `Extension > Authorize` failed and the sticky error toast appeared in the originating tab.
+2. The administrator installed **Force Navigator Reloaded Dev** through **Connected Apps OAuth Usage** (the Install action opens `AppInstallApprovalPage.apexp` in a new tab, confirmed with **Install**); the row then showed **Manage App Policies** and **Uninstall**.
+3. The same nonadmin ran `Extension > Authorize` again, reached the consent page, and chose **Allow**. Chrome closed the OAuth window. Toast timeline in the originating tab after clicking Allow: error toast still present at 0.4 s, exactly one success toast at 0.8 s with no error toast, no toasts at 7.3 s. No fallback notice. The palette listed 16 rendered commands including `Application > Home`, `Administration > Users > …`, and `Extension > Options`, without `Extension > Authorize`; the loading indicator was off. Extension storage contained the org's token entry (names only were inspected). Screenshot reviewed.
+
+Automated tests added: success cases in `tests/authFeedback.test.js`.
+
+### Review and re-verification
+
+An independent review of the integrated change set found and the implementation fixed: the early failure publish to the originating tab was not wired (the toast now appears while the OAuth window is still open, and the terminal publish is deduplicated per attempt); `Channel.publish` now tolerates a closed originating tab (`No tab with id`); tab-based error reports must come from another window than the originating tab; a reloaded error window receives the same failure again; the page-script injector marks the document instead of the self-removing script tag; the fallback notice creates its live region before filling it. After the fixes the nonadmin scenarios were rerun: attribution and early notification with the loading indicator off while the window was open, one toast after closing, panel present after reloading the error window, toast replacement across attempts, fallback without Aura, and the full failure, installation, retry, and success journey above.
+
+Remaining limitations: `state` is not echoed on the Salesforce error page, so attribution relies on the pending attempt, the org, the tab-less or new-window origin, and a single active attempt per org. In Chrome for Testing 153 the auth window reported without `sender.tab`; the audit observed a tab in Chrome 152, and both paths are covered by tests. The toast help link uses the public README anchor as its `href` and is redirected to the welcome page by the extension; without the extension's page script the README opens instead.
+
+### Sandbox state after testing
+
+- Connected app **Force Navigator Reloaded Dev**: uninstalled again, **Allowed** with an **Install** action, user count 0. Denied-attempt counters and login history from the tests remain.
+- Synthetic user `005AP00000sH237YAC`: deactivated, profile restored to Sales Employee, no permission set assignments, the temporary one-time-password authenticator registration disconnected.
+- Temporary profile **FNR Auth E2E** and its profile session setting deleted. No org-wide security settings were changed.
+- Local test artifacts: the nonadmin session file and the Chrome for Testing profiles (which held tokens) were deleted. Test scripts under `/tmp/fnr-e2e` contain no credentials.
