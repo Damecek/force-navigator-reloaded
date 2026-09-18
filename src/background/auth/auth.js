@@ -9,6 +9,11 @@ import {
   toLightningUrl,
 } from '../../shared/index.js';
 import { makePkcePair } from './authUtil.js';
+import AuthFlowError from './authFlowError.js';
+import {
+  AUTH_FAILURE_SOURCE,
+  sanitizeAuthErrorText,
+} from '../../shared/authFailure.js';
 
 /**
  * @typedef {Object} Token
@@ -24,32 +29,50 @@ import { makePkcePair } from './authUtil.js';
  */
 
 /**
- * Launches interactive OAuth2-PKCE flow and stores token
+ * Launches interactive OAuth2-PKCE flow and stores token.
+ * @param {string} hostname Any Salesforce hostname of the org.
+ * @param {Object} [options]
+ * @param {string} [options.state] Opaque value echoed by Salesforce, used to correlate the attempt.
+ * @param {() => boolean} [options.shouldPersist] Consulted right before the token is stored; a superseded attempt returns false and its token is discarded.
  * @returns {Promise<Token>} token object
+ * @throws {AuthFlowError} when Salesforce, the OAuth callback, or the token exchange reports an error.
  */
-export async function interactiveLogin(hostname) {
+export async function interactiveLogin(
+  hostname,
+  { state, shouldPersist } = {}
+) {
   const { verifier, challenge } = await makePkcePair();
   const loginBase = toLightningUrl(hostname);
   const scopes = await buildOauthScopes();
-  const authUrl =
-    `${loginBase}/services/oauth2/authorize?response_type=code` +
-    `&client_id=${encodeURIComponent(CLIENT_ID)}` +
-    `&redirect_uri=${encodeURIComponent(chrome.identity.getRedirectURL('oauth2'))}` +
-    `&scope=${encodeURIComponent(scopes)}` +
-    `&code_challenge=${challenge}&code_challenge_method=S256`;
-  console.log('Invoking OAuth2 flow', { hostname, loginBase, scopes, authUrl });
-  const redirectUrl = await chrome.identity.launchWebAuthFlow({
-    url: authUrl,
-    interactive: true,
+  const redirectUri = chrome.identity.getRedirectURL('oauth2');
+  const authParams = new URLSearchParams({
+    response_type: 'code',
+    client_id: CLIENT_ID,
+    redirect_uri: redirectUri,
+    scope: scopes,
+    code_challenge: challenge,
+    code_challenge_method: 'S256',
   });
-  const returnedUrl = new URL(redirectUrl);
-  console.log('OAuth2 redirect URL', redirectUrl);
-  const code = returnedUrl.searchParams.get('code');
-  if (!code) {
-    throw new Error(
-      'OAuth2 login failed: no code received. Received instead: ' + returnedUrl
+  if (state) {
+    authParams.set('state', state);
+  }
+  const authUrl = `${loginBase}/services/oauth2/authorize?${authParams.toString()}`;
+  console.log('Invoking OAuth2 flow', { hostname, loginBase, scopes, state });
+  let redirectUrl;
+  try {
+    redirectUrl = await chrome.identity.launchWebAuthFlow({
+      url: authUrl,
+      interactive: true,
+    });
+  } catch (error) {
+    throw new AuthFlowError(
+      sanitizeAuthErrorText(error?.message) || 'OAuth window closed',
+      {
+        source: AUTH_FAILURE_SOURCE.IDENTITY_API,
+      }
     );
   }
+  const code = parseAuthorizationCode(redirectUrl, state);
 
   const tokenBase = toCoreUrl(hostname);
   const tokenEndpoint = `${tokenBase}/services/oauth2/token`;
@@ -57,7 +80,7 @@ export async function interactiveLogin(hostname) {
     grant_type: 'authorization_code',
     client_id: CLIENT_ID,
     code,
-    redirect_uri: chrome.identity.getRedirectURL('oauth2'),
+    redirect_uri: redirectUri,
     code_verifier: verifier,
   });
   const resp = await fetch(tokenEndpoint, {
@@ -66,7 +89,7 @@ export async function interactiveLogin(hostname) {
     body: params.toString(),
   });
   if (!resp.ok) {
-    throw new Error(`Token request failed: ${await resp.text()}`);
+    throw buildTokenExchangeError(await resp.text());
   }
   const token = await resp.json();
   console.log('OAuth2 token response', {
@@ -74,8 +97,86 @@ export async function interactiveLogin(hostname) {
     instance_url: token?.instance_url,
     scope: token?.scope,
   });
+  if (typeof shouldPersist === 'function' && !shouldPersist()) {
+    console.log('OAuth2 attempt superseded, discarding its token');
+    return token;
+  }
   await storeToken(token);
   return token;
+}
+
+/**
+ * Extract the authorization code from the OAuth callback URL.
+ * Errors returned by Salesforce on the callback are surfaced as structured failures.
+ * @param {string|undefined} redirectUrl
+ * @param {string|undefined} expectedState
+ * @returns {string}
+ * @throws {AuthFlowError}
+ */
+function parseAuthorizationCode(redirectUrl, expectedState) {
+  let returnedUrl;
+  try {
+    returnedUrl = new URL(redirectUrl);
+  } catch {
+    throw new AuthFlowError('OAuth2 login failed: no callback URL received', {
+      source: AUTH_FAILURE_SOURCE.OAUTH_CALLBACK,
+    });
+  }
+  const params = returnedUrl.searchParams;
+  console.log('OAuth2 callback received', {
+    hasCode: params.has('code'),
+    error: params.get('error'),
+    hasState: params.has('state'),
+  });
+  if (expectedState && params.get('state') !== expectedState) {
+    throw new AuthFlowError('OAuth2 login failed: state mismatch', {
+      source: AUTH_FAILURE_SOURCE.OAUTH_CALLBACK,
+      error: 'state_mismatch',
+    });
+  }
+  const error = params.get('error');
+  if (error) {
+    throw new AuthFlowError(
+      `OAuth2 login failed: ${sanitizeAuthErrorText(error)}`,
+      {
+        source: AUTH_FAILURE_SOURCE.OAUTH_CALLBACK,
+        error,
+        errorDescription: params.get('error_description') || '',
+      }
+    );
+  }
+  const code = params.get('code');
+  if (!code) {
+    throw new AuthFlowError('OAuth2 login failed: no code received', {
+      source: AUTH_FAILURE_SOURCE.OAUTH_CALLBACK,
+    });
+  }
+  return code;
+}
+
+/**
+ * Build a structured error from the token endpoint response body.
+ * @param {string} body
+ * @returns {AuthFlowError}
+ */
+function buildTokenExchangeError(body) {
+  let error;
+  let errorDescription;
+  try {
+    const parsed = JSON.parse(body);
+    error = parsed?.error;
+    errorDescription = parsed?.error_description;
+  } catch {
+    errorDescription = body;
+  }
+  return new AuthFlowError(
+    `Token request failed: ${sanitizeAuthErrorText(error || errorDescription)}`,
+    {
+      source: AUTH_FAILURE_SOURCE.TOKEN_EXCHANGE,
+      error,
+      errorDescription,
+    }
+  );
 }
 
 /**
@@ -220,6 +321,11 @@ export function tokenHasScope(token, scope) {
   return scopes.includes(scope);
 }
 
+/**
+ * Persist a token under the org's Lightning hostname with the current issue time.
+ * @param {Token} token
+ * @returns {Promise<void>}
+ */
 function storeToken(token) {
   token.issued_at = Date.now();
   const cache = new CacheManager(toLightningHostname(token.instance_url));

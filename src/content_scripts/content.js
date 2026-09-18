@@ -4,13 +4,17 @@ import { createElement } from 'lwc';
  */
 import '@webcomponents/custom-elements';
 import { injectLightningNavigationBridge } from './lightningNavigationBridge';
+import { injectLightningToastBridge } from './lightningToastBridge';
+import { registerAuthHelpLinkListener } from './authHelpLink';
 import App from 'x/app';
 
 /**
- * Inject the Lightning navigation bridge early so Aura navigation is available
- * before the command palette triggers navigation events.
+ * Inject the Lightning bridges early so Aura navigation and native toasts are
+ * available before the command palette needs them.
  */
 injectLightningNavigationBridge();
+injectLightningToastBridge();
+registerAuthHelpLinkListener();
 
 const elm = createElement('x-app', { is: App });
 document.body.appendChild(elm);

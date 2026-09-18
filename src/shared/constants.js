@@ -88,6 +88,21 @@ export const REVIEW_COMMAND_URL =
  * @type {string}
  */
 export const CLIENT_ID = __CLIENT_ID__;
+/**
+ * Label of the connected app that administrators see in
+ * Setup > Connected Apps OAuth Usage for this build.
+ * @type {string}
+ */
+export const CONNECTED_APP_LABEL =
+  typeof __CONNECTED_APP_LABEL__ !== 'undefined'
+    ? __CONNECTED_APP_LABEL__
+    : 'Force Navigator Reloaded';
+export const EXTENSION_DISPLAY_NAME = 'Force Navigator Reloaded';
+/** Extension page with authorization help, relative to the extension root. */
+export const AUTH_HELP_PAGE = 'welcome.html#authorization-help';
+/** Public copy of the authorization help for contexts that cannot open extension pages. */
+export const AUTH_HELP_README_URL =
+  'https://github.com/Damecek/force-navigator-reloaded#authorization--connected-apps';
 export const SF_TOKEN_CACHE_KEY = 'sfToken';
 export const AUTOLOGIN_SETTINGS_KEY = 'AutoLogin';
 export const COMMAND_PALETTE_SETTINGS_KEY = 'CommandPalette';
@@ -129,3 +144,12 @@ export const CHANNEL_OPEN_REVIEW_PAGE = 'openReviewPage';
 export const CHANNEL_LOGIN_AS_PRIVATE = 'loginAsPrivate';
 export const CHANNEL_TOGGLE_COMMAND_PALETTE = 'toggleCommandPalette';
 export const CHANNEL_AUTOLOGIN_MYDOMAIN = 'autoLoginMyDomain';
+export const CHANNEL_REPORT_OAUTH_ERROR_PAGE = 'reportOauthErrorPage';
+export const CHANNEL_OPEN_AUTH_HELP = 'openAuthorizationHelp';
+
+/**
+ * Path of the Salesforce page that shows terminal OAuth errors such as
+ * `invalid_client` when the connected app is not installed in the org.
+ */
+export const SALESFORCE_OAUTH_ERROR_PAGE_PATH =
+  '/setup/secur/RemoteAccessErrorPage.apexp';

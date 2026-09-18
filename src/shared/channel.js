@@ -6,7 +6,8 @@
 function isMissingTabReceiverError(error) {
   return (
     error instanceof Error &&
-    error.message.includes('Receiving end does not exist')
+    (error.message.includes('Receiving end does not exist') ||
+      /No tab with id/i.test(error.message))
   );
 }
 
@@ -24,16 +25,29 @@ export default class Channel {
 
   /**
    * Subscribe callback to messages of this channel.
+   * With `respond` enabled the resolved callback value is sent back to the
+   * publisher, which receives it from {@link Channel#request}.
    * @param {({data: any, sender: chrome.runtime.MessageSender}) => any} cb
+   * @param {{respond?: boolean}} [options]
    */
-  subscribe(cb) {
+  subscribe(cb, { respond = false } = {}) {
     console.log('Subscribing to channel', this.name);
-    const wrapper = (msg, sender) => {
+    const wrapper = (msg, sender, sendResponse) => {
       if (msg.action !== this.name) {
         return false;
       }
       console.log('Handling message', msg.action, 'in channel', this.name);
-      return cb({ data: msg.data, sender });
+      const result = cb({ data: msg.data, sender });
+      if (!respond) {
+        return result;
+      }
+      Promise.resolve(result)
+        .catch((error) => {
+          console.error(`Channel "${this.name}" responder failed`, error);
+          return null;
+        })
+        .then((value) => sendResponse(value ?? null));
+      return true;
     };
     this._listeners.set(cb, wrapper);
     chrome.runtime.onMessage.addListener(wrapper);
@@ -49,6 +63,25 @@ export default class Channel {
     if (wrapper) {
       chrome.runtime.onMessage.removeListener(wrapper);
       this._listeners.delete(cb);
+    }
+  }
+
+  /**
+   * Send a message to the background and wait for the subscriber's response.
+   * @param {any} [data]
+   * @returns {Promise<any>} Response value, or null when nobody responded.
+   */
+  async request(data) {
+    console.log('Requesting on channel', this.name);
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: this.name,
+        data,
+      });
+      return response ?? null;
+    } catch (error) {
+      console.log(`Channel "${this.name}": request failed`, error?.message);
+      return null;
     }
   }
 

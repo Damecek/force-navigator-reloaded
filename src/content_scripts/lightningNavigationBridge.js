@@ -1,3 +1,5 @@
+import { injectPageScript } from './pageScriptInjector.js';
+
 const LIGHTNING_NAVIGATION_EVENT = 'forceNavigatorNavigate';
 
 /**
@@ -11,20 +13,7 @@ const LIGHTNING_NAVIGATION_EVENT = 'forceNavigatorNavigate';
  * @returns {void}
  */
 export function injectLightningNavigationBridge() {
-  const existingScript = document.querySelector(
-    'script[data-force-navigator-lightning]'
-  );
-  if (existingScript) {
-    return;
-  }
-  const script = document.createElement('script');
-  script.src = chrome.runtime.getURL('lightningNavigation.js');
-  script.type = 'text/javascript';
-  script.dataset.forceNavigatorLightning = 'true';
-  script.addEventListener('load', () => {
-    script.remove();
-  });
-  document.documentElement.appendChild(script);
+  injectPageScript('lightningNavigation.js', 'force-navigator-lightning');
 }
 
 /**

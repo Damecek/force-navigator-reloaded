@@ -9,6 +9,8 @@ import {
 } from '../../../../../shared';
 import { createCommandDescriptors } from '../commandClassRegister/commandFactory';
 import { COMMAND_LOADING_EVENT } from '../loading/loadingEvents';
+import { createAuthFeedback } from '../authFeedback/authFeedback';
+import { openAuthHelp } from '../../../../../content_scripts/authHelpLink';
 
 /**
  * App component for the command palette.
@@ -22,6 +24,7 @@ export default class App extends LightningElement {
   @track commands = [];
   @track isLoading = false;
   isCommandPaletteVisible = false;
+  _authFeedback = createAuthFeedback({ openHelp: openAuthHelp });
 
   /**
    * Subscribe to background channels and set up event listeners.
@@ -39,19 +42,30 @@ export default class App extends LightningElement {
     this.publishRefreshCommands();
   }
 
+  /**
+   * Ask the background for the current org's commands and show the loading indicator meanwhile.
+   * @returns {Promise<void>}
+   */
   publishRefreshCommands() {
     this.isLoading = true;
     return new Channel(CHANNEL_REFRESH_COMMANDS).publish();
   }
 
-  _handleAuth = () => {
-    console.log('auth completed');
+  _handleAuth = ({ data }) => {
+    console.log('auth completed', { attemptId: data?.attemptId });
+    this._authFeedback.showSuccess(data);
     return this.publishRefreshCommands();
   };
 
   _handleAuthFailure = ({ data }) => {
-    console.error('auth failed', data);
+    const failure = data?.failure ?? null;
+    console.error('auth failed', {
+      kind: failure?.kind,
+      confirmed: failure?.confirmed,
+      salesforceError: failure?.salesforceError,
+    });
     this.isLoading = false;
+    this._authFeedback.showFailure(failure);
     return false;
   };
 

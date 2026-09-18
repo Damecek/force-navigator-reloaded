@@ -39,7 +39,10 @@ and other org destinations without leaving the keyboard. It is available directl
   `Extension > Review Force Navigator Reloaded`, which opens the Chrome Web Store reviews page once and then disables
   itself
 - **Optional My Domain Auto-login**: Toggle auto-login from the Settings page. When enabled, the extension can auto-login on supported `*.my.salesforce.com` login pages, including username-first prompts, for already authorized orgs and requests OAuth scope `web`; if the token is missing `web` scope, auto-login stops and the palette offers `Extension > Authorize` for explicit re-authorization
-- **Welcome Page**: Automatically opens after first install with a quick start guide, shortcut tips, and review link
+- **Welcome Page**: Automatically opens after first install with a quick start guide, authorization help with copyable
+  administrator instructions, shortcut tips, and review link
+- **Authorization Feedback**: Failed authorizations are explained in the OAuth window and as a native Salesforce toast
+  in the originating tab, including the case where an administrator has to install the connected app first
 
 ### Fuzzy Search
 
@@ -98,7 +101,8 @@ version might occasionally lag behind the latest release.
 4. Type `?` followed by a search term such as `?boyz 123` to open Salesforce global search results
 5. Press Enter to execute the selected command
 6. Press `Esc` or the same shortcut again to close the command palette when it has focus
-7. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts and Settings
+7. Use the `?` help button in the palette header (or the toolbar icon) to open the extension popup with shortcuts,
+   Settings, and authorization help
 8. Use the Settings page to edit the JSON configuration, tailoring which command sources (Setup nodes, objects, flows,
    Apex classes, Apex triggers, Experience Cloud sites, lightning apps, permission sets, permission set groups, users,
    login as) appear in the palette
@@ -112,29 +116,76 @@ version might occasionally lag behind the latest release.
 - _\*.salesforce-setup.com\*_
 - _\*.builder.salesforce-experience.com\*_
 
-## Authentication & Connected Apps
+## Authorization & Connected Apps
 
-Force Navigator Reloaded authorises to Salesforce via the **OAuth 2.0 PKCE** flow declared in `src/manifest.json`.
+Force Navigator Reloaded authorizes to Salesforce with the **OAuth 2.0 PKCE** flow declared in `src/manifest.json`. The
+extension reads Setup menus, objects, flows, and other metadata through a Salesforce connected app; until an org is
+authorized, the palette offers only `Extension > Authorize` and `Extension > Options`.
+
+### How to authorize an org
+
+1. Open any Lightning page of the org and open the command palette.
+2. Run `Extension > Authorize`. Salesforce opens a window; sign in if asked and choose **Allow**.
+3. When the window closes, the palette reloads the org's commands and shows a confirmation toast. Tokens stay in local
+   extension storage and are refreshed automatically.
+
+The extension requests the `api` and `refresh_token` scopes, plus `web` when My Domain auto-login is enabled.
+Authorization is per org and per browser profile.
+
+### When an administrator has to install the connected app
+
+Org policy can require that a Salesforce administrator installs the connected app before any user can authorize it.
+Salesforce then shows an OAuth error instead of the consent page:
+
+```text
+error=invalid_client
+error_description=app must be installed into org
+```
+
+The extension recognizes this error, explains it in the OAuth window and in the Salesforce tab, and links to the help
+on the welcome page (`Authorization help` in the extension popup). Approving access in the consent window is therefore
+not always sufficient, and installing the Chrome extension is not the same as installing the connected app in the org.
+
+Administrator steps:
+
+1. In Setup, enter **Connected Apps OAuth Usage** in Quick Find.
+2. Find the app for the build in use: **Force Navigator Reloaded Prod** for the Chrome Web Store extension,
+   **Force Navigator Reloaded Dev** for a local development build.
+3. **Allowed** does not mean **Installed**. Click **Install** next to the app and confirm.
+4. If the org limits the app to admin-approved users, open the installed app, set Permitted Users accordingly, and
+   assign the user's profile or a permission set.
+5. Ask the user to run `Extension > Authorize` again and choose **Allow**.
+
+The welcome page contains a copyable message with these steps for administrators.
+
+### Other authorization messages
+
+- **Authorization was not completed**: the OAuth window was closed before Salesforce confirmed access. Run
+  `Extension > Authorize` again.
+- **Authorization was declined**: **Deny** was chosen on the consent page. Run the command again and choose **Allow**.
+- **Salesforce reported an authorization error**: retry, and if it persists share the reported error code with your
+  administrator. The extension never shows tokens, authorization codes, or full OAuth URLs.
 
 ### Where do the connected apps live?
 
 - Two connected-app definitions live in `sf/force-app/main/default/connectedApps`:
   - `Force_Navigator_Reloaded_Prod.connectedApp-meta.xml`
   - `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml`
-- Both apps were **created and configured once** in the author’s developer org.  
-  They are bound to the stable extension IDs:
+- Both apps were **created and configured once** in the author's developer org. They are bound to the stable extension
+  IDs:
   - Production ID `iniflnopffblekndhplennjijdcfkeak`
   - Development ID `fjcokiadigpmkojdlhbkbhimkcmjokon`
 
-### Do I have to deploy the connected app to my org?
+### Do I have to deploy the connected app metadata to my org?
 
-**No.** The connected app is needed only during the OAuth handshake; it is _not_ deployed to, nor stored in, your
-Salesforce org. Simply install the extension and approve its access once—nothing else is required.
+**No.** Nobody deploys this metadata to a customer org. Salesforce keeps the connected-app definition in its
+infrastructure, and installing the app through **Connected Apps OAuth Usage** only registers it in your org. That
+installation is an org policy step performed by an administrator; it is different from deploying metadata, and
+different from installing the Chrome extension.
 
-Even if the original developer org is deleted, Salesforce retains the connected-app metadata in its infrastructure. At
-that point the app becomes read-only. Any future changes (e.g. redirect URIs, scopes, secret rotation) would require the
-author to redeploy a fresh connected app and update the extension’s consumer key—end-users do **not** need to take
-action.
+Even if the original developer org is deleted, Salesforce retains the connected-app metadata. At that point the app
+becomes read-only. Any future changes (redirect URIs, scopes, secret rotation) would require the author to redeploy a
+fresh connected app and update the extension's consumer key. End users would not need to take action.
 
 ## Development
 

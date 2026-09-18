@@ -20,6 +20,9 @@ Choose which command groups appear in the palette from the extension settings. K
 • Built for large orgs
 Org metadata is cached for faster repeat access, and virtual scrolling keeps long command lists responsive. Refresh the command list whenever you need the latest metadata.
 
+• Authorize once per org
+Run Extension > Authorize from the palette and choose Allow in the Salesforce window. Some orgs require a Salesforce administrator to install the connected app "Force Navigator Reloaded Prod" in Setup > Connected Apps OAuth Usage before users can authorize. If that is the case, the extension explains it in the OAuth window and with a Salesforce toast, and the welcome page provides copyable instructions for your administrator.
+
 • Optional My Domain auto-login
 Enable auto-login in Settings to continue through supported Salesforce My Domain login pages for orgs you have already authorised. The feature is off by default and can be disabled at any time.
 

@@ -49,3 +49,33 @@ test('welcome screenshots retain their original colors in dark mode', async () =
     /@media \(prefers-color-scheme: dark\)[\s\S]*\.welcome-shot__image\s*{[\s\S]*color-scheme: only light;/
   );
 });
+
+test('welcome page explains authorization and administrator installation', async () => {
+  const template = await readFile(welcomeTemplateUrl, 'utf8');
+  const script = await readFile(
+    new URL(
+      '../src/lwc/modules/welcome/x/welcomeApp/welcomeApp.js',
+      import.meta.url
+    ),
+    'utf8'
+  );
+  const normalized = template.replace(/\s+/g, ' ');
+
+  assert.match(template, /id="authorization-help"/);
+  assert.match(template, /title="Authorize the extension"/);
+  assert.match(
+    normalized,
+    /Allowed<\/strong> does not mean(&nbsp;| )<strong>Installed/
+  );
+  assert.match(normalized, /app must be installed into org/);
+  assert.match(
+    normalized,
+    /Approving access in the consent window is not always sufficient/
+  );
+  assert.match(template, /{connectedAppLabel}/);
+  assert.match(template, /onclick={handleCopyAdminInstructions}/);
+  assert.match(template, /aria-live="polite"/);
+  assert.match(script, /navigator\.clipboard\.writeText/);
+  assert.match(script, /scrollToAuthorizationHelpIfRequested/);
+  assert.doesNotMatch(normalized, /VPN|identity verification|frozen/i);
+});

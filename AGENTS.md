@@ -59,10 +59,15 @@
   - AGENTS.md contains instructions for AI agents working in this repository. Add or update instructions as repeated
     patterns are discovered.
   - README.md describes the project and its features.
+- LWC templates drop whitespace between a line break and an inline element such as `<strong>`, `<code>`, or `<a>`.
+  Put `&nbsp;` before the inline element (see `welcomeApp.html`) instead of relying on the line break.
 - Use JSDoc comments to document public APIs and to introduce types for parameters and return values.
 - Do not litter code with comments //.
 - Use `console.log` for debugging; logs are stripped in production builds, so avoid excessive or obsolete statements.
 - For long-running command executions, emit explicit loading events from command classes so `app` can toggle loading indicators without command-id filtering.
+- Page-context bridges (Aura navigation, native toasts) are plain scripts in `src/content_scripts` injected through
+  `pageScriptInjector.js` and driven by DOM events. Register new ones in `webpack.config.js` copy patterns and in the
+  manifest `web_accessible_resources`; keep authorization failure copy in `src/shared/authFailureCopy.js`.
 - Keep Salesforce REST and Tooling API requests pinned through `SALESFORCE_API_VERSION`. Advance the pin deliberately,
   one version at a time, only after every command source has been validated against both the current production release
   and a preview org. During preview windows, do not select a version newer than the current production release. Do not
