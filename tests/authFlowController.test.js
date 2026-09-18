@@ -290,3 +290,31 @@ test('a reloaded error window receives the same failure again', async () => {
   assert.equal(second[0].kind, 'app_not_installed');
   assert.equal(second[0].attemptId, first[0].attemptId);
 });
+
+test('a superseded attempt from the same tab must not persist its token', async () => {
+  const mock = installChromeMock();
+  const { registerAuthFlowListeners } = await loadController();
+  const logins = [];
+  registerAuthFlowListeners({
+    login: (hostname, options) =>
+      new Promise((resolve) => logins.push({ options, resolve })),
+  });
+  const first = mock.dispatch('invokeAuthFlow', undefined, { tab: ORIGIN_TAB });
+  await new Promise((r) => setTimeout(r, 0));
+  const second = mock.dispatch('invokeAuthFlow', undefined, {
+    tab: ORIGIN_TAB,
+  });
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(logins.length, 2);
+  assert.equal(logins[0].options.shouldPersist(), false);
+  assert.equal(logins[1].options.shouldPersist(), true);
+  logins[1].resolve({});
+  await second;
+  logins[0].resolve({});
+  await first;
+  const completed = mock.sent.filter(
+    (m) => m.payload.action === 'completedAuthFlow'
+  );
+  assert.equal(completed.length, 1);
+  assert.equal(completed[0].payload.data.attemptId, logins[1].options.state);
+});

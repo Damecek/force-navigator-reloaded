@@ -60,6 +60,9 @@ function createDeps({ toastHandled = true } = {}) {
         calls.scheduled = (calls.scheduled || 0) + 1;
         callback();
       },
+      armHelpLink: () => {
+        calls.armed = (calls.armed || 0) + 1;
+      },
     },
   };
 }
@@ -151,4 +154,41 @@ test('success falls back to a timed status notice without the host toast', () =>
   assert.equal(feedback.showSuccess({ attemptId: 'attempt-1' }), 'fallback');
   assert.equal(calls.fallbacks[0].variant, 'success');
   assert.ok(calls.fallbacks[0].duration > 0);
+});
+
+test('a scheduled notification is dropped when a newer one was presented meanwhile', () => {
+  const pending = [];
+  const { calls, deps } = createDeps();
+  deps.scheduleAfterDismiss = (callback) => pending.push(callback);
+  let toastPresent = false;
+  deps.showToast = (request) => {
+    calls.toasts.push(request);
+    toastPresent = true;
+    return true;
+  };
+  deps.dismissToasts = (titles) => {
+    calls.dismissed.push(titles);
+    const had = toastPresent;
+    toastPresent = false;
+    return had;
+  };
+  const feedback = createAuthFeedback(deps);
+  feedback.showFailure(NOT_INSTALLED);
+  assert.equal(feedback.showFailure(CANCELLED), 'scheduled');
+  assert.equal(feedback.showSuccess({ attemptId: 'attempt-3' }), 'toast');
+  pending.forEach((callback) => callback());
+  assert.equal(calls.toasts.length, 2);
+  assert.equal(calls.toasts[1].variant, 'success');
+});
+
+test('arms the help link only when a native toast with the link is shown', () => {
+  const { calls, deps } = createDeps();
+  const feedback = createAuthFeedback(deps);
+  feedback.showFailure(NOT_INSTALLED);
+  assert.equal(calls.armed, 1);
+  feedback.showSuccess({ attemptId: 'attempt-2' });
+  assert.equal(calls.armed, 1);
+  const fallback = createDeps({ toastHandled: false });
+  createAuthFeedback(fallback.deps).showFailure(NOT_INSTALLED);
+  assert.equal(fallback.calls.armed, undefined);
 });

@@ -11,6 +11,7 @@ import {
   dismissFallbackNotice,
   showFallbackNotice,
 } from '../../../../../content_scripts/fallbackNotice.js';
+import { armAuthHelpLink } from '../../../../../content_scripts/authHelpLink.js';
 
 export const AUTH_HELP_LABEL = 'Open authorization help';
 export const AUTH_SUCCESS_TITLE = `${EXTENSION_DISPLAY_NAME} is authorized`;
@@ -24,6 +25,7 @@ const SUCCESS_DURATION_MS = 6000;
  * @property {() => void} [dismissFallback]
  * @property {() => void} [openHelp] Opens the extension help page.
  * @property {(callback: () => void) => void} [scheduleAfterDismiss] Defers a new toast until the host closed the previous one.
+ * @property {() => void} [armHelpLink] Permits one page-context help-link click to open the extension help.
  */
 
 const DISMISS_SETTLE_MS = 400;
@@ -76,13 +78,23 @@ export function createAuthFeedback({
   dismissFallback = dismissFallbackNotice,
   openHelp,
   scheduleAfterDismiss = (callback) => setTimeout(callback, DISMISS_SETTLE_MS),
+  armHelpLink = armAuthHelpLink,
 } = {}) {
   const notifiedAttempts = new Set();
   const shownTitles = new Set();
+  let generation = 0;
 
+  /**
+   * Show a request natively or through the fallback notice.
+   * @param {import('../../../../../content_scripts/lightningToastBridge').ToastRequest} request
+   * @returns {'toast'|'fallback'}
+   */
   function present(request) {
     shownTitles.add(request.title);
     if (showToast(request)) {
+      if (request.helpUrl) {
+        armHelpLink();
+      }
       return 'toast';
     }
     showFallback({
@@ -103,6 +115,26 @@ export function createAuthFeedback({
     return 'fallback';
   }
 
+  /**
+   * Present now, or after the previous toast closed. A request that is no
+   * longer the latest when its turn comes is dropped.
+   * @param {import('../../../../../content_scripts/lightningToastBridge').ToastRequest} request
+   * @param {boolean} mustWait
+   * @returns {'toast'|'fallback'|'scheduled'}
+   */
+  function presentLatest(request, mustWait) {
+    const requestGeneration = ++generation;
+    if (!mustWait) {
+      return present(request);
+    }
+    scheduleAfterDismiss(() => {
+      if (requestGeneration === generation) {
+        present(request);
+      }
+    });
+    return 'scheduled';
+  }
+
   return {
     /**
      * Show feedback for a failed authorization attempt.
@@ -115,12 +147,7 @@ export function createAuthFeedback({
         return 'skipped';
       }
       notifiedAttempts.add(key);
-      const request = buildAuthFailureToast(failure);
-      if (this.clear()) {
-        scheduleAfterDismiss(() => present(request));
-        return 'scheduled';
-      }
-      return present(request);
+      return presentLatest(buildAuthFailureToast(failure), this.clear());
     },
 
     /**
@@ -134,12 +161,7 @@ export function createAuthFeedback({
         return 'skipped';
       }
       notifiedAttempts.add(key);
-      const request = buildAuthSuccessToast();
-      if (this.clear()) {
-        scheduleAfterDismiss(() => present(request));
-        return 'scheduled';
-      }
-      return present(request);
+      return presentLatest(buildAuthSuccessToast(), this.clear());
     },
 
     /**

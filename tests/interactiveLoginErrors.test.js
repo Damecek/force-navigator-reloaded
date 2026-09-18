@@ -103,3 +103,47 @@ test('interactiveLogin reports token exchange errors as structured failures', as
     return true;
   });
 });
+
+test('interactiveLogin discards the token of a superseded attempt', async () => {
+  installChrome(
+    async () => 'https://example.chromiumapp.org/oauth2?code=good-code'
+  );
+  const stored = [];
+  global.chrome.storage.local.set = async (values) => {
+    stored.push(...Object.keys(values));
+  };
+  global.fetch = async () => ({
+    ok: true,
+    json: async () => ({
+      access_token: 'a',
+      refresh_token: 'r',
+      instance_url: 'https://acme.my.salesforce.com',
+      scope: 'api refresh_token',
+    }),
+  });
+  const { interactiveLogin } = await loadAuth();
+  const token = await interactiveLogin('acme.my.salesforce.com', {
+    shouldPersist: () => false,
+  });
+  assert.equal(token.access_token, 'a');
+  assert.deepEqual(stored, []);
+  await interactiveLogin('acme.my.salesforce.com', {
+    shouldPersist: () => true,
+  });
+  assert.equal(stored.length, 1);
+});
+
+test('interactiveLogin rejects a callback error whose state does not match', async () => {
+  installChrome(
+    async () =>
+      'https://example.chromiumapp.org/oauth2?error=access_denied&state=other'
+  );
+  const { interactiveLogin } = await loadAuth();
+  await assert.rejects(
+    interactiveLogin('acme.my.salesforce.com', { state: 'abc' }),
+    (error) => {
+      assert.equal(error.error, 'state_mismatch');
+      return true;
+    }
+  );
+});

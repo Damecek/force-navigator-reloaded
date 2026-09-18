@@ -51,7 +51,10 @@ export function registerAuthFlowListeners({
       openTabIds: await listOpenTabIds(),
     });
     try {
-      await login(hostname, { state: attempt.id });
+      await login(hostname, {
+        state: attempt.id,
+        shouldPersist: () => registry.isActive(attempt.id),
+      });
       if (!registry.isActive(attempt.id)) {
         console.log('Auth flow superseded, skipping completion publish');
         return;
@@ -164,6 +167,10 @@ export function toPayload(attempt, failure) {
   };
 }
 
+/**
+ * Ids of all tabs open right now, used to recognize tabs created by the auth flow.
+ * @returns {Promise<number[]>}
+ */
 async function listOpenTabIds() {
   try {
     const tabs = await chrome.tabs.query({});

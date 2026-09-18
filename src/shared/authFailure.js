@@ -23,7 +23,6 @@ export const AUTH_FAILURE_SOURCE = Object.freeze({
 
 const MAX_TEXT_LENGTH = 200;
 const APP_NOT_INSTALLED_PATTERN = /must be installed/i;
-const ACCESS_DENIED_PATTERN = /denied authorization|access[_ ]denied/i;
 const CANCELLED_PATTERN =
   /did not approve access|user cancel|user canceled|user cancelled|window closed|closed by the user/i;
 
@@ -96,10 +95,7 @@ export function classifyAuthFailure({
       detail
     );
   }
-  if (
-    errorCode === 'access_denied' ||
-    (errorCode && ACCESS_DENIED_PATTERN.test(description))
-  ) {
+  if (errorCode === 'access_denied') {
     return build(
       AUTH_FAILURE_KIND.ACCESS_DENIED,
       true,
@@ -154,6 +150,15 @@ export function isConfirmedAuthFailure(failure) {
   return failure?.confirmed === true;
 }
 
+/**
+ * Assemble the failure object.
+ * @param {string} kind
+ * @param {boolean} confirmed
+ * @param {string} source
+ * @param {SalesforceOauthError|null} salesforceError
+ * @param {string} message
+ * @returns {AuthFailure}
+ */
 function build(kind, confirmed, source, salesforceError, message) {
   return { kind, confirmed, source, salesforceError, message };
 }

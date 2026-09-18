@@ -25,6 +25,11 @@ export function injectPageScript(fileName, marker) {
   document.documentElement.appendChild(script);
 }
 
+/**
+ * Convert a `data-*` marker name to its dataset property name.
+ * @param {string} value
+ * @returns {string}
+ */
 function toCamelCase(value) {
   return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 }

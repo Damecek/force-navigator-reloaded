@@ -18,6 +18,11 @@ import { toCoreHostname } from '../../shared/index.js';
  * an in-memory map matches the lifetime of the flow itself.
  */
 export default class AuthAttemptRegistry {
+  /**
+   * @param {Object} [deps]
+   * @param {() => number} [deps.now] Clock, injectable for tests.
+   * @param {() => string} [deps.createId] Attempt id factory, injectable for tests.
+   */
   constructor({ now = Date.now, createId = randomId } = {}) {
     this._attempts = new Map();
     this._now = now;
@@ -149,6 +154,10 @@ export default class AuthAttemptRegistry {
   }
 }
 
+/**
+ * Generate an unguessable attempt id, also used as the OAuth `state` value.
+ * @returns {string}
+ */
 function randomId() {
   if (globalThis.crypto?.randomUUID) {
     return globalThis.crypto.randomUUID();

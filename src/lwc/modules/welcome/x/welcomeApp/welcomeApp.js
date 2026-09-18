@@ -47,15 +47,26 @@ export default class WelcomeApp extends LightningElement {
   @track copyStatus = '';
   _scrolledToHash = false;
 
+  /**
+   * Detect an open Lightning tab and follow hash changes to the help anchor.
+   * @returns {void}
+   */
   connectedCallback() {
     void this.setupLightningLink();
     window.addEventListener('hashchange', this._handleHashChange);
   }
 
+  /**
+   * @returns {void}
+   */
   disconnectedCallback() {
     window.removeEventListener('hashchange', this._handleHashChange);
   }
 
+  /**
+   * Scroll to the requested help anchor once the template has rendered.
+   * @returns {void}
+   */
   renderedCallback() {
     if (this._scrolledToHash) {
       return;

@@ -105,3 +105,13 @@ test('a confirmed terminal callback error wins over nothing recorded', () => {
     AUTH_FAILURE_KIND.ACCESS_DENIED
   );
 });
+
+test('a denial mentioned only in the description keeps the structured error code', () => {
+  const failure = classifyAuthFailure({
+    error: 'invalid_client',
+    errorDescription: 'access denied for this client',
+    source: AUTH_FAILURE_SOURCE.SALESFORCE_ERROR_PAGE,
+  });
+  assert.equal(failure.kind, AUTH_FAILURE_KIND.OAUTH_ERROR);
+  assert.equal(failure.salesforceError.error, 'invalid_client');
+});

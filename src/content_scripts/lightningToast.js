@@ -16,6 +16,9 @@
   const shownTitles = new Set();
   let helpUrl = null;
 
+  /**
+   * @returns {object|null} The Aura runtime when the page exposes it.
+   */
   function getAura() {
     const aura = window.$A;
     return aura && typeof aura.get === 'function' ? aura : null;

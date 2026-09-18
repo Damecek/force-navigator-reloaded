@@ -33,10 +33,14 @@ import {
  * @param {string} hostname Any Salesforce hostname of the org.
  * @param {Object} [options]
  * @param {string} [options.state] Opaque value echoed by Salesforce, used to correlate the attempt.
+ * @param {() => boolean} [options.shouldPersist] Consulted right before the token is stored; a superseded attempt returns false and its token is discarded.
  * @returns {Promise<Token>} token object
  * @throws {AuthFlowError} when Salesforce, the OAuth callback, or the token exchange reports an error.
  */
-export async function interactiveLogin(hostname, { state } = {}) {
+export async function interactiveLogin(
+  hostname,
+  { state, shouldPersist } = {}
+) {
   const { verifier, challenge } = await makePkcePair();
   const loginBase = toLightningUrl(hostname);
   const scopes = await buildOauthScopes();
@@ -93,6 +97,10 @@ export async function interactiveLogin(hostname, { state } = {}) {
     instance_url: token?.instance_url,
     scope: token?.scope,
   });
+  if (typeof shouldPersist === 'function' && !shouldPersist()) {
+    console.log('OAuth2 attempt superseded, discarding its token');
+    return token;
+  }
   await storeToken(token);
   return token;
 }
@@ -120,6 +128,12 @@ function parseAuthorizationCode(redirectUrl, expectedState) {
     error: params.get('error'),
     hasState: params.has('state'),
   });
+  if (expectedState && params.get('state') !== expectedState) {
+    throw new AuthFlowError('OAuth2 login failed: state mismatch', {
+      source: AUTH_FAILURE_SOURCE.OAUTH_CALLBACK,
+      error: 'state_mismatch',
+    });
+  }
   const error = params.get('error');
   if (error) {
     throw new AuthFlowError(
@@ -130,12 +144,6 @@ function parseAuthorizationCode(redirectUrl, expectedState) {
         errorDescription: params.get('error_description') || '',
       }
     );
-  }
-  if (expectedState && params.get('state') !== expectedState) {
-    throw new AuthFlowError('OAuth2 login failed: state mismatch', {
-      source: AUTH_FAILURE_SOURCE.OAUTH_CALLBACK,
-      error: 'state_mismatch',
-    });
   }
   const code = params.get('code');
   if (!code) {
@@ -313,6 +321,11 @@ export function tokenHasScope(token, scope) {
   return scopes.includes(scope);
 }
 
+/**
+ * Persist a token under the org's Lightning hostname with the current issue time.
+ * @param {Token} token
+ * @returns {Promise<void>}
+ */
 function storeToken(token) {
   token.issued_at = Date.now();
   const cache = new CacheManager(toLightningHostname(token.instance_url));

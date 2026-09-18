@@ -186,6 +186,10 @@ An independent review of the integrated change set found and the implementation 
 
 Remaining limitations: `state` is not echoed on the Salesforce error page, so attribution relies on the pending attempt, the org, the tab-less or new-window origin, and a single active attempt per org. In Chrome for Testing 153 the auth window reported without `sender.tab`; the audit observed a tab in Chrome 152, and both paths are covered by tests. The toast help link uses the public README anchor as its `href` and is redirected to the welcome page by the extension; without the extension's page script the README opens instead.
 
+### Pull request review follow-up
+
+CodeRabbit's review of pull request #152 led to these changes: a superseded authorization attempt no longer persists its token (`interactiveLogin` consults `shouldPersist` before storing); the page-context help link can open the extension help only once per toast the extension itself displayed, so host-page scripts cannot flood the browser with tabs; deferred notifications are dropped when a newer one was presented meanwhile; `access_denied` is recognized only by its structured error code; the OAuth callback validates `state` before reading `error`. The version-field comments were false positives, because the pre-commit hook wrote those values. Verified as administrator: a page-dispatched `forceNavigatorOpenAuthHelp` event can consume at most the single opening armed for the displayed toast; afterwards three forged events opened nothing and the toast link fell back to the public README anchor.
+
 ### Sandbox state after testing
 
 - Connected app **Force Navigator Reloaded Dev**: uninstalled again, **Allowed** with an **Install** action, user count 0. Denied-attempt counters and login history from the tests remain.

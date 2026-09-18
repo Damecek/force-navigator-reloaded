@@ -42,6 +42,10 @@ export default class App extends LightningElement {
     this.publishRefreshCommands();
   }
 
+  /**
+   * Ask the background for the current org's commands and show the loading indicator meanwhile.
+   * @returns {Promise<void>}
+   */
   publishRefreshCommands() {
     this.isLoading = true;
     return new Channel(CHANNEL_REFRESH_COMMANDS).publish();
