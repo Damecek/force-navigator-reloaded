@@ -113,7 +113,7 @@ test('refreshToken clears cached token when invalid_grant is returned', async ()
   assert.equal(stored[TOKEN_STORAGE_KEY], undefined);
 });
 
-test('refreshToken preserves cached token when non-invalid_grant error occurs', async () => {
+test('refreshToken marks the grant uncertain when a server error occurs', async () => {
   const { CacheManager, SF_TOKEN_CACHE_KEY } = await loadSharedModule();
   const { refreshToken } = await loadAuthModule();
   const cache = new CacheManager(ORG_HOSTNAME);
@@ -130,7 +130,10 @@ test('refreshToken preserves cached token when non-invalid_grant error occurs', 
   const stored = await chrome.storage.local.get([TOKEN_STORAGE_KEY]);
 
   assert.equal(result, null);
-  assert.deepEqual(stored[TOKEN_STORAGE_KEY]?.value, cachedToken);
+  assert.deepEqual(stored[TOKEN_STORAGE_KEY]?.value, {
+    ...cachedToken,
+    refreshPending: true,
+  });
 });
 
 test('refreshToken deletes cached token when refresh token is missing', async () => {
@@ -239,7 +242,7 @@ test('getCommands falls back to authorize commands and clears token after invali
   assert.equal(stored[TOKEN_STORAGE_KEY], undefined);
 });
 
-test('getCommands falls back to authorize commands and preserves token after temporary failure', async () => {
+test('getCommands falls back to authorize commands after an uncertain refresh', async () => {
   const { CacheManager, SF_TOKEN_CACHE_KEY } = await loadSharedModule();
   const { getCommands } = await import(
     `../src/background/commandRegister.js?test=${Date.now()}-${Math.random()}`
@@ -261,5 +264,8 @@ test('getCommands falls back to authorize commands and preserves token after tem
     AuthorizeExtensionCommand: [{}],
     ExtensionOptionsCommand: [{}],
   });
-  assert.deepEqual(stored[TOKEN_STORAGE_KEY]?.value, cachedToken);
+  assert.deepEqual(stored[TOKEN_STORAGE_KEY]?.value, {
+    ...cachedToken,
+    refreshPending: true,
+  });
 });

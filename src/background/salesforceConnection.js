@@ -26,6 +26,7 @@ export class SalesforceConnection {
     this.origin = instanceUrl.replace(/\/$/, '');
     this.base = `${this.origin}/services/data/v${version}`;
     this.hostname = toLightningHostname(instanceUrl);
+    this.accessToken = accessToken;
     this.headers = this.getHeaders(accessToken);
   }
 
@@ -53,16 +54,20 @@ export class SalesforceConnection {
     const url = path.startsWith('/services/data/')
       ? `${this.origin}${path}`
       : `${this.base}${path}`;
-    const res = await fetch(url, { headers: this.headers });
+    const requestAccessToken = this.accessToken;
+    const res = await fetch(url, {
+      headers: this.getHeaders(requestAccessToken),
+    });
     if (!res.ok) {
       if (res.status === tokenExpiredCode) {
         console.warn(
           'Salesforce GET',
           path,
-          '→ 401 Unauthorized, refreshing token',
-          this.headers.Authorization
+          '→ 401 Unauthorized, refreshing token'
         );
-        const token = await refreshToken(this.hostname);
+        const token = await refreshToken(this.hostname, {
+          rejectedAccessToken: requestAccessToken,
+        });
         if (!token) {
           const error = new Error(
             `Salesforce GET ${path} → 401: refresh token failed`
@@ -70,6 +75,7 @@ export class SalesforceConnection {
           error.code = AUTH_REFRESH_FAILED_CODE;
           throw error;
         }
+        this.accessToken = token.access_token;
         this.headers = this.getHeaders(token.access_token);
         return this._get(path, 0);
       }

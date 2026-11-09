@@ -21,7 +21,7 @@ test('README explains administrator installation and drops the "nothing else is 
 
 test('store listing describes authorization and the administrator prerequisite in unwrapped paragraphs', async () => {
   const listing = await readFile(listingUrl, 'utf8');
-  assert.match(listing, /^• Authorize once per org$/m);
+  assert.match(listing, /^• Authorize per org$/m);
   const paragraph = listing
     .split('\n')
     .find((line) => line.startsWith('Run Extension > Authorize'));

@@ -79,7 +79,7 @@ new Channel(CHANNEL_AUTOLOGIN_MYDOMAIN).subscribe(async ({ sender }) => {
       return;
     }
     const url = buildFrontdoorUrl(orgHostname, token.access_token, retURL);
-    console.log('MyDomain auto-login redirect', { orgHostname, url });
+    console.log('MyDomain auto-login redirect', { orgHostname, retURL });
     await chrome.tabs.update(tabId, { url });
   } catch (error) {
     console.error('MyDomain auto-login failed', error, { tabId, orgHostname });

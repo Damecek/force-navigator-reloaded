@@ -132,6 +132,27 @@ authorized, the palette offers only `Extension > Authorize` and `Extension > Opt
 The extension requests the `api` and `refresh_token` scopes, plus `web` when My Domain auto-login is enabled.
 Authorization is per org and per browser profile.
 
+### Token refresh, rotation, and idle expiry
+
+The background service worker refreshes the access token about 20 hours after it was issued, or when Salesforce rejects
+a request with 401. Only one refresh runs per org at a time. Tabs and requests that arrive while it runs wait for it,
+and a request rejected with an already replaced access token reuses the stored token instead of refreshing again. This
+keeps the extension compatible with refresh token rotation, where Salesforce revokes the whole token family when an
+old refresh token is reused.
+
+- A refresh result never overwrites or clears a newer authorization that was stored while the refresh was running.
+- `invalid_grant` (revoked, rotated out, or idle-expired refresh token) clears the org's stored token, and the palette
+  offers `Extension > Authorize` again.
+- Before a refresh request leaves the extension, its token is marked as pending in persistent storage. If the response
+  is lost or the worker stops before new credentials are saved, the submitted token is never reused. Run
+  `Extension > Authorize` to recover. This conservative recovery also applies after a server error.
+- When the server returns no new refresh token, the extension keeps the previous one. Apps without rotation keep
+  working unchanged.
+
+Salesforce enforces the idle refresh-token lifetime. The extension does not keep tokens alive in the background, so an
+org left unused for longer than the connected app's idle limit needs `Extension > Authorize` again. Rollout status of
+the connected-app settings is tracked in [docs/oauth-refresh-hardening.md](docs/oauth-refresh-hardening.md).
+
 ### When an administrator has to install the connected app
 
 Org policy can require that a Salesforce administrator installs the connected app before any user can authorize it.
