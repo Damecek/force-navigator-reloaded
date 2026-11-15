@@ -14,10 +14,11 @@
         <isCodeCredentialEnabled>false</isCodeCredentialEnabled>
         <isCodeCredentialPostOnly>false</isCodeCredentialPostOnly>
         <isConsumerSecretOptional>true</isConsumerSecretOptional>
+        <isEnforceRefreshTokenTTL>true</isEnforceRefreshTokenTTL>
         <isIntrospectAllTokens>false</isIntrospectAllTokens>
         <isNamedUserJwtEnabled>false</isNamedUserJwtEnabled>
         <isPkceRequired>true</isPkceRequired>
-        <isRefreshTokenRotationEnabled>false</isRefreshTokenRotationEnabled>
+        <isRefreshTokenRotationEnabled>true</isRefreshTokenRotationEnabled>
         <isSecretRequiredForRefreshToken>false</isSecretRequiredForRefreshToken>
         <isSecretRequiredForTokenExchange>false</isSecretRequiredForTokenExchange>
         <isTokenExchangeEnabled>false</isTokenExchangeEnabled>
@@ -28,7 +29,7 @@
     <oauthPolicy>
         <ipRelaxation>BYPASS</ipRelaxation>
         <isTokenExchangeFlowEnabled>false</isTokenExchangeFlowEnabled>
-        <refreshTokenPolicy>infinite</refreshTokenPolicy>
+        <refreshTokenPolicy>specific_inactivity:30:DAYS</refreshTokenPolicy>
     </oauthPolicy>
     <sessionPolicy>
         <sessionTimeout>1440</sessionTimeout>

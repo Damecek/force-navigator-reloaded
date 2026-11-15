@@ -19,7 +19,7 @@ adds no proof-of-possession (DPoP), no External Client App, and no new auth back
 - A refresh response without `refresh_token` keeps the previous one, so the Prod app without rotation keeps working.
 - `ensureWebScopedToken` (My Domain auto-login) refreshes exactly once instead of up to twice.
 - Development logs no longer print cached token values, the `Authorization` header, or the frontdoor URL with `sid`.
-- `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml`: `isRefreshTokenRotationEnabled` and `isEnforceRefreshTokenTTL` are `true`; `refreshTokenPolicy` is `specific_inactivity:30:DAYS`. The Prod file is unchanged.
+- The Dev and Prod Connected App metadata now have `isRefreshTokenRotationEnabled` and `isEnforceRefreshTokenTTL` set to `true`, with `refreshTokenPolicy=specific_inactivity:30:DAYS`. Prod was activated only after the client rollout waiting period described below.
 
 The idle TTL is enforced by Salesforce. It is a sliding 30-day window that resets on every refresh. It is not an
 absolute 30-day lifetime and not the access-token session timeout (`sessionTimeout` stays 1440 minutes). The extension
@@ -33,6 +33,16 @@ does not refresh in the background only to keep an unused org alive.
 2. Run the manual acceptance below against `carvago-dev` with a development build.
 3. Release the client to the Chrome Web Store. Confirm that the hardened version is publicly available to all users, then wait at least five full days for users to update. Upload success or a pending store review does not start this waiting period. Defer activation if publication is incomplete or a regression is reported.
 4. Prod app: apply the same two settings, then update `Force_Navigator_Reloaded_Prod.connectedApp-meta.xml` to match.
+
+### Production activation on November 15, 2026
+
+- Chrome Web Store version 5.18.0 was first confirmed publicly available on November 10 at 09:00:31 UTC. The activation check on November 15 confirmed that the public listing still showed 5.18.0 and that more than 120 hours had elapsed. The release tag points to `99bc96184fb5579554023b9ceafb895021fae12c`.
+- Owner org `00DgL000004HUsEUAW`, authenticated through `force-navigator-connected-app`, owns the existing `Force_Navigator_Reloaded_Prod` app. Before modification, a fresh metadata retrieve matched its consumer key, callback, label, and PKCE requirement to the source. No new app or consumer key was created.
+- Rotation was enabled through the existing app's Setup page. The idle TTL enforcement checkbox was already checked, disabled, and described by Salesforce as a required setting. It was preserved. The app's OAuth policy was explicitly saved as **Expire refresh token if not used for 30 Day(s)**.
+- Reopening the app's edit page confirmed rotation, TTL enforcement, and PKCE enabled. Comparing all checkbox states before and after showed only rotation changed. The saved policy page confirmed **Idle Expiration Time Limit Enforced** and 30 days. IP relaxation, self-authorization, and the 24-hour session timeout were preserved.
+- A fresh metadata retrieve after saving independently confirmed `isRefreshTokenRotationEnabled=true` and `refreshTokenPolicy=specific_inactivity:30:DAYS`. Comparing the complete retrieved Prod definition before and after found only those two changes; all other retrieved fields, including the consumer key and callback, were unchanged. The Dev definition was unchanged. Metadata omitted `isEnforceRefreshTokenTTL` for both apps, so enforcement verification relies on the reopened owner UI rather than an assumed API value.
+- Subscriber propagation was not confirmed: the `carvago-dev` Insights page showed the Dev app with OAuth controls 3/3, but did not show a Prod app row during this check. No additional app installation or authorization was performed just to obtain subscriber evidence.
+- Actual 30-day wall-clock expiration and full proof-of-possession compliance remain outside this verification. No user grants were broadly revoked.
 
 Older clients that still run when rotation is turned on can refresh twice in parallel. Salesforce then revokes the token
 family, and the user sees `Extension > Authorize`. This is why Prod waits for the client update.
