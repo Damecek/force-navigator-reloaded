@@ -1,9 +1,9 @@
 /**
- * Base64-url-encode an ArrayBuffer
- * @param {ArrayBuffer} buf
+ * Base64-url-encode binary data without padding.
+ * @param {ArrayBuffer|Uint8Array} buf
  * @returns {string}
  */
-function b64url(buf) {
+export function b64url(buf) {
   const bytes = new Uint8Array(buf);
   let str = '';
   for (const b of bytes) {

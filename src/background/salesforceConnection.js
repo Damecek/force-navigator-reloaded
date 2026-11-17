@@ -1,10 +1,13 @@
+/* eslint-disable camelcase */
 import { refreshToken } from './auth/auth.js';
+import {
+  buildAuthorizationHeaders,
+  REAUTHORIZATION_REQUIRED_CODE,
+} from './auth/requestAuthorization.js';
 import {
   SALESFORCE_API_VERSION,
   toLightningHostname,
 } from '../shared/index.js';
-
-const AUTH_REFRESH_FAILED_CODE = 'AUTH_REFRESH_FAILED';
 
 /**
  * Check whether an error means token refresh failed and re-authorization is required.
@@ -12,28 +15,29 @@ const AUTH_REFRESH_FAILED_CODE = 'AUTH_REFRESH_FAILED';
  * @returns {boolean}
  */
 export function isAuthRefreshFailedError(error) {
-  return error?.code === AUTH_REFRESH_FAILED_CODE;
+  return error?.code === REAUTHORIZATION_REQUIRED_CODE;
 }
 
 export class SalesforceConnection {
   /**
    * @param {object} opts
    * @param {string} opts.instanceUrl   https://<org>.my.salesforce.com
-   * @param {string} opts.accessToken   sid / OAuth bearer
+   * @param {import('./auth/auth.js').Token} [opts.token] Stored grant; a DPoP-bound grant signs every request.
+   * @param {string} [opts.accessToken] Bearer access token, used when no grant is passed.
    * @param {string} [opts.version] Salesforce API version override.
    */
-  constructor({ instanceUrl, accessToken, version = SALESFORCE_API_VERSION }) {
+  constructor({
+    instanceUrl,
+    token,
+    accessToken,
+    version = SALESFORCE_API_VERSION,
+  }) {
     this.origin = instanceUrl.replace(/\/$/, '');
     this.base = `${this.origin}/services/data/v${version}`;
     this.hostname = toLightningHostname(instanceUrl);
-    this.accessToken = accessToken;
-    this.headers = this.getHeaders(accessToken);
-  }
-
-  getHeaders(accessToken) {
-    return {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
+    this.token = token || {
+      access_token: accessToken,
+      instance_url: this.origin,
     };
   }
 
@@ -54,9 +58,12 @@ export class SalesforceConnection {
     const url = path.startsWith('/services/data/')
       ? `${this.origin}${path}`
       : `${this.base}${path}`;
-    const requestAccessToken = this.accessToken;
+    const requestToken = this.token;
     const res = await fetch(url, {
-      headers: this.getHeaders(requestAccessToken),
+      headers: {
+        ...(await buildAuthorizationHeaders(requestToken, 'GET', url)),
+        'Content-Type': 'application/json',
+      },
     });
     if (!res.ok) {
       if (res.status === tokenExpiredCode) {
@@ -66,17 +73,16 @@ export class SalesforceConnection {
           '→ 401 Unauthorized, refreshing token'
         );
         const token = await refreshToken(this.hostname, {
-          rejectedAccessToken: requestAccessToken,
+          rejectedAccessToken: requestToken.access_token,
         });
         if (!token) {
           const error = new Error(
             `Salesforce GET ${path} → 401: refresh token failed`
           );
-          error.code = AUTH_REFRESH_FAILED_CODE;
+          error.code = REAUTHORIZATION_REQUIRED_CODE;
           throw error;
         }
-        this.accessToken = token.access_token;
-        this.headers = this.getHeaders(token.access_token);
+        this.token = token;
         return this._get(path, 0);
       }
       const msg = await res.text();

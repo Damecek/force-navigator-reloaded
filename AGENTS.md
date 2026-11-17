@@ -68,6 +68,11 @@
 - Page-context bridges (Aura navigation, native toasts) are plain scripts in `src/content_scripts` injected through
   `pageScriptInjector.js` and driven by DOM events. Register new ones in `webpack.config.js` copy patterns and in the
   manifest `web_accessible_resources`; keep authorization failure copy in `src/shared/authFailureCopy.js`.
+- Authorize every Salesforce request from the background through `buildAuthorizationHeaders`
+  (`src/background/auth/requestAuthorization.js`), which signs DPoP-bound grants. Start browser sessions only through
+  `requestFrontdoorUrl` (`src/background/auth/uiSessionBridge.js`). Never put an access token into a URL, send a bound
+  token with the `Bearer` scheme, or log tokens, proofs, nonces, or frontdoor URLs. Read `docs/oauth-dpop.md` before
+  changing authorization, refresh, or key storage.
 - Keep Salesforce REST and Tooling API requests pinned through `SALESFORCE_API_VERSION`. Advance the pin deliberately,
   one version at a time, only after every command source has been validated against both the current production release
   and a preview org. During preview windows, do not select a version newer than the current production release. Do not

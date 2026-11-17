@@ -1,7 +1,8 @@
 # OAuth refresh hardening: rotation and idle TTL
 
 First iteration of OAuth hardening for the extension. It keeps the existing global connected apps and consumer keys. It
-adds no proof-of-possession (DPoP), no External Client App, and no new auth backend.
+adds no proof-of-possession (DPoP), no External Client App, and no new auth backend. DPoP followed as a separate
+change and is described in [OAuth DPoP: design, rollout, and acceptance](oauth-dpop.md).
 
 ## What changed
 
@@ -144,7 +145,11 @@ Prerequisite: the Dev app settings from rollout step 1 are active.
 
 ## Remaining gap
 
-Tokens are still bearer tokens in `chrome.storage.local`. Rotation shortens how long a stolen refresh token stays
-usable once the extension refreshes, and the idle TTL ends unused grants. A stolen access token still works until its
-session expires. Full compliance with the Salesforce Insights recommendation for public clients still needs
-proof-of-possession (DPoP), which is out of scope for this iteration.
+This iteration left tokens as bearer tokens in `chrome.storage.local`. Rotation shortens how long a stolen refresh
+token stays usable once the extension refreshes, and the idle TTL ends unused grants. A stolen bearer access token
+still works until its session expires.
+
+The client now supports proof-of-possession: new authorizations are bound to a key, and auto-login and Login As no
+longer put the access token into a frontdoor URL. See [OAuth DPoP: design, rollout, and acceptance](oauth-dpop.md).
+Grants issued before that change stay bearer grants until the user authorizes again, and neither app requires DPoP
+yet, so full compliance with the Salesforce Insights recommendation is still open.

@@ -95,7 +95,7 @@ export async function getCommands(hostname) {
   const instanceHostname = toLightningHostname(hostname);
   const connection = new SalesforceConnection({
     instanceUrl: token.instance_url,
-    accessToken: token.access_token,
+    token,
   });
   const loadUsers = createUsersLoader(connection);
   let NavigationCommand = [];
