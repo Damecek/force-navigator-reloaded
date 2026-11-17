@@ -173,7 +173,7 @@ Passed in one sandbox:
 
 ### Independent review
 
-Two rounds of independent security review (Open Code Review in delegation mode, GPT-6.2 Astra at high reasoning effort) covered all changed files. Both rounds ended with a rejection and a list of findings.
+Three rounds of independent security review (Open Code Review in delegation mode, GPT-6.2 Astra at high reasoning effort) covered the change. The first two rounds ended with a rejection and a list of findings. The third round accepted commit `9d4cd44` and found no new runtime defect.
 
 Fixed and covered by tests:
 
@@ -189,7 +189,7 @@ Left unchanged on purpose:
 - A successful refresh response without a new refresh token keeps the previous one. The first round rated this high for rotating apps. The second round accepted it: the worst case is a revoked token family and one more authorization, with no path to another user's grant or to disclosure. The behavior predates this change.
 - A failed refresh whose body contains `invalid_grant` clears the grant regardless of the HTTP status. This predates the change.
 - REST error messages include the Salesforce error body, and the auto-login log line includes the address of the login page. Production builds strip `console.log`. Both predate the change.
-- Login As returns to the current page, including its query string and fragment, as it did before. The second round asked for an allowlist of that route data.
+- Login As returns to the current page, including its query string and fragment, as it did before. The second round asked for an allowlist of that route data, and the third round accepted the documented behavior.
 - A key that fails to sign leaves the replay guard in place, so the next attempt asks for authorization. That is the intended outcome for an unusable key.
 - Login As needs the `web` scope, which a default installation does not request. See [UI sessions](#ui-sessions).
 
