@@ -64,6 +64,7 @@ export class SalesforceConnection {
         ...(await buildAuthorizationHeaders(requestToken, 'GET', url)),
         'Content-Type': 'application/json',
       },
+      redirect: 'error',
     });
     if (!res.ok) {
       if (res.status === tokenExpiredCode) {

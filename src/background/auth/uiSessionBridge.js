@@ -35,8 +35,12 @@ export async function requestFrontdoorUrl(token, redirectPath) {
       `UI session bridge failed: ${response.status} ${ERROR_CODE_PATTERN.test(code) ? code : 'unreadable response'}`
     );
   }
-  const { frontdoor_uri: frontdoorUri } = await response.json();
-  const frontdoor = new URL(frontdoorUri);
+  let frontdoor;
+  try {
+    frontdoor = new URL((await response.json()).frontdoor_uri);
+  } catch {
+    throw new Error('UI session bridge returned an unreadable response');
+  }
   if (
     frontdoor.origin !== origin ||
     frontdoor.pathname !== FRONTDOOR_PATH ||

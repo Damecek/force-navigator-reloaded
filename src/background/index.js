@@ -17,7 +17,11 @@ import {
   toCoreUrl,
 } from '../shared/index.js';
 import { getCommands } from './commandRegister.js';
-import { ensureToken, ensureWebScopedToken } from './auth/auth.js';
+import {
+  ensureToken,
+  ensureWebScopedToken,
+  tokenHasScope,
+} from './auth/auth.js';
 import { registerAuthFlowListeners } from './auth/authFlowController.js';
 import { isRelativePath, requestFrontdoorUrl } from './auth/uiSessionBridge.js';
 
@@ -139,12 +143,15 @@ new Channel(CHANNEL_LOGIN_AS_PRIVATE).subscribe(async ({ data, sender }) => {
   });
   const loginAsPath = `/servlet/servlet.su?${query.toString()}`;
   let url;
-  try {
-    url = await requestFrontdoorUrl(token, loginAsPath);
-  } catch (error) {
-    console.error('Private Login As starts without a session', error, {
-      orgHostname,
-    });
+  if (tokenHasScope(token, 'web')) {
+    try {
+      url = await requestFrontdoorUrl(token, loginAsPath);
+    } catch (error) {
+      console.error('Private Login As failed', error, { orgHostname });
+      return;
+    }
+  } else {
+    console.log('Grant has no web scope; Login As opens without a session');
     url = `${toCoreUrl(orgHostname)}${loginAsPath}`;
   }
   await chrome.windows.create({

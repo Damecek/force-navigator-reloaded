@@ -84,14 +84,14 @@ Added rules:
 - A bound grant is refreshed only with a proof from its key. A bearer grant is refreshed without a proof, because Salesforce refuses to bind it.
 - A refresh response whose token type differs from the stored grant is rejected and leaves the replay guard in place. A bound grant is never downgraded.
 - A bound token is never sent with the `Bearer` scheme. Credentials are refused for a URL outside the org that issued them, and a bound grant stored under another org's hostname is cleared instead of used.
-- Token and UI Bridge requests fail on an HTTP redirect, so a grant is never sent on to another URL.
+- Token, UI Bridge, REST, and Tooling requests fail on an HTTP redirect, so neither a grant nor a proof is sent on to another URL.
 - An authorization that was superseded while it waited for the token lock or the key store writes neither a token nor a key.
 
 ### UI sessions
 
 Auto-login and Login As ask the UI Bridge API for a frontdoor URL and open it. Bound grants sign the request. Bearer grants use the same API with the `Bearer` scheme, so the old `frontdoor.jsp?sid=<access token>` URL is gone for every grant. The returned URL must be the frontdoor page of the same org and must not carry a session ID. Redirect paths must be relative and free of backslashes and control characters, including the page that Login As returns to.
 
-Both features need the `web` scope, as before. The extension requests it only while auto-login is turned on. With a grant that lacks it, `frontdoor.jsp?sid=` showed the login page in version 5.18.0, and the UI Bridge answers `Invalid_Scope` now. Login As then opens its Salesforce address in the private window without a session, which keeps the earlier visible behavior. Requesting `web` whenever Login As commands are enabled would close this gap and is left as a product decision, because it changes the scopes of a default installation.
+Both features need the `web` scope, as before. The extension requests it only while auto-login is turned on. With a grant that lacks it, `frontdoor.jsp?sid=` showed the login page in version 5.18.0, and the UI Bridge answers `Invalid_Scope` now. For such a grant Login As skips the UI Bridge and opens its Salesforce address in the private window without a session, which keeps the earlier visible behavior. When the UI Bridge fails for a grant that has the scope, nothing is opened and the error is logged. Requesting `web` whenever Login As commands are enabled would close this gap and is left as a product decision, because it changes the scopes of a default installation.
 
 ### Bearer grants and migration
 
@@ -153,7 +153,7 @@ Passed in one org:
 
 ### Installed extension
 
-The unpacked development build with ID `fjcokiadigpmkojdlhbkbhimkcmjokon` ran in Chrome for Testing 158 with a fresh profile, driven by Playwright. The palette was opened with the message that the keyboard command sends, because browser-level shortcuts cannot be automated. The harness and the installed-extension checks were repeated on the final code after the review fixes, except the update and killed-browser observations.
+The unpacked development build with ID `fjcokiadigpmkojdlhbkbhimkcmjokon` ran in Chrome for Testing 158 with a fresh profile, driven by Playwright. The palette was opened with the message that the keyboard command sends, because browser-level shortcuts cannot be automated. After the last review fixes, these checks were repeated on the final code: the harness login, API, refresh, concurrency, negative, auto-login, restart, and cross-org checks in both sandboxes, the complete installed-extension run in `carvago-dev`, and authorization plus both Login As variants in the installed extension. The remaining results below come from the code before the second round of review fixes.
 
 Passed in both sandboxes:
 
@@ -173,13 +173,24 @@ Passed in one sandbox:
 
 ### Independent review
 
-An independent security review (Open Code Review in delegation mode, GPT-6.2 Astra at high reasoning effort) covered all changed files. It first rejected the change. These findings were fixed and covered by tests: token and UI Bridge requests no longer follow redirects, a nonce challenge is accepted only with status 400, the UI Bridge refuses a frontdoor URL with a session ID or user info and paths with backslashes or control characters, bridge errors carry only a status and an error code, a bound grant stored under another org is cleared, and a superseded authorization is checked again before the token is written.
+Two rounds of independent security review (Open Code Review in delegation mode, GPT-6.2 Astra at high reasoning effort) covered all changed files. Both rounds ended with a rejection and a list of findings.
 
-Left unchanged on purpose, because the behavior predates this change and was accepted with the refresh hardening:
+Fixed and covered by tests:
 
-- A successful refresh response without a new refresh token keeps the previous one. The reviewer rated the risk high for rotating apps. The worst case is one more authorization, the same outcome as the proposed fix.
-- A failed refresh whose body contains `invalid_grant` clears the grant regardless of the HTTP status.
-- REST error messages include the Salesforce error body, and the auto-login log line includes the address of the login page. Production builds strip `console.log`.
+- Token, UI Bridge, REST, and Tooling requests no longer follow redirects.
+- A nonce challenge is accepted only with status 400.
+- The UI Bridge refuses a frontdoor URL with a session ID or user info and paths with backslashes or control characters. Its errors carry only a status and an error code, and an unreadable response is reported without its content.
+- A bound grant stored under another org is cleared before any refresh branch can return it.
+- A superseded authorization is checked again before the token is written.
+- Login As falls back to a window without a session only for a grant without the `web` scope.
+
+Left unchanged on purpose:
+
+- A successful refresh response without a new refresh token keeps the previous one. The first round rated this high for rotating apps. The second round accepted it: the worst case is a revoked token family and one more authorization, with no path to another user's grant or to disclosure. The behavior predates this change.
+- A failed refresh whose body contains `invalid_grant` clears the grant regardless of the HTTP status. This predates the change.
+- REST error messages include the Salesforce error body, and the auto-login log line includes the address of the login page. Production builds strip `console.log`. Both predate the change.
+- Login As returns to the current page, including its query string and fragment, as it did before. The second round asked for an allowlist of that route data.
+- A key that fails to sign leaves the replay guard in place, so the next attempt asks for authorization. That is the intended outcome for an unusable key.
 - Login As needs the `web` scope, which a default installation does not request. See [UI sessions](#ui-sessions).
 
 ### Not verified

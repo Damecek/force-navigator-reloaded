@@ -343,6 +343,11 @@ async function runRefresh(loginBase, rejectedAccessToken) {
     console.log('Interrupted refresh requires authorization for', loginBase);
     return clearTokenIfUnchanged(loginBase, cachedToken);
   }
+  const { usable, dpopKey } = await resolveGrantKey(cachedToken, loginBase);
+  if (!usable) {
+    console.log('Bound grant has no usable key; authorization is required');
+    return clearTokenIfUnchanged(loginBase, cachedToken);
+  }
   if (
     cachedToken &&
     rejectedAccessToken &&
@@ -356,11 +361,6 @@ async function runRefresh(loginBase, rejectedAccessToken) {
       'Token refresh unavailable. Missing refresh token, deleting cached token for',
       loginBase
     );
-    return clearTokenIfUnchanged(loginBase, cachedToken);
-  }
-  const { usable, dpopKey } = await resolveGrantKey(cachedToken, loginBase);
-  if (!usable) {
-    console.log('Bound grant has no usable key; authorization is required');
     return clearTokenIfUnchanged(loginBase, cachedToken);
   }
   const prepared = await withTokenLock(loginBase, async () => {
@@ -508,7 +508,7 @@ function clearTokenIfUnchanged(loginBase, snapshot) {
  * A bearer grant needs none. A bound grant is unusable when its key is missing
  * from this browser profile, it was issued to another OAuth client, or it is
  * stored under an org other than the one that issued it.
- * @param {Token} token
+ * @param {Token|null} token
  * @param {string} loginBase Canonical Lightning hostname the grant is stored under.
  * @returns {Promise<{usable: boolean, dpopKey: import('./dpop/dpopProof.js').DpopKey|null}>}
  */

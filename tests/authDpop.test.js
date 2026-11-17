@@ -367,6 +367,17 @@ test('a bound grant stored under another org is never used for that org', async 
   assert.equal(storedToken(ORG), undefined);
   assert.equal(keysOf(OTHER_ORG).length, 1);
   assert.equal(storedToken(OTHER_ORG).token_type, 'DPoP');
+
+  storageArea.records.set(
+    TOKEN_KEY(ORG),
+    structuredClone(storageArea.records.get(TOKEN_KEY(OTHER_ORG)))
+  );
+  assert.equal(
+    await auth.refreshToken(ORG, { rejectedAccessToken: 'rejected-token' }),
+    null
+  );
+  assert.equal(storedToken(ORG), undefined);
+  assert.equal(keysOf(OTHER_ORG).length, 1);
 });
 
 test('a 401 challenge from the token endpoint is not retried', async () => {
@@ -665,9 +676,10 @@ test('a bearer connection keeps sending the Bearer scheme without a proof', asyn
     accessToken: 'bearer-access',
   }).query('SELECT Id FROM User');
 
-  const { headers } = salesforce.apiCalls[0].init;
+  const { headers, redirect } = salesforce.apiCalls[0].init;
   assert.equal(headers.Authorization, 'Bearer bearer-access');
   assert.equal(headers.DPoP, undefined);
+  assert.equal(redirect, 'error');
 });
 
 test('credentials are refused for a URL outside the issuing org', async () => {
@@ -798,6 +810,16 @@ test('UI bridge rejects unsafe redirect paths, foreign frontdoor URLs, and failu
       /unexpected URL/
     );
   }
+  response = new Response('otp=one-time-secret is not json', { status: 200 });
+  await assert.rejects(
+    requestFrontdoorUrl(bearer, '/lightning/page/home'),
+    /^Error: UI session bridge returned an unreadable response$/
+  );
+  response = jsonResponse(200, { frontdoor_uri: 'not a url otp=secret' });
+  await assert.rejects(
+    requestFrontdoorUrl(bearer, '/lightning/page/home'),
+    /^Error: UI session bridge returned an unreadable response$/
+  );
   response = new Response('Bad_OAuth_Token', { status: 403 });
   await assert.rejects(
     requestFrontdoorUrl(bearer, '/lightning/page/home'),
