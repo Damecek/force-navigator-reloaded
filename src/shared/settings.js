@@ -189,3 +189,21 @@ export function invalidateSettingsCache() {
 export async function isAutologinEnabled() {
   return (await getSetting([AUTOLOGIN_SETTINGS_KEY])) === true;
 }
+
+/**
+ * Settings of features that start a Salesforce UI session and therefore need
+ * the OAuth `web` scope. A new feature adds the key path of its setting here.
+ */
+const WEB_SCOPE_SETTINGS = [
+  [AUTOLOGIN_SETTINGS_KEY],
+  [COMMANDS_SETTINGS_KEY, LOGIN_AS_SETTINGS_KEY],
+];
+
+/**
+ * Returns whether an enabled feature needs a grant with the `web` scope.
+ * @returns {Promise<boolean>}
+ */
+export async function isWebScopeRequired() {
+  const values = await Promise.all(WEB_SCOPE_SETTINGS.map(getSetting));
+  return values.includes(true);
+}

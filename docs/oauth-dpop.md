@@ -91,7 +91,7 @@ Added rules:
 
 Auto-login and Login As ask the UI Bridge API for a frontdoor URL and open it. Bound grants sign the request. Bearer grants use the same API with the `Bearer` scheme, so the old `frontdoor.jsp?sid=<access token>` URL is gone for every grant. The returned URL must be the frontdoor page of the same org and must not carry a session ID. Redirect paths must be relative and free of backslashes and control characters, including the page that Login As returns to.
 
-Both features need the `web` scope, as before. The extension requests it only while auto-login is turned on. With a grant that lacks it, `frontdoor.jsp?sid=` showed the login page in version 5.18.0, and the UI Bridge answers `Invalid_Scope` now. For such a grant Login As skips the UI Bridge and opens its Salesforce address in the private window without a session, which keeps the earlier visible behavior. When the UI Bridge fails for a grant that has the scope, nothing is opened and the error is logged. Requesting `web` whenever Login As commands are enabled would close this gap and is left as a product decision, because it changes the scopes of a default installation.
+Both features need the `web` scope, as before. The extension requests it while one of them is enabled. `WEB_SCOPE_SETTINGS` in `src/shared/settings.js` lists the settings of features that start a UI session, and `isWebScopeRequired()` reads it for the authorization request and for the palette. A new feature of that kind adds the key path of its setting to the list. Login As commands are on by default, so a default installation requests `web`. Before this change the extension requested it only for auto-login, and Login As in a default installation ended at the sign-in page. When the stored grant lacks `web` and a listed feature is on, the palette offers `Extension > Authorize` next to the other commands. With a grant that lacks it, `frontdoor.jsp?sid=` showed the login page in version 5.18.0, and the UI Bridge answers `Invalid_Scope` now. For such a grant Login As skips the UI Bridge and opens its Salesforce address in the private window without a session, which keeps the earlier visible behavior. When the UI Bridge fails for a grant that has the scope, nothing is opened and the error is logged.
 
 ### Bearer grants and migration
 
@@ -129,10 +129,11 @@ Evidence is separated by how it was obtained.
 
 ### Unit and integration tests
 
-`npm test` runs 216 tests. The 175 tests that existed before pass without modification, including refresh concurrency, replay protection after lost responses and restarts, storage failures, and protection of a newer authorization.
+`npm test` runs 222 tests. The 175 tests that existed before pass without modification, including refresh concurrency, replay protection after lost responses and restarts, storage failures, and protection of a newer authorization.
 
 - `tests/dpopProof.test.js`: proof header, claims, and signature, binding to method, URL, nonce, and access token, unique `jti`, the thumbprint, non-extractable keys, rejection of missing key material, strict reading of nonce challenges, and the key store with org isolation and pruning.
 - `tests/authDpop.test.js`: authorization that binds a grant, a bearer answer stored as a bearer grant, key replacement and atomic storage, bound and bearer refresh, eight concurrent callers per org, missing key, key of another org, another client ID, key store failure, refused downgrade, bounded nonce retries, a lost response after a challenge, a stale refresh against a newer authorization, a superseded authorization, a grant stored under another org, signed API requests including pagination and the 401 retry, the origin check, and the UI Bridge for both grant types.
+- `tests/webScope.test.js`: the `web` scope is requested by default because Login As is on, by each listed feature on its own, and not when all of them are off. The palette offers authorization for a grant without `web` only while a listed feature is on.
 
 ### Live OAuth harness
 
@@ -168,7 +169,8 @@ Passed in one sandbox:
 
 - `carvago-uat`: `Administration > Users > <test user> > Login As` opened a private window that landed in Lightning as the dedicated test user. The identity page showed that user and not the administrator.
 - `carvago-dev`: starting the profile with a build of a higher version, an extension update, kept the grant and key and reloaded the commands.
-- `carvago-dev`: with auto-login off, the grant had the scopes `refresh_token api`. A Login As command opened the private window at the Salesforce sign-in page, and the address carried no session ID or one-time code.
+- `carvago-uat`, after the `web` scope change: with the default settings, auto-login off and Login As on, `Extension > Authorize` stored a bound grant with the scopes `refresh_token web api`, and the Login As command opened a private window that landed in Lightning as the dedicated test user.
+- `carvago-dev`, before the `web` scope change: a grant with the scopes `refresh_token api` and a Login As command opened the private window at the Salesforce sign-in page, and the address carried no session ID or one-time code. Grants from earlier authorizations still take this path.
 - `carvago-uat`: a browser process killed during a refresh came back with the grant discarded and without a token request, and the palette offered authorization.
 
 ### Independent review
@@ -191,7 +193,6 @@ Left unchanged on purpose:
 - REST error messages include the Salesforce error body, and the auto-login log line includes the address of the login page. Production builds strip `console.log`. Both predate the change.
 - Login As returns to the current page, including its query string and fragment, as it did before. The second round asked for an allowlist of that route data, and the third round accepted the documented behavior.
 - A key that fails to sign leaves the replay guard in place, so the next attempt asks for authorization. That is the intended outcome for an unusable key.
-- Login As needs the `web` scope, which a default installation does not request. See [UI sessions](#ui-sessions).
 
 ### Not verified
 
@@ -243,7 +244,7 @@ Use a development build (`npm run dev-build`, load `dist` unpacked, ID `fjcokiad
 3. In the service worker Network panel, a login shows two requests to `/services/oauth2/token`, 400 then 200, both with a `DPoP` request header. API requests carry `Authorization: DPoP ...` and a `DPoP` header.
 4. Restart Chrome, then reload the extension on `chrome://extensions`. Each time the palette loads commands without authorizing.
 5. Force a refresh as in step 5 of the [refresh hardening acceptance](oauth-refresh-hardening.md#manual-acceptance-carvago-dev) and open the palette in two tabs. One 400 and one 200 token request appear, and the stored refresh token changes.
-6. Turn on My Domain auto-login, authorize again so the grant has the `web` scope, log out, and open the My Domain login page. The tab lands in Lightning. The address bar shows `frontdoor.jsp?otp=...` on the way and never `sid=`.
+6. Turn on My Domain auto-login, log out, and open the My Domain login page. The tab lands in Lightning. The address bar shows `frontdoor.jsp?otp=...` on the way and never `sid=`.
 7. Run a Login As command. A private window opens as that user. Allow the extension in incognito if Chrome asks for it.
 8. Revoke the grant under the user's **OAuth Connected Apps**, run `Extension > Refresh Command List`, and confirm the palette offers `Extension > Authorize`. Authorize and confirm commands load.
 9. Bearer transition: in a profile that was authorized with version 5.18.0, install this build over it. Commands keep loading and the stored `token_type` stays `Bearer`. Run `Extension > Authorize` and confirm it becomes `DPoP`.

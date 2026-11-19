@@ -68,6 +68,9 @@
 - Page-context bridges (Aura navigation, native toasts) are plain scripts in `src/content_scripts` injected through
   `pageScriptInjector.js` and driven by DOM events. Register new ones in `webpack.config.js` copy patterns and in the
   manifest `web_accessible_resources`; keep authorization failure copy in `src/shared/authFailureCopy.js`.
+- A feature that starts a Salesforce browser session needs the OAuth `web` scope. Add the key path of its setting to
+  `WEB_SCOPE_SETTINGS` in `src/shared/settings.js`; authorization and the palette read it through
+  `isWebScopeRequired()`.
 - Authorize every Salesforce request from the background through `buildAuthorizationHeaders`
   (`src/background/auth/requestAuthorization.js`), which signs DPoP-bound grants. Start browser sessions only through
   `requestFrontdoorUrl` (`src/background/auth/uiSessionBridge.js`). Never put an access token into a URL, send a bound

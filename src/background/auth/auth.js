@@ -3,6 +3,7 @@ import {
   CacheManager,
   CLIENT_ID,
   isAutologinEnabled,
+  isWebScopeRequired,
   SF_TOKEN_CACHE_KEY,
   toCoreUrl,
   toLightningHostname,
@@ -583,8 +584,9 @@ function withTokenLock(loginBase, task) {
  * @returns {Promise<string>}
  */
 async function buildOauthScopes() {
-  const autologinEnabled = await isAutologinEnabled();
-  return autologinEnabled ? 'web api refresh_token' : 'api refresh_token';
+  return (await isWebScopeRequired())
+    ? 'web api refresh_token'
+    : 'api refresh_token';
 }
 
 /**
