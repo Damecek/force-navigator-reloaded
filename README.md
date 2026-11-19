@@ -134,7 +134,7 @@ authorized, the palette offers only `Extension > Authorize` and `Extension > Opt
 The extension requests the `api` and `refresh_token` scopes, plus `web` while a feature that starts a Salesforce
 browser session is enabled: Login As commands (on by default) or My Domain auto-login. To authorize without `web`,
 turn both off in Settings before you run `Extension > Authorize`. When one of them is on and the stored grant lacks
-`web`, the palette also offers `Extension > Authorize`; the other commands keep working.
+`web`, the palette also offers `Extension > Authorize`; navigation and Login As commands stay in the palette.
 Authorization is per org and per browser profile.
 
 ### Proof of possession (DPoP)

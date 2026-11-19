@@ -187,6 +187,8 @@ export function invalidateSettingsCache() {
  * @returns {Promise<boolean>}
  */
 export async function isAutologinEnabled() {
+  // The options page saves settings from another context; read storage again.
+  invalidateSettingsCache();
   return (await getSetting([AUTOLOGIN_SETTINGS_KEY])) === true;
 }
 
@@ -204,6 +206,10 @@ const WEB_SCOPE_SETTINGS = [
  * @returns {Promise<boolean>}
  */
 export async function isWebScopeRequired() {
-  const values = await Promise.all(WEB_SCOPE_SETTINGS.map(getSetting));
+  // The options page saves settings from another context; read storage again.
+  invalidateSettingsCache();
+  const values = await Promise.all(
+    WEB_SCOPE_SETTINGS.map((keyPath) => getSetting(keyPath))
+  );
   return values.includes(true);
 }

@@ -238,7 +238,8 @@ function buildTokenExchangeError(body) {
 }
 
 /**
- * Ensures token is ready for My Domain auto-login flow.
+ * Ensures token is ready for My Domain auto-login flow. Returns null unless
+ * auto-login is enabled and the grant has the `web` scope.
  * Always exchanges the refresh token once so frontdoor receives a fresh UI session,
  * and never launches interactive OAuth from the passive auto-login flow.
  *
@@ -246,6 +247,11 @@ function buildTokenExchangeError(body) {
  * @returns {Promise<Token|null>}
  */
 export async function ensureWebScopedToken(hostname) {
+  // A grant can carry `web` for Login As alone, so the setting decides here too.
+  if (!(await isAutologinEnabled())) {
+    console.log('ensureWebScopedToken: auto-login is disabled');
+    return null;
+  }
   const cachedToken = await new CacheManager(toLightningHostname(hostname)).get(
     SF_TOKEN_CACHE_KEY
   );
@@ -263,8 +269,7 @@ export async function ensureWebScopedToken(hostname) {
     );
     return null;
   }
-  const autologinEnabled = await isAutologinEnabled();
-  if (autologinEnabled && !tokenHasScope(token, 'web')) {
+  if (!tokenHasScope(token, 'web')) {
     console.log(
       'Auto-login requires web scope. Skipping passive auto-login without interactive OAuth.'
     );

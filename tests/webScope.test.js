@@ -33,7 +33,8 @@ global.chrome = {
 // The same module instance that auth.js and commandRegister.js read settings from.
 const shared = await import('../src/shared/index.js');
 const { getCommands } = await import('../src/background/commandRegister.js');
-const { interactiveLogin } = await import('../src/background/auth/auth.js');
+const { ensureWebScopedToken, interactiveLogin } =
+  await import('../src/background/auth/auth.js');
 
 const settingsWith = ({ autoLogin, loginAs }) =>
   shared.saveSettings({
@@ -103,6 +104,7 @@ test('the default settings need the web scope because Login As is on', async () 
 test('each feature that starts a UI session needs the web scope on its own', async () => {
   await settingsWith({ autoLogin: true, loginAs: false });
   assert.equal(await shared.isWebScopeRequired(), true);
+  assert.equal(await requestedScope(), 'web api refresh_token');
 
   await settingsWith({ autoLogin: false, loginAs: true });
   assert.equal(await shared.isWebScopeRequired(), true);
@@ -139,4 +141,41 @@ test('the palette does not offer authorization when no enabled feature needs the
   const commands = await commandsForGrant('api refresh_token');
 
   assert.equal('AuthorizeExtensionCommand' in commands, false);
+});
+
+test('settings saved from another context apply to the next authorization', async () => {
+  await shared.resetSettings();
+  assert.equal(await shared.isWebScopeRequired(), true);
+
+  // A separate module instance has its own settings cache, like the options page.
+  const optionsPage = await import('../src/shared/settings.js?context=options');
+  await optionsPage.saveSettings({
+    AutoLogin: false,
+    Commands: { LoginAs: false },
+  });
+
+  assert.equal(await shared.isWebScopeRequired(), false);
+  assert.equal(await requestedScope(), 'api refresh_token');
+});
+
+test('auto-login does not use a grant with the web scope while its setting is off', async () => {
+  await settingsWith({ autoLogin: false, loginAs: true });
+  const cache = new shared.CacheManager(ORG);
+  const grant = {
+    access_token: '00Dxx0000000001!access',
+    refresh_token: 'refresh',
+    instance_url: `https://${ORG_CORE}`,
+    issued_at: Date.now(),
+    scope: 'refresh_token web api',
+  };
+  await cache.set(shared.SF_TOKEN_CACHE_KEY, grant, { preserve: true });
+  let requests = 0;
+  global.fetch = async () => {
+    requests += 1;
+    throw new Error('Unexpected fetch call');
+  };
+
+  assert.equal(await ensureWebScopedToken(ORG), null);
+  assert.equal(requests, 0);
+  assert.deepEqual(await cache.get(shared.SF_TOKEN_CACHE_KEY), grant);
 });
