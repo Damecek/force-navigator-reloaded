@@ -183,13 +183,23 @@ export function invalidateSettingsCache() {
 }
 
 /**
+ * Reads settings from storage for an authorization decision. It skips the
+ * in-memory copy, because the options page saves from another context, and
+ * writes nothing back, because a write could overwrite such a save.
+ * @returns {Promise<typeof DEFAULT_SETTINGS>}
+ */
+async function readStoredSettings() {
+  return mergeSettings(
+    await new CacheManager(GLOBAL_CACHE_SCOPE).get(SETTINGS_KEY)
+  );
+}
+
+/**
  * Returns whether My Domain auto-login is enabled.
  * @returns {Promise<boolean>}
  */
 export async function isAutologinEnabled() {
-  // The options page saves settings from another context; read storage again.
-  invalidateSettingsCache();
-  return (await getSetting([AUTOLOGIN_SETTINGS_KEY])) === true;
+  return (await readStoredSettings())[AUTOLOGIN_SETTINGS_KEY] === true;
 }
 
 /**
@@ -206,10 +216,8 @@ const WEB_SCOPE_SETTINGS = [
  * @returns {Promise<boolean>}
  */
 export async function isWebScopeRequired() {
-  // The options page saves settings from another context; read storage again.
-  invalidateSettingsCache();
-  const values = await Promise.all(
-    WEB_SCOPE_SETTINGS.map((keyPath) => getSetting(keyPath))
+  const settings = await readStoredSettings();
+  return WEB_SCOPE_SETTINGS.some(
+    (keyPath) => keyPath.reduce((value, key) => value?.[key], settings) === true
   );
-  return values.includes(true);
 }

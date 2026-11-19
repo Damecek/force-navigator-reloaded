@@ -110,7 +110,7 @@ test('interactiveLogin discards the token of a superseded attempt', async () => 
   );
   const stored = [];
   global.chrome.storage.local.set = async (values) => {
-    stored.push(...Object.keys(values).filter((k) => k.endsWith('_sfToken')));
+    stored.push(...Object.keys(values));
   };
   global.fetch = async () => ({
     ok: true,

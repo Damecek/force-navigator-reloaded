@@ -179,3 +179,27 @@ test('auto-login does not use a grant with the web scope while its setting is of
   assert.equal(requests, 0);
   assert.deepEqual(await cache.get(shared.SF_TOKEN_CACHE_KEY), grant);
 });
+
+test('an authorization check racing a settings save does not overwrite the save', async () => {
+  const readFromStorage = storageArea.get;
+  let finishRead;
+  const paused = new Promise((resolve) => {
+    finishRead = resolve;
+  });
+  storageArea.get = async (keys) => {
+    storageArea.get = readFromStorage;
+    const snapshot = await readFromStorage(keys);
+    await paused;
+    return snapshot;
+  };
+  const check = shared.isWebScopeRequired();
+  const optionsPage = await import('../src/shared/settings.js?context=race');
+  await optionsPage.saveSettings({
+    AutoLogin: false,
+    Commands: { LoginAs: false },
+  });
+  finishRead();
+
+  assert.equal(await check, true);
+  assert.equal(await shared.isWebScopeRequired(), false);
+});
