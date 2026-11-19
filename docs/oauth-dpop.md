@@ -154,7 +154,7 @@ Passed in one org:
 
 ### Installed extension
 
-The unpacked development build with ID `fjcokiadigpmkojdlhbkbhimkcmjokon` ran in Chrome for Testing 158 with a fresh profile, driven by Playwright. The palette was opened with the message that the keyboard command sends, because browser-level shortcuts cannot be automated. After the last review fixes, these checks were repeated on the final code: the harness login, API, refresh, concurrency, negative, auto-login, restart, and cross-org checks in both sandboxes, the complete installed-extension run in `carvago-dev`, and authorization plus both Login As variants in the installed extension. The remaining results below come from the code before the second round of review fixes.
+The unpacked development build with ID `fjcokiadigpmkojdlhbkbhimkcmjokon` ran in Chrome for Testing 158 with a fresh profile, driven by Playwright. The palette was opened with the message that the keyboard command sends, because browser-level shortcuts cannot be automated. After the last review fixes, these checks were repeated on the final code: the harness login, API, refresh, concurrency, negative, auto-login, restart, and cross-org checks in both sandboxes, the complete installed-extension run in `carvago-dev`, and authorization plus both Login As variants in the installed extension. The remaining results below come from the code before the second round of review fixes. After the `web` scope change and its review fixes, two runs passed on commit `e81e09e`: the complete installed-extension run in `carvago-dev`, including auto-login after logout, and authorization with the default settings followed by Login As in `carvago-uat`.
 
 Passed in both sandboxes:
 
@@ -177,7 +177,7 @@ Passed in one sandbox:
 
 Three rounds of independent security review (Open Code Review in delegation mode, GPT-6.2 Astra at high reasoning effort) covered the change. The first two rounds ended with a rejection and a list of findings. The third round accepted commit `9d4cd44` and found no new runtime defect.
 
-The `web` scope change in commit `031ce6f` got its own reviews. The first rejected it with two findings. The background auto-login handler returned a token while auto-login was off, which the wider default scope would have turned into a working session. The background worker could also keep settings from before a change on the options page. The second confirmed the auto-login fix and found that the fresh settings read could write defaults over a save made at the same moment, which the read without a write-back fixes. One existing test changed: it turns auto-login on before it expects a token for auto-login.
+The `web` scope change in commit `031ce6f` got its own reviews. The first rejected it with two findings. The background auto-login handler returned a token while auto-login was off, which the wider default scope would have turned into a working session. The background worker could also keep settings from before a change on the options page. The second confirmed the auto-login fix and found that the fresh settings read could write defaults over a save made at the same moment, which the read without a write-back fixes. The third accepted commit `e81e09e` with no open finding. One existing test changed: it turns auto-login on before it expects a token for auto-login.
 
 Fixed and covered by tests:
 
@@ -211,7 +211,7 @@ Left unchanged on purpose:
 ### Test side effects
 
 - Salesforce keeps five grants per user and app and drops the least recently used one. The test authorizations dropped five unused test grants from November 9, three in `carvago-dev` and two in `carvago-uat`. Grants in real use were not affected.
-- Four bound test grants from November 17 were left on the server because their keys were destroyed before revocation: one in `carvago-dev` and three in `carvago-uat`. Nobody can use them. An administrator can revoke them under the user's **OAuth Connected Apps**, or they end with the idle limit.
+- Four bound test grants from November 17 were left on the server because their keys were destroyed before revocation: one in `carvago-dev` and three in `carvago-uat`. A later test authorization in `carvago-uat` dropped one of them as the least recently used grant, so three remain. Nobody can use them. An administrator can revoke them under the user's **OAuth Connected Apps**, or they end with the idle limit.
 - All other test grants were revoked individually. No app setting was changed and no grant of another user was touched.
 
 ## Manual acceptance
