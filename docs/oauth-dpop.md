@@ -4,8 +4,9 @@ The extension supports OAuth 2.0 Demonstrating Proof of Possession ([RFC 9449](h
 
 ## Status
 
-- The client is implemented and verified. Nothing in this change enables, requires, or locks DPoP on a connected app.
-- The Dev and Prod connected apps still accept bearer tokens. Salesforce issues bound tokens to a client that asks for them and keeps accepting bearer grants until the app requires DPoP.
+- The client is implemented and verified.
+- The Dev connected app requires DPoP since November 20, 2026. The setting is not locked. Bearer grants of the Dev app no longer work, and each needs `Extension > Authorize` once per org.
+- The Prod connected app still accepts bearer tokens. Salesforce issues bound tokens to a client that asks for them and keeps accepting bearer grants until the app requires DPoP.
 - Full compliance with the Salesforce installation requirement needs the rollout steps below, including the separately gated locking step. No compliance is claimed here.
 - The Salesforce CLI plugin is unchanged. It uses the authorization of Salesforce CLI, and extension DPoP does not cover CLI-owned grants.
 
@@ -29,6 +30,16 @@ Measured with the existing Dev connected app in `carvago-dev` and `carvago-uat`,
 | `ui_sid`                                 | Not present in token responses of this flow. The Mobile SDK reads it only from its hybrid flows.                                                                                                                                                                                                                                                                                                                              |
 
 The Mobile SDK migrates a bearer session by authorizing again through the UI Bridge API, which matches the refused refresh upgrade above. A Chrome extension has no equivalent of that silent web view, so migration here is a new authorization.
+
+## Salesforce behavior with Require DPoP on, measured on November 20, 2026
+
+Measured in `carvago-dev` and `carvago-uat` after the Dev app started to require DPoP.
+
+- The setting reached `carvago-dev` between two and six minutes after the deploy. A bearer authorization made in that gap still returned a `Bearer` token.
+- A bearer access token issued before enforcement then returned 401 `INVALID_SESSION_ID` on REST.
+- A refresh of that bearer grant without a proof returned 400 `invalid_request` with the description "app requires proof of possession". The response is not `invalid_grant`, so the extension keeps the grant marked as uncertain and asks for authorization.
+- A new authorization request without `dpop_jkt` stopped at `/services/oauth2/authorize` with status 400 in both sandboxes. No grant was created.
+- Authorization with `dpop_jkt`, refresh, REST and Tooling reads, the UI Bridge, and revocation behaved as measured on November 17.
 
 ## Design
 
@@ -97,26 +108,29 @@ Both features need the `web` scope, as before. The extension requests it while o
 
 - Existing grants keep the stored format of version 5.18.0 and keep working as bearer grants while the app accepts them.
 - A grant becomes bound through `Extension > Authorize`. With an existing Salesforce session and an already approved app this is one command without a consent page.
-- When the app requires DPoP, Salesforce rejects bearer grants. The refresh then fails, the grant is cleared or marked uncertain, and the palette offers `Extension > Authorize`. This path is exercised with revoked and unusable grants. The exact server error under enforcement is not observed, because enforcement was not enabled.
+- When the app requires DPoP, Salesforce rejects bearer grants. The refresh then fails, the grant is cleared or marked uncertain, and the palette offers `Extension > Authorize`. With the Dev app requiring DPoP, the installed extension took this path with a real bearer grant: one refresh without a proof failed, the grant stayed stored with its replay guard, the palette offered `Extension > Authorize` and no org commands, and authorizing stored a bound grant and restored the commands.
 - Not implemented: a silent migration that authorizes again without the user. It needs a non-interactive OAuth window whose behavior with Salesforce's scripted redirects is unverified. Decide on it before Prod enforcement if one command per user and org is too much.
 
 ## Rollout plan
 
-Nothing below was executed. Enabling **Require DPoP** on an app affects every org and user of that app at once. Locking is irreversible.
+The Dev app steps were executed on November 20, 2026. Nothing was executed for the Prod app. Enabling **Require DPoP** on an app affects every org and user of that app at once. Locking is irreversible.
 
 ### Dev app
 
 The Dev app is used by unpacked development builds only. Its owner org is reached through the CLI alias `force-navigator-connected-app`.
 
-1. Merge this change. Tell everyone who runs a development build to update it and run `Extension > Authorize` once per org.
-2. In the owner org, open the existing app `Force Navigator Reloaded Dev` and turn on **Require DPoP (Demonstrating Proof-of-Possession)** in its OAuth settings. Change nothing else and do not lock the setting. Compare all settings before and after, as in the rotation rollout.
-3. Retrieve the app metadata and record the field that represents the setting. Its name is not verified. Update `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml` to match.
-4. Run the manual acceptance below in `carvago-dev` and `carvago-uat`. Also check a grant that is still a bearer grant: the palette must offer `Extension > Authorize`, and authorizing must restore the commands.
-5. Confirm in subscriber Insights that proof of possession counts as on.
-6. Roll back by turning the setting off if a regression appears. That works only while the setting is not locked.
+1. Done: the change is merged. Everyone who runs a development build updates it and runs `Extension > Authorize` once per org.
+2. Done: the setting is on and not locked. The metadata field is `isDPopEnabled` in `oauthConfig`. It exists in Metadata API 68.0 and not in 64.0, so `sf/sfdx-project.json` now uses 68.0. A deploy of `ConnectedApp:Force_Navigator_Reloaded_Dev` alone changed it, after a validation run. Reading both apps through the Metadata API before and after showed one difference, `isDPopEnabled` from `false` to `true` on the Dev app. The Prod definition was identical.
+3. Done: `Force_Navigator_Reloaded_Dev.connectedApp-meta.xml` carries `<isDPopEnabled>true</isDPopEnabled>`.
+4. Done by automation in `carvago-dev` and `carvago-uat`, see the installed-extension evidence. The manual acceptance below is still open.
+5. Open: confirm in subscriber Insights that proof of possession counts as on. Whether an unlocked setting counts was not read.
+6. Roll back by turning the setting off if a regression appears: set `isDPopEnabled` to `false` and deploy the Dev app alone. That works only while the setting is not locked.
+
+`npm run deploy` in `sf` deploys both apps. Use `sf project deploy start -m 'ConnectedApp:Force_Navigator_Reloaded_Dev'` for a Dev-only change.
 
 ### Prod app
 
+0. Resolve the idle-expiry mismatch first. On November 20, 2026 the Metadata API 68.0 read `isEnforceRefreshTokenTTL=false` for the Prod app, and subscriber Insights showed its OAuth controls as 2 of 3, while `Force_Navigator_Reloaded_Prod.connectedApp-meta.xml` says `true`. `sf/sfdx-project.json` now uses API 68.0, which knows this field, so `npm run deploy` sends `true` for the Prod app.
 1. Release the client first. Confirm that the version with DPoP is publicly available in the Chrome Web Store, then wait at least five full days, as for rotation. A pending review does not start the waiting period.
 2. Expect every user whose grant predates the release to be asked for `Extension > Authorize` once per org when DPoP becomes required. Users on an older client cannot authorize at all afterwards, which is why the waiting period matters.
 3. Turn on **Require DPoP** on the existing Prod app. Keep the consumer key and callback. Update the Prod metadata file to match a fresh retrieve.
@@ -173,6 +187,12 @@ Passed in one sandbox:
 - `carvago-dev`, before the `web` scope change: a grant with the scopes `refresh_token api` and a Login As command opened the private window at the Salesforce sign-in page, and the address carried no session ID or one-time code. Grants from earlier authorizations still take this path.
 - `carvago-uat`: a browser process killed during a refresh came back with the grant discarded and without a token request, and the palette offered authorization.
 
+Passed on November 20, 2026 with the Dev app requiring DPoP, on the merged code (`fab6461`):
+
+- `carvago-dev`: the complete list above, from authorization to recovery after revocation.
+- `carvago-dev`: a profile that held a real bearer grant ended with `Extension > Authorize` in the palette after one refresh without a proof, and authorizing stored a bound grant and restored the commands.
+- `carvago-uat`: with the default settings `Extension > Authorize` stored a bound grant with the scopes `refresh_token web api`, and the Login As command opened a private window that landed in Lightning as the dedicated test user.
+
 ### Independent review
 
 Three rounds of independent security review (Open Code Review in delegation mode, GPT-6.2 Astra at high reasoning effort) covered the change. The first two rounds ended with a rejection and a list of findings. The third round accepted commit `9d4cd44` and found no new runtime defect.
@@ -198,7 +218,8 @@ Left unchanged on purpose:
 
 ### Not verified
 
-- Behavior with **Require DPoP** turned on, on either app. The setting was not changed.
+- Behavior with **Require DPoP** turned on for the Prod app. The setting was changed on the Dev app only.
+- The subscriber Insights page after the Dev app started to require DPoP.
 - The Prod app, the Web Store build, and any org other than the two sandboxes.
 - Expiry of a nonce after 24 hours. The recovery through a 401 and a refresh is covered by a unit test only.
 - Google Chrome stable with a real keyboard shortcut and a visible OAuth consent page. The test profile had an approved app, so authorization completed without consent.
@@ -212,7 +233,8 @@ Left unchanged on purpose:
 
 - Salesforce keeps five grants per user and app and drops the least recently used one. The test authorizations dropped five unused test grants from November 9, three in `carvago-dev` and two in `carvago-uat`. Grants in real use were not affected.
 - Four bound test grants from November 17 were left on the server because their keys were destroyed before revocation: one in `carvago-dev` and three in `carvago-uat`. A later test authorization in `carvago-uat` dropped one of them as the least recently used grant, so three remain. Nobody can use them. An administrator can revoke them under the user's **OAuth Connected Apps**, or they end with the idle limit.
-- All other test grants were revoked individually. No app setting was changed and no grant of another user was touched.
+- All other test grants were revoked individually, including those of November 20. One more unused test grant from November 9 in `carvago-dev` was dropped as the least recently used grant. No grant of another user was touched.
+- The only app setting changed is **Require DPoP** on the Dev app, on November 20, 2026. It made every bearer grant of the Dev app unusable, in every org.
 
 ## Manual acceptance
 

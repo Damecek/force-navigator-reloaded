@@ -14,6 +14,7 @@
         <isCodeCredentialEnabled>false</isCodeCredentialEnabled>
         <isCodeCredentialPostOnly>false</isCodeCredentialPostOnly>
         <isConsumerSecretOptional>true</isConsumerSecretOptional>
+        <isDPopEnabled>true</isDPopEnabled>
         <isEnforceRefreshTokenTTL>true</isEnforceRefreshTokenTTL>
         <isIntrospectAllTokens>false</isIntrospectAllTokens>
         <isNamedUserJwtEnabled>false</isNamedUserJwtEnabled>
