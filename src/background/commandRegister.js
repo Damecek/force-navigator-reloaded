@@ -31,7 +31,7 @@ import {
   getSetting,
   LOGIN_AS_CACHE_KEY,
   LOGIN_AS_CACHE_TTL,
-  isAutologinEnabled,
+  isWebScopeRequired,
   LIGHTNING_APP_CACHE_KEY,
   LIGHTNING_APP_CACHE_TTL,
   LIGHTNING_APP_SETTINGS_KEY,
@@ -95,7 +95,7 @@ export async function getCommands(hostname) {
   const instanceHostname = toLightningHostname(hostname);
   const connection = new SalesforceConnection({
     instanceUrl: token.instance_url,
-    accessToken: token.access_token,
+    token,
   });
   const loadUsers = createUsersLoader(connection);
   let NavigationCommand = [];
@@ -146,9 +146,8 @@ export async function getCommands(hostname) {
     }
     throw error;
   }
-  const autologinEnabled = await isAutologinEnabled();
   const requiresWebScopeReauthorize =
-    autologinEnabled && !tokenHasScope(token, 'web');
+    !tokenHasScope(token, 'web') && (await isWebScopeRequired());
   const RefreshCommandListCommand = [{}];
   const ResetCommandListUsageTracking = [{}];
   const ReviewCommand = [{}];

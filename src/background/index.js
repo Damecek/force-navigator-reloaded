@@ -1,5 +1,4 @@
 import {
-  buildFrontdoorUrl,
   CacheManager,
   Channel,
   CHANNEL_AUTOLOGIN_MYDOMAIN,
@@ -18,8 +17,15 @@ import {
   toCoreUrl,
 } from '../shared/index.js';
 import { getCommands } from './commandRegister.js';
-import { ensureToken, ensureWebScopedToken } from './auth/auth.js';
+import {
+  ensureToken,
+  ensureWebScopedToken,
+  tokenHasScope,
+} from './auth/auth.js';
 import { registerAuthFlowListeners } from './auth/authFlowController.js';
+import { isRelativePath, requestFrontdoorUrl } from './auth/uiSessionBridge.js';
+
+const DEFAULT_LANDING_PATH = '/lightning/page/home';
 
 chrome.commands.onCommand.addListener((command, tab) => {
   const url = tab?.url;
@@ -56,7 +62,10 @@ registerAuthFlowListeners();
 new Channel(CHANNEL_AUTOLOGIN_MYDOMAIN).subscribe(async ({ sender }) => {
   const tabId = sender?.tab?.id;
   const orgHostname = getSenderHostname(sender);
-  const retURL = getSenderRetURL(sender) || '/lightning/page/home';
+  const senderRetURL = getSenderRetURL(sender);
+  const retURL = isRelativePath(senderRetURL)
+    ? senderRetURL
+    : DEFAULT_LANDING_PATH;
   console.log('MyDomain auto-login requested', {
     tabId,
     orgHostname,
@@ -78,7 +87,7 @@ new Channel(CHANNEL_AUTOLOGIN_MYDOMAIN).subscribe(async ({ sender }) => {
       await refreshCommandsForTab(tabId, orgHostname);
       return;
     }
-    const url = buildFrontdoorUrl(orgHostname, token.access_token, retURL);
+    const url = await requestFrontdoorUrl(token, retURL);
     console.log('MyDomain auto-login redirect', { orgHostname, retURL });
     await chrome.tabs.update(tabId, { url });
   } catch (error) {
@@ -132,8 +141,19 @@ new Channel(CHANNEL_LOGIN_AS_PRIVATE).subscribe(async ({ data, sender }) => {
     retURL: contextPath,
     targetURL: contextPath,
   });
-  const loginAsUrl = `${toCoreUrl(orgHostname)}/servlet/servlet.su?${query.toString()}`;
-  const url = buildFrontdoorUrl(orgHostname, sessionId, loginAsUrl);
+  const loginAsPath = `/servlet/servlet.su?${query.toString()}`;
+  let url;
+  if (tokenHasScope(token, 'web')) {
+    try {
+      url = await requestFrontdoorUrl(token, loginAsPath);
+    } catch (error) {
+      console.error('Private Login As failed', error, { orgHostname });
+      return;
+    }
+  } else {
+    console.log('Grant has no web scope; Login As opens without a session');
+    url = `${toCoreUrl(orgHostname)}${loginAsPath}`;
+  }
   await chrome.windows.create({
     url,
     incognito: true,
@@ -155,7 +175,7 @@ function getSenderHostname(sender) {
 }
 
 /**
- * Extract raw retURL query parameter from sender tab URL if present.
+ * Extract the decoded retURL or startURL query parameter from the sender tab URL if present.
  * @param {chrome.runtime.MessageSender} sender
  * @returns {string|null}
  */
@@ -167,7 +187,7 @@ function getSenderRetURL(sender) {
     }
     const retUrlMatch = tabUrl.match(/[?&]retURL=([^&]+)/);
     if (retUrlMatch?.[1]) {
-      return retUrlMatch[1];
+      return decodeURIComponent(retUrlMatch[1]);
     }
     const startUrlMatch = tabUrl.match(/[?&]startURL=([^&]+)/);
     if (startUrlMatch?.[1]) {
@@ -193,7 +213,7 @@ function parseOrgIdFromSessionId(sessionId) {
 }
 
 /**
- * Ensure context path is a relative path and never empty.
+ * Ensure context path is a relative path on the org and never empty.
  * @param {string | undefined} contextPath
  * @returns {string}
  */
@@ -201,7 +221,8 @@ function normalizeContextPath(contextPath) {
   if (typeof contextPath !== 'string' || !contextPath) {
     return '/';
   }
-  return contextPath.startsWith('/') ? contextPath : `/${contextPath}`;
+  const path = contextPath.startsWith('/') ? contextPath : `/${contextPath}`;
+  return isRelativePath(path) ? path : '/';
 }
 
 /**

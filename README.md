@@ -38,7 +38,9 @@ and other org destinations without leaving the keyboard. It is available directl
 - **Review Request Command**: After real extension activity, the palette can show
   `Extension > Review Force Navigator Reloaded`, which opens the Chrome Web Store reviews page once and then disables
   itself
-- **Optional My Domain Auto-login**: Toggle auto-login from the Settings page. When enabled, the extension can auto-login on supported `*.my.salesforce.com` login pages, including username-first prompts, for already authorized orgs and requests OAuth scope `web`; if the token is missing `web` scope, auto-login stops and the palette offers `Extension > Authorize` for explicit re-authorization
+- **Optional My Domain Auto-login**: Toggle auto-login from the Settings page. When enabled, the extension can auto-login on supported `*.my.salesforce.com` login pages, including username-first prompts, for already authorized orgs. Auto-login needs the OAuth scope `web`; if the token is missing it, auto-login stops and the palette offers `Extension > Authorize` for explicit re-authorization
+- **Key-bound Tokens (DPoP)**: New authorizations bind the access and refresh tokens to a signing key that stays in
+  the browser profile. Salesforce rejects a bound token that is presented without a proof from that key
 - **Welcome Page**: Automatically opens after first install with a quick start guide, authorization help with copyable
   administrator instructions, shortcut tips, and review link
 - **Authorization Feedback**: Failed authorizations are explained in the OAuth window and as a native Salesforce toast
@@ -129,8 +131,39 @@ authorized, the palette offers only `Extension > Authorize` and `Extension > Opt
 3. When the window closes, the palette reloads the org's commands and shows a confirmation toast. Tokens stay in local
    extension storage and are refreshed automatically.
 
-The extension requests the `api` and `refresh_token` scopes, plus `web` when My Domain auto-login is enabled.
+The extension requests the `api` and `refresh_token` scopes, plus `web` while a feature that starts a Salesforce
+browser session is enabled: Login As commands (on by default) or My Domain auto-login. To authorize without `web`,
+turn both off in Settings before you run `Extension > Authorize`. When one of them is on and the stored grant lacks
+`web`, the palette also offers `Extension > Authorize`; navigation and Login As commands stay in the palette.
 Authorization is per org and per browser profile.
+
+### Proof of possession (DPoP)
+
+Every new authorization uses [OAuth 2.0 DPoP (RFC 9449)](https://www.rfc-editor.org/rfc/rfc9449.html). The extension
+generates an ES256 key pair for the grant, sends its thumbprint with the authorization request, and proves possession
+of the key on the token exchange. Salesforce then issues tokens of type `DPoP`.
+
+- Each token refresh and each REST or Tooling API request carries a fresh signed proof for that method, URL, and access
+  token. Salesforce returns 401 for a bound access token without a valid proof, and refuses a bound refresh token
+  without one.
+- The private key is a non-extractable `CryptoKey` in the extension's IndexedDB. Extension code can sign with it and
+  cannot read or export it. The key is never written to `chrome.storage`, never synced, and never leaves the browser
+  profile. Each org has its own key, and a new authorization replaces it.
+- My Domain auto-login and private Login As start the browser session through the Salesforce UI Bridge API
+  (`/services/oauth2/singleaccess`). The opened URL carries a short-lived one-time code. The access token is not put
+  into a URL. Salesforce allows this only for a grant with the `web` scope. With a grant from an earlier
+  authorization that lacks it, Login As opens the private window at the Salesforce sign-in page until you authorize
+  again.
+- Authorizations made before this version stay bearer grants and keep working while Salesforce accepts them.
+  Salesforce does not bind an existing bearer refresh token, so an org moves to a bound grant the next time you run
+  `Extension > Authorize`.
+- The palette offers `Extension > Authorize` when a bound grant cannot be used: the browser profile lost the key (for
+  example after its site data was cleared), the grant was revoked, or Salesforce starts requiring DPoP for a grant
+  that is still a bearer grant. Authorizing again creates a new key and a new bound grant.
+
+DPoP protects tokens that leak from storage, logs, or the network. It does not protect against software that controls
+the browser profile itself, because that software can ask the extension's key to sign. Protocol evidence, the key
+lifecycle, and the rollout plan are in [docs/oauth-dpop.md](docs/oauth-dpop.md).
 
 ### Token refresh, rotation, and idle expiry
 

@@ -490,6 +490,8 @@ test('a new interactive login is not blocked by an earlier refresh failure', asy
 
 test('ensureWebScopedToken refreshes an old token only once', async () => {
   const { ensureWebScopedToken } = await loadAuth();
+  const { saveSettings } = await import('../src/shared/index.js');
+  await saveSettings({ AutoLogin: true });
   seedToken(ORG);
   const tokenCalls = mockFetch(() =>
     jsonResponse({

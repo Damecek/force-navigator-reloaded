@@ -3,6 +3,7 @@ import {
   CacheManager,
   CLIENT_ID,
   isAutologinEnabled,
+  isWebScopeRequired,
   SF_TOKEN_CACHE_KEY,
   toCoreUrl,
   toLightningHostname,
@@ -10,6 +11,18 @@ import {
 } from '../../shared/index.js';
 import { makePkcePair } from './authUtil.js';
 import AuthFlowError from './authFlowError.js';
+import {
+  deleteDpopKey,
+  pruneDpopKeys,
+  saveDpopKey,
+} from './dpop/dpopKeyStore.js';
+import {
+  createDpopProof,
+  generateDpopKey,
+  isDpopToken,
+  readDpopNonceChallenge,
+} from './dpop/dpopProof.js';
+import { loadGrantKey } from './requestAuthorization.js';
 import {
   AUTH_FAILURE_SOURCE,
   sanitizeAuthErrorText,
@@ -26,11 +39,16 @@ import {
  * @property {string} scope
  * @property {string} signature
  * @property {boolean} [refreshPending] Durable guard against replay after an interrupted refresh.
- * @property {string} token_type
+ * @property {string} token_type `DPoP` for a grant bound to a key, otherwise `Bearer`.
+ * @property {string} [dpop_jkt] Thumbprint of the key a bound grant was issued for.
+ * @property {string} [dpop_nonce] Latest server nonce for proofs of a bound grant.
+ * @property {string} [client_id] OAuth client that a bound grant was issued to.
  */
 
 /**
  * Launches interactive OAuth2-PKCE flow and stores token.
+ * The request offers a new DPoP key; Salesforce binds the grant to it and
+ * answers with token type `DPoP`. A `Bearer` answer is stored as a bearer grant.
  * @param {string} hostname Any Salesforce hostname of the org.
  * @param {Object} [options]
  * @param {string} [options.state] Opaque value echoed by Salesforce, used to correlate the attempt.
@@ -43,6 +61,7 @@ export async function interactiveLogin(
   { state, shouldPersist } = {}
 ) {
   const { verifier, challenge } = await makePkcePair();
+  const dpopKey = await generateDpopKey();
   const loginBase = toLightningUrl(hostname);
   const scopes = await buildOauthScopes();
   const redirectUri = chrome.identity.getRedirectURL('oauth2');
@@ -53,6 +72,7 @@ export async function interactiveLogin(
     scope: scopes,
     code_challenge: challenge,
     code_challenge_method: 'S256',
+    dpop_jkt: dpopKey.thumbprint,
   });
   if (state) {
     authParams.set('state', state);
@@ -84,11 +104,11 @@ export async function interactiveLogin(
     redirect_uri: redirectUri,
     code_verifier: verifier,
   });
-  const resp = await fetch(tokenEndpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString(),
-  });
+  const { response: resp, nonce } = await postTokenRequest(
+    tokenEndpoint,
+    params,
+    dpopKey
+  );
   if (!resp.ok) {
     throw buildTokenExchangeError(await resp.text());
   }
@@ -97,13 +117,50 @@ export async function interactiveLogin(
     hostname,
     instance_url: token?.instance_url,
     scope: token?.scope,
+    token_type: token?.token_type,
   });
   if (typeof shouldPersist === 'function' && !shouldPersist()) {
     console.log('OAuth2 attempt superseded, discarding its token');
     return token;
   }
-  await storeToken(token);
+  await storeToken(token, dpopKey, nonce, shouldPersist);
   return token;
+}
+
+/**
+ * POST a grant to the token endpoint. A request with a DPoP key first sends a
+ * proof without a nonce. Salesforce answers with a `use_dpop_nonce` challenge
+ * before it processes the grant, and the request is repeated once with that
+ * fresh nonce. No other response is retried, and a redirect fails the request
+ * so the grant is never sent to another URL.
+ * @param {string} tokenEndpoint
+ * @param {URLSearchParams} params
+ * @param {import('./dpop/dpopProof.js').DpopKey|null} dpopKey
+ * @returns {Promise<{response: Response, nonce: string|null}>}
+ */
+async function postTokenRequest(tokenEndpoint, params, dpopKey) {
+  const send = async (nonce) => {
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+    if (dpopKey) {
+      headers.DPoP = await createDpopProof({
+        key: dpopKey,
+        method: 'POST',
+        url: tokenEndpoint,
+        nonce,
+      });
+    }
+    return fetch(tokenEndpoint, {
+      method: 'POST',
+      headers,
+      body: params.toString(),
+      redirect: 'error',
+    });
+  };
+  const response = await send();
+  const nonce = dpopKey ? await readDpopNonceChallenge(response) : null;
+  return nonce
+    ? { response: await send(nonce), nonce }
+    : { response, nonce: null };
 }
 
 /**
@@ -181,7 +238,8 @@ function buildTokenExchangeError(body) {
 }
 
 /**
- * Ensures token is ready for My Domain auto-login flow.
+ * Ensures token is ready for My Domain auto-login flow. Returns null unless
+ * auto-login is enabled and the grant has the `web` scope.
  * Always exchanges the refresh token once so frontdoor receives a fresh UI session,
  * and never launches interactive OAuth from the passive auto-login flow.
  *
@@ -189,6 +247,11 @@ function buildTokenExchangeError(body) {
  * @returns {Promise<Token|null>}
  */
 export async function ensureWebScopedToken(hostname) {
+  // A grant can carry `web` for Login As alone, so the setting decides here too.
+  if (!(await isAutologinEnabled())) {
+    console.log('ensureWebScopedToken: auto-login is disabled');
+    return null;
+  }
   const cachedToken = await new CacheManager(toLightningHostname(hostname)).get(
     SF_TOKEN_CACHE_KEY
   );
@@ -206,8 +269,7 @@ export async function ensureWebScopedToken(hostname) {
     );
     return null;
   }
-  const autologinEnabled = await isAutologinEnabled();
-  if (autologinEnabled && !tokenHasScope(token, 'web')) {
+  if (!tokenHasScope(token, 'web')) {
     console.log(
       'Auto-login requires web scope. Skipping passive auto-login without interactive OAuth.'
     );
@@ -228,6 +290,10 @@ export async function ensureToken(hostname) {
   const cachedToken = await cache.get(SF_TOKEN_CACHE_KEY);
   if (!cachedToken) {
     return null;
+  }
+  if (!(await resolveGrantKey(cachedToken, loginBase)).usable) {
+    console.log('Bound grant has no usable key; authorization is required');
+    return clearTokenIfUnchanged(loginBase, cachedToken);
   }
   const refreshTime = 3600 * 1000 * 24; // defined in Force_Navigator_Reloaded_xxx.connectedApp-meta.xml
   const grace = 3600 * 1000 * 4; // 4 hours grace period
@@ -283,6 +349,11 @@ async function runRefresh(loginBase, rejectedAccessToken) {
     console.log('Interrupted refresh requires authorization for', loginBase);
     return clearTokenIfUnchanged(loginBase, cachedToken);
   }
+  const { usable, dpopKey } = await resolveGrantKey(cachedToken, loginBase);
+  if (!usable) {
+    console.log('Bound grant has no usable key; authorization is required');
+    return clearTokenIfUnchanged(loginBase, cachedToken);
+  }
   if (
     cachedToken &&
     rejectedAccessToken &&
@@ -323,7 +394,7 @@ async function runRefresh(loginBase, rejectedAccessToken) {
   }
 
   console.log('Refreshing Salesforce token for', loginBase);
-  const outcome = await requestTokenRefresh(cachedToken);
+  const outcome = await requestTokenRefresh(cachedToken, dpopKey);
   if (outcome.invalidGrant) {
     console.log(
       'Token refresh failed with invalid_grant. Refresh token is revoked or expired, clearing cached token.'
@@ -343,6 +414,11 @@ async function runRefresh(loginBase, rejectedAccessToken) {
   const fresh = outcome.token;
   fresh.refresh_token = fresh.refresh_token || cachedToken.refresh_token;
   fresh.scope = fresh.scope || cachedToken.scope;
+  if (dpopKey) {
+    fresh.dpop_jkt = cachedToken.dpop_jkt;
+    fresh.dpop_nonce = outcome.nonce || cachedToken.dpop_nonce;
+    fresh.client_id = cachedToken.client_id;
+  }
   console.log('OAuth2 refresh response', {
     instance_url: fresh?.instance_url,
     scope: fresh?.scope,
@@ -369,11 +445,16 @@ async function runRefresh(loginBase, rejectedAccessToken) {
 
 /**
  * Calls the token endpoint with the refresh token grant.
+ * A bound grant proves possession of its key; a bearer grant sends no proof,
+ * because Salesforce refuses to bind an existing bearer refresh token.
  * Errors and unreadable responses leave the durable replay guard in place.
+ * A response whose token type differs from the stored grant is rejected, so a
+ * bound grant is never downgraded.
  * @param {Token} cachedToken
- * @returns {Promise<{token?: Token, invalidGrant?: boolean, error?: string}>}
+ * @param {import('./dpop/dpopProof.js').DpopKey|null} dpopKey Key of a bound grant.
+ * @returns {Promise<{token?: Token, nonce?: string|null, invalidGrant?: boolean, error?: string}>}
  */
-async function requestTokenRefresh(cachedToken) {
+async function requestTokenRefresh(cachedToken, dpopKey) {
   const tokenEndpoint = `${cachedToken.instance_url.replace(/\/+$/, '')}/services/oauth2/token`;
   const params = new URLSearchParams({
     grant_type: 'refresh_token',
@@ -381,11 +462,11 @@ async function requestTokenRefresh(cachedToken) {
     refresh_token: cachedToken.refresh_token,
   });
   try {
-    const resp = await fetch(tokenEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    });
+    const { response: resp, nonce } = await postTokenRequest(
+      tokenEndpoint,
+      params,
+      dpopKey
+    );
     if (!resp.ok) {
       const errorBody = await resp.text();
       const { error } = buildTokenExchangeError(errorBody);
@@ -399,7 +480,10 @@ async function requestTokenRefresh(cachedToken) {
     if (!token?.access_token || !token?.instance_url) {
       return { error: 'invalid_token_response' };
     }
-    return { token };
+    if (isDpopToken(token) !== !!dpopKey) {
+      return { error: 'unexpected_token_type' };
+    }
+    return { token, nonce };
   } catch {
     return { error: 'request_failed' };
   }
@@ -420,8 +504,47 @@ function clearTokenIfUnchanged(loginBase, snapshot) {
       return current;
     }
     await cache.clear(SF_TOKEN_CACHE_KEY);
+    await pruneOrgKeys(loginBase, null);
     return null;
   });
+}
+
+/**
+ * Resolve the signing key of a stored grant.
+ * A bearer grant needs none. A bound grant is unusable when its key is missing
+ * from this browser profile, it was issued to another OAuth client, or it is
+ * stored under an org other than the one that issued it.
+ * @param {Token|null} token
+ * @param {string} loginBase Canonical Lightning hostname the grant is stored under.
+ * @returns {Promise<{usable: boolean, dpopKey: import('./dpop/dpopProof.js').DpopKey|null}>}
+ */
+async function resolveGrantKey(token, loginBase) {
+  if (!isDpopToken(token)) {
+    return { usable: true, dpopKey: null };
+  }
+  if (
+    token.client_id !== CLIENT_ID ||
+    toLightningHostname(token.instance_url) !== loginBase
+  ) {
+    return { usable: false, dpopKey: null };
+  }
+  const dpopKey = await loadGrantKey(token);
+  return { usable: !!dpopKey, dpopKey };
+}
+
+/**
+ * Delete keys of an org that its stored grant no longer uses.
+ * A failure leaves an unused key behind and never blocks the token change.
+ * @param {string} loginBase
+ * @param {string|null} keepThumbprint
+ * @returns {Promise<void>}
+ */
+async function pruneOrgKeys(loginBase, keepThumbprint) {
+  try {
+    await pruneDpopKeys(loginBase, keepThumbprint);
+  } catch {
+    console.log('Cannot prune unused DPoP keys for', loginBase);
+  }
 }
 
 /**
@@ -466,8 +589,9 @@ function withTokenLock(loginBase, task) {
  * @returns {Promise<string>}
  */
 async function buildOauthScopes() {
-  const autologinEnabled = await isAutologinEnabled();
-  return autologinEnabled ? 'web api refresh_token' : 'api refresh_token';
+  return (await isWebScopeRequired())
+    ? 'web api refresh_token'
+    : 'api refresh_token';
 }
 
 /**
@@ -485,16 +609,61 @@ export function tokenHasScope(token, scope) {
 }
 
 /**
- * Persist a token under the org's Lightning hostname with the current issue time.
- * @param {Token} token
+ * Delete the key of a grant that could not be stored. A failure is ignored
+ * because the key is unreferenced and is pruned with the next token change.
+ * @param {string} thumbprint
  * @returns {Promise<void>}
  */
-function storeToken(token) {
+async function discardKey(thumbprint) {
+  try {
+    await deleteDpopKey(thumbprint);
+  } catch {
+    console.log('Cannot delete an unused DPoP key');
+  }
+}
+
+/**
+ * Persist a token under the org's Lightning hostname with the current issue time.
+ * A bound grant stores its key first, so a stored `DPoP` token always has a
+ * key; the key is removed again when the token cannot be written. Keys of
+ * replaced grants are deleted afterwards. An attempt that was superseded
+ * while it waited for the lock or the key store writes nothing.
+ * @param {Token} token
+ * @param {import('./dpop/dpopProof.js').DpopKey} dpopKey Key offered in the authorization request.
+ * @param {string|null} nonce Nonce from the token endpoint challenge.
+ * @param {() => boolean} [shouldPersist] Consulted again right before the token write.
+ * @returns {Promise<void>}
+ */
+function storeToken(token, dpopKey, nonce, shouldPersist) {
   token.issued_at = Date.now();
   const loginBase = toLightningHostname(token.instance_url);
-  return withTokenLock(loginBase, () =>
-    new CacheManager(loginBase).set(SF_TOKEN_CACHE_KEY, token, {
-      preserve: true,
-    })
-  );
+  const bound = isDpopToken(token);
+  if (bound) {
+    token.dpop_jkt = dpopKey.thumbprint;
+    token.dpop_nonce = nonce;
+    token.client_id = CLIENT_ID;
+  }
+  return withTokenLock(loginBase, async () => {
+    if (bound) {
+      await saveDpopKey(loginBase, dpopKey);
+    }
+    if (typeof shouldPersist === 'function' && !shouldPersist()) {
+      console.log('OAuth2 attempt superseded, discarding its token');
+      if (bound) {
+        await discardKey(dpopKey.thumbprint);
+      }
+      return;
+    }
+    try {
+      await new CacheManager(loginBase).set(SF_TOKEN_CACHE_KEY, token, {
+        preserve: true,
+      });
+    } catch (error) {
+      if (bound) {
+        await discardKey(dpopKey.thumbprint);
+      }
+      throw error;
+    }
+    await pruneOrgKeys(loginBase, bound ? dpopKey.thumbprint : null);
+  });
 }

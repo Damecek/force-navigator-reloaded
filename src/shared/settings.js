@@ -183,9 +183,41 @@ export function invalidateSettingsCache() {
 }
 
 /**
+ * Reads settings from storage for an authorization decision. It skips the
+ * in-memory copy, because the options page saves from another context, and
+ * writes nothing back, because a write could overwrite such a save.
+ * @returns {Promise<typeof DEFAULT_SETTINGS>}
+ */
+async function readStoredSettings() {
+  return mergeSettings(
+    await new CacheManager(GLOBAL_CACHE_SCOPE).get(SETTINGS_KEY)
+  );
+}
+
+/**
  * Returns whether My Domain auto-login is enabled.
  * @returns {Promise<boolean>}
  */
 export async function isAutologinEnabled() {
-  return (await getSetting([AUTOLOGIN_SETTINGS_KEY])) === true;
+  return (await readStoredSettings())[AUTOLOGIN_SETTINGS_KEY] === true;
+}
+
+/**
+ * Settings of features that start a Salesforce UI session and therefore need
+ * the OAuth `web` scope. A new feature adds the key path of its setting here.
+ */
+const WEB_SCOPE_SETTINGS = [
+  [AUTOLOGIN_SETTINGS_KEY],
+  [COMMANDS_SETTINGS_KEY, LOGIN_AS_SETTINGS_KEY],
+];
+
+/**
+ * Returns whether an enabled feature needs a grant with the `web` scope.
+ * @returns {Promise<boolean>}
+ */
+export async function isWebScopeRequired() {
+  const settings = await readStoredSettings();
+  return WEB_SCOPE_SETTINGS.some(
+    (keyPath) => keyPath.reduce((value, key) => value?.[key], settings) === true
+  );
 }

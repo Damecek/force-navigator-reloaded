@@ -2,7 +2,7 @@
 
 This document explains each key in the Settings JSON shown on the extension options page.
 
-`AutoLogin`: Enables optional My Domain auto-login on supported Salesforce login pages, including username-first prompts, for already authorized orgs. Default: `false`.
+`AutoLogin`: Enables optional My Domain auto-login on supported Salesforce login pages, including username-first prompts, for already authorized orgs. While enabled, `Extension > Authorize` requests the OAuth scope `web`. Default: `false`.
 
 `CommandPalette`: Controls command palette presentation.
 
@@ -78,4 +78,4 @@ This document explains each key in the Settings JSON shown on the extension opti
 
 `Commands.Users`: Includes active user navigation commands. Default: `true`.
 
-`Commands.LoginAs`: Includes Login As commands for active standard users. Default: `true`.
+`Commands.LoginAs`: Includes Login As commands for active standard users. While enabled, `Extension > Authorize` requests the OAuth scope `web`, which Login As needs to open the private session. If the stored grant lacks `web`, the palette also offers `Extension > Authorize`. Default: `true`.
